@@ -84,20 +84,24 @@ def manifest_params(manifest: dict[str, Any] | None) -> dict[str, str]:
     if not manifest:
         return {"model.manifest": "missing"}
     params: dict[str, str] = {"model.manifest_state": str(manifest.get("state"))}
-    for model in manifest.get("models") or []:
-        if not isinstance(model, dict) or not model.get("required_for_video"):
-            continue
-        mid = str(model.get("id"))
+    # Every required model gets its own namespaced identity (the video path uses an ensemble of several models).
+    required = [m for m in manifest.get("models") or [] if isinstance(m, dict) and m.get("required_for_video")]
+    params["model.ids"] = ",".join(str(m.get("id")) for m in required)
+    for model in required:
+        prefix = f"model.{model.get('id')}"
         params.update({
-            "model.id": mid,
-            "model.repository_revision": str(model.get("repository_revision")),
-            "model.checkpoint_sha256": str(model.get("checkpoint_sha256")),
-            "model.checkpoint_size_bytes": str(model.get("checkpoint_size_bytes")),
-            "model.format": str(model.get("format")),
-            "model.class_map": json.dumps(model.get("supported_class_map"), sort_keys=True),
-            "model.input_shape_policy": str(model.get("input_shape_policy")),
-            "model.torch_version": str(model.get("torch_version")),
+            f"{prefix}.repository_revision": str(model.get("repository_revision")),
+            f"{prefix}.checkpoint_sha256": str(model.get("checkpoint_sha256")),
+            f"{prefix}.checkpoint_size_bytes": str(model.get("checkpoint_size_bytes")),
+            f"{prefix}.format": str(model.get("format")),
+            f"{prefix}.class_map": json.dumps(model.get("supported_class_map"), sort_keys=True),
+            f"{prefix}.input_shape_policy": str(model.get("input_shape_policy")),
+            f"{prefix}.torch_version": str(model.get("torch_version")),
         })
+    ensemble = manifest.get("ensemble")
+    if isinstance(ensemble, dict):
+        params["model.ensemble_id"] = str(ensemble.get("ensemble_id"))
+        params["model.ensemble_sha256"] = str(ensemble.get("ensemble_sha256"))
     return {k: v[:MAX_PARAM_LEN] for k, v in params.items()}
 
 

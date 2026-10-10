@@ -40,7 +40,11 @@ find_python() {
 export_openapi() {
   local out="$1" py
   if py="$(find_python)"; then
-    (cd "$BACKEND" && APP_ENV="test" "$py" -m app.export_openapi --output "$out") || die "OpenAPI export failed"
+    local out_arg="$out"
+    # A Windows interpreter (Git Bash) needs a native path: callers such as make export MSYS_NO_PATHCONV=1,
+    # which stops MSYS from translating /d/... for it.
+    if command -v cygpath >/dev/null 2>&1; then out_arg="$(cygpath -w "$out")"; fi
+    (cd "$BACKEND" && APP_ENV="test" "$py" -m app.export_openapi --output "$out_arg") || die "OpenAPI export failed"
   elif command -v docker >/dev/null 2>&1; then
     local image="${DD_BACKEND_IMAGE:-dreamdrive-backend:local}"
     docker image inspect "$image" >/dev/null 2>&1 || die "no backend venv and image $image not found (build it first)"

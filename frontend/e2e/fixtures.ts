@@ -31,6 +31,12 @@ export const test = base.extend<{ guard: Guard }>({
         if (!url.protocol.startsWith('http')) return;
         if (LOCAL_HOSTS.has(url.hostname) && url.origin !== base.origin) foreignLocal.push(request.url());
       });
+      // Chrome refuses Cross-Origin-Opener-Policy on plain-HTTP origins that are not loopback (e.g. the compose
+      // runner's http://gateway:8080) and logs it as a console error. The header is valid on HTTPS and localhost,
+      // so only that exact browser notice is tolerated, and only for such a base URL.
+      if (base.protocol === 'http:' && !LOCAL_HOSTS.has(base.hostname)) {
+        allowed.push("The Cross-Origin-Opener-Policy header has been ignored, because the URL's origin was untrustworthy");
+      }
       await use({ allowConsole: (pattern) => allowed.push(pattern) });
       const unexpected = consoleErrors.filter((text) => !allowed.some((pattern) => text.includes(pattern)));
       expect(unexpected, 'browser console errors').toEqual([]);

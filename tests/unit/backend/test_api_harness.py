@@ -346,6 +346,9 @@ def make_settings(tmp: Path, **overrides: Any) -> Settings:
         "artifact_root": tmp / "artifacts",
         "redis_url": "redis://fake:6379/0",
         "git_commit": TEST_COMMIT,
+        # Pinned so the ambient BUILD_* env of a QA/CI container cannot leak into assertions.
+        "build_version": "dev",
+        "build_dirty": False,
         "max_queued_per_session": 5,
         "max_queued_total": 10,
         "max_requests_per_minute": 50,

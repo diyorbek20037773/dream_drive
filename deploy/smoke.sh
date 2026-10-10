@@ -18,7 +18,24 @@ if [[ $# -lt 1 || $1 == -h || $1 == --help ]]; then
 fi
 
 if py=$(host_python); then
-  exec "$py" "$DD_REPO_ROOT/deploy/lib/smoke.py" "$@"
+  script="$DD_REPO_ROOT/deploy/lib/smoke.py"
+  # A Windows python (Git Bash) needs native paths: make exports MSYS_NO_PATHCONV=1, which stops MSYS from
+  # translating /d/... arguments for it.
+  if command -v cygpath >/dev/null 2>&1; then
+    script=$(cygpath -w "$script")
+    args=()
+    prev=""
+    for a in "$@"; do
+      if [[ $prev == --upload || $prev == --evidence ]]; then
+        [[ $prev == --evidence ]] && mkdir -p "$a"
+        a=$(cygpath -w "$a")
+      fi
+      args+=("$a")
+      prev=$a
+    done
+    set -- "${args[@]}"
+  fi
+  exec "$py" "$script" "$@"
 fi
 [[ $(uname -s) == Linux ]] || die "python3 not found; install Python 3.9+ to run the smoke client"
 log "python3 not found on host; running the smoke client in python:3.11-slim-bookworm (host network)"

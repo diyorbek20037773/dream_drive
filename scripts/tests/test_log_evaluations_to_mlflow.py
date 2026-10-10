@@ -71,9 +71,14 @@ class PayloadTests(unittest.TestCase):
         manifest = lem.load_manifest(MANIFEST)
         self.assertIsNotNone(manifest)
         params = lem.manifest_params(manifest)
-        model = next(m for m in manifest["models"] if m.get("required_for_video"))
-        self.assertEqual(params["model.checkpoint_sha256"], str(model["checkpoint_sha256"]))
-        self.assertEqual(json.loads(params["model.class_map"]), model["supported_class_map"])
+        required = [m for m in manifest["models"] if m.get("required_for_video")]
+        self.assertEqual(params["model.ids"], ",".join(m["id"] for m in required))
+        for model in required:  # each ensemble member keeps its own identity; none overwrites another
+            prefix = f"model.{model['id']}"
+            self.assertEqual(params[f"{prefix}.checkpoint_sha256"], str(model["checkpoint_sha256"]))
+            self.assertEqual(json.loads(params[f"{prefix}.class_map"]), model["supported_class_map"])
+        if isinstance(manifest.get("ensemble"), dict):
+            self.assertEqual(params["model.ensemble_sha256"], str(manifest["ensemble"]["ensemble_sha256"]))
 
     def test_missing_manifest_is_explicit(self) -> None:
         self.assertEqual(lem.manifest_params(None), {"model.manifest": "missing"})
