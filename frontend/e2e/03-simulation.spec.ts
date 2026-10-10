@@ -104,8 +104,11 @@ test.describe('simulation (LiteRoad, simulator only)', () => {
     const basis = page.getByTestId('decision-basis');
     await expect(basis).toBeVisible();
     await expect(page.getByTestId('basis-item').first()).toBeAttached();
-    const basisFrame = await basis.getAttribute('data-frame-id');
-    const itemFrames = await page.getByTestId('basis-item').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-frame-id')));
+    // One atomic DOM read: the panel re-renders for every new frame, so two separate reads can straddle an update.
+    const { basisFrame, itemFrames } = await basis.evaluate((node) => ({
+      basisFrame: node.getAttribute('data-frame-id'),
+      itemFrames: Array.from(node.querySelectorAll('[data-testid="basis-item"]')).map((item) => item.getAttribute('data-frame-id')),
+    }));
     expect(itemFrames.length).toBeGreaterThan(0);
     expect(new Set(itemFrames), 'all basis items share one frame id').toEqual(new Set([basisFrame]));
     await expect(page.getByTestId('maneuver-history-item').first()).toBeVisible({ timeout: 30_000 });

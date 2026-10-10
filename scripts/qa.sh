@@ -26,6 +26,11 @@ run_id=$commit
 qa_dir="artifacts/qa/$run_id"
 mkdir -p "$qa_dir"
 export DD_REQUIRE_LIVE=1
+# The whole browser suite reaches the stack from one client IP and starts many uploads/runs/evaluations within a
+# minute, which the production abuse limit (MAX_REQUESTS_PER_MINUTE=10 per session and per IP) answers with 429 at
+# random points (CI run 38080989885). The QA stack therefore runs with a higher limit; the 429 behaviour itself is
+# covered by the unit and security tests. Shell env overrides .env for Compose interpolation; production is unchanged.
+export MAX_REQUESTS_PER_MINUTE="${DD_QA_MAX_REQUESTS_PER_MINUTE:-120}"
 fixture_clip="tests/fixtures/cache/commons_dashcam_daylight_cc0_96s_10s.mp4"
 
 # name | prerequisites | command (run from the repo root; EVIDENCE_DIR is appended for make targets)
