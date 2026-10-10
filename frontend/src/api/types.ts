@@ -70,6 +70,7 @@ export type DecisionManeuver = Schemas['DecisionManeuver'];
 export type LivePerception = Schemas['LivePerception'];
 
 export type Evaluation = Schemas['Evaluation'];
+export type EvaluationDataset = Schemas['EvaluationDataset'];
 export type EvaluationList = Schemas['EvaluationList'];
 export type EvaluationKind = Schemas['EvaluationKind'];
 export type EvaluationState = Schemas['EvaluationState'];
@@ -168,6 +169,6 @@ export interface TimelineFile {
   job_id: string;
   analysis_fps: number;
   video?: { width?: number; height?: number; duration_s?: number } | null;
-  model?: Partial<ModelIdentity> | null;
+  model?: (Partial<ModelIdentity> & { models?: { model_id: string; label?: string }[] }) | null;
   frames: TimelineFrame[];
 }

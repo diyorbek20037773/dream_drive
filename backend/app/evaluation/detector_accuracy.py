@@ -43,6 +43,7 @@ import httpx
 import numpy as np
 
 from app.evaluation.coco_ap import MAX_DETS, ClassResult, ImageSample, evaluate_class, xyxy_to_xywh
+from app.evaluation.datasets import COCO_VAL2017_STREET
 from app.evaluation.registry import write_evaluation
 from app.perception.client import InferenceClient, InferenceClientError
 from app.schemas.report import Metric
@@ -771,6 +772,7 @@ def run_detector_accuracy(
         "finished_utc": datetime.now(UTC).isoformat(),
         "source": "learned_model",
         "sample_count": len(evaluated_ids),
+        "dataset": dict(COCO_VAL2017_STREET),
         "metrics": {k: v.model_dump(mode="json") for k, v in metrics.items()},
         "limitations": limitations,
         "code_commit": code_commit if _COMMIT.match(code_commit or "") else None,

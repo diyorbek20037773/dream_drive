@@ -126,10 +126,20 @@ def test_vehicle_outside_corridor_is_ignored() -> None:
 
 
 def test_low_score_counts_only_when_tracked() -> None:
-    untracked = _vehicle(220, 200, 420, 350, score=0.3, track=None)
-    tracked = _vehicle(220, 200, 420, 350, score=0.3, track=7)
+    untracked = _vehicle(220, 200, 420, 350, score=0.45, track=None)
+    tracked = _vehicle(220, 200, 420, 350, score=0.45, track=7)
     assert decide(_image(), _drivable(), _lanes(), [untracked]).image_obstacle_cue is None
     assert decide(_image(), _drivable(), _lanes(), [tracked]).state == "controlled_stop"
+
+
+@pytest.mark.parametrize("score", [0.1, 0.22, 0.39])
+def test_tracked_continuation_below_floor_never_drives_a_decision(score: float) -> None:
+    """ByteTrack keeps 0.1-0.4 boxes on confirmed tracks; they must not become decision evidence."""
+    assert DEFAULT_THRESHOLDS.tracked_min_score == 0.4
+    tracked = _vehicle(220, 200, 420, 350, score=score, track=7)
+    d = decide(_image(), _drivable(), _lanes(), [tracked])
+    assert d.image_obstacle_cue is None
+    assert d.state != "controlled_stop"
 
 
 def test_unverified_classes_are_excluded() -> None:

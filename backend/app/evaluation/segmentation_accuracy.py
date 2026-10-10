@@ -55,6 +55,7 @@ import httpx
 import numpy as np
 from numpy.typing import NDArray
 
+from app.evaluation.datasets import KITTI_ROAD_TRAINING
 from app.evaluation.registry import write_evaluation
 from app.perception.client import InferenceClient, InferenceClientError
 from app.schemas.report import Metric
@@ -816,6 +817,7 @@ def run_drivable_accuracy(
         "finished_utc": datetime.now(UTC).isoformat(),
         "source": "learned_model",
         "sample_count": len(rows),
+        "dataset": dict(KITTI_ROAD_TRAINING),
         "metrics": {k: v.model_dump(mode="json") for k, v in metrics.items()},
         "limitations": limitations,
         "code_commit": code_commit if _COMMIT.match(code_commit or "") else None,

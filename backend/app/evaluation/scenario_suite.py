@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from app.agents.runner import SessionConfig, SimulationSession
+from app.evaluation.datasets import LITEROAD_SYNTHETIC_SCENARIOS
 from app.evaluation.registry import write_evaluation
 from app.evaluation.sim_metrics import EXPECTED_OUTCOME, expected_outcome_met, suite_metrics
 from app.reporting.sim_report import SIM_LIMITATIONS
@@ -99,6 +100,7 @@ def run_scenario_suite(
         "finished_utc": datetime.now(UTC).isoformat(),
         "source": "synthetic_rgb_cv",
         "sample_count": len(runs),
+        "dataset": dict(LITEROAD_SYNTHETIC_SCENARIOS),
         "metrics": {k: v.model_dump(mode="json") for k, v in metrics.items()},
         "limitations": [
             *SIM_LIMITATIONS,

@@ -77,8 +77,18 @@ def load_evaluation_details(root: Path, eval_id: str) -> dict[str, Any] | None:
 BASELINE_DIR = Path(__file__).resolve().parents[3] / "evaluations" / "baseline"
 
 
+def _metadata_backfill(existing: dict[str, Any] | None, baseline: dict[str, Any]) -> bool:
+    """True when the runtime copy equals the baseline except for the metadata-only ``dataset`` object it lacks."""
+    if existing is None or "dataset" in existing or "dataset" not in baseline:
+        return False
+    return existing == {k: v for k, v in baseline.items() if k != "dataset"}
+
+
 def seed_baseline(root: Path, baseline_dir: Path = BASELINE_DIR) -> int:
-    """Copy valid baseline evaluation files that are missing from ``root``; returns how many were copied."""
+    """Copy valid baseline evaluation files that are missing from ``root``; returns how many were copied.
+
+    An existing copy is never overwritten, except that an unmodified copy of the same baseline record that predates
+    the metadata-only ``dataset`` object gets it added (every other field must be identical)."""
     if not baseline_dir.is_dir():
         return 0
     root.mkdir(parents=True, exist_ok=True)
@@ -88,6 +98,11 @@ def seed_baseline(root: Path, baseline_dir: Path = BASELINE_DIR) -> int:
             continue
         dest = root / src.name
         if dest.exists():
+            baseline = _read(src)
+            if baseline is not None and _metadata_backfill(_read(dest), baseline):
+                tmp = root / f".{src.stem}.backfill.tmp"
+                shutil.copyfile(src, tmp)
+                os.replace(tmp, dest)
             continue
         tmp = root / f".{src.stem}.seed.tmp"
         shutil.copyfile(src, tmp)

@@ -194,6 +194,9 @@ def test_end_to_end_outputs_and_contracts(tmp_path: Path) -> None:
         "reason_counts",
         "tracks",
         "class_counts",
+        "class_counts_low_score",
+        "detection_report_min_score",
+        "low_score_tracks_dropped",
         "audio",
     }
     assert set(summary["timing_ms"]) == {
@@ -209,7 +212,10 @@ def test_end_to_end_outputs_and_contracts(tmp_path: Path) -> None:
     assert summary["audio"] == "removed"
     assert summary["effective_analyzed_fps"] > 0
     assert sum(summary["decision_counts"].values()) == 10
-    assert summary["class_counts"] == {"vehicle": 20}
+    # The 0.15 decoy per frame is below DETECTION_REPORT_MIN_SCORE (0.4): reported separately, not as a finding.
+    assert summary["class_counts"] == {"vehicle": 10}
+    assert summary["class_counts_low_score"] == {"vehicle": 10}
+    assert summary["detection_report_min_score"] == 0.4
     assert summary["tracks"][0]["track_id"] == 1 and summary["tracks"][0]["frames"] == 10
 
     # annotated.mp4: H.264, one frame per analyzed sample at the analysis rate

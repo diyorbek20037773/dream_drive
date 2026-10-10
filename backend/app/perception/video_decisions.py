@@ -17,7 +17,10 @@ class the service does not enable, is ignored and flagged `unverified_class_excl
 - vehicle: `vehicle` (YOLOPv2), `bus`, `truck` (RF-DETR-N; the service relabels a YOLOPv2 vehicle box as bus/truck
   when both models agree, IoU >= 0.5)
 - person: `person`;  two_wheeler: `bicycle`, `motorcycle`;  traffic_light: `traffic_light`;  stop_sign: `stop_sign`
-Evidence rule for every family: score >= 0.5 or attached to a confirmed ByteTrack track (low-score continuation).
+Evidence rule for every family: score >= the family minimum (0.5), or attached to a confirmed ByteTrack track AND
+score >= `tracked_min_score` (0.4). The inference service returns boxes down to 0.1 so that ByteTrack's second
+association can keep tracks alive; those 0.1-0.4 continuation boxes keep the track id but never drive a decision, so
+no decision path consumes a box below 0.4.
 
 Signals:
 - lane_status: rows of the band containing lane-mask pixels left / right of the image centre. Both sides >= 10 % of
@@ -127,6 +130,8 @@ class DecisionThresholds:
     light_region_y_max: float = 0.55
     stop_sign_min_score: float = 0.5
     stop_sign_min_height: float = 0.02
+    # Floor for tracked low-score continuation boxes (every family); see the module docstring evidence rule.
+    tracked_min_score: float = 0.4
 
     def as_dict(self) -> dict[str, float | int]:
         return {k: getattr(self, k) for k in self.__dataclass_fields__}
@@ -325,8 +330,11 @@ def drivable_offset(drivable_mask: BoolMask, th: DecisionThresholds = DEFAULT_TH
     return float(np.clip((width / 2.0 - float(np.median(mids))) / half, -1.0, 1.0))
 
 
-def _has_evidence(det: DecisionDetection, min_score: float) -> bool:
-    return det.track_id is not None or det.score >= min_score
+def _has_evidence(det: DecisionDetection, min_score: float, tracked_min_score: float) -> bool:
+    """Untracked boxes need the family minimum; tracked continuation boxes still need `tracked_min_score`."""
+    if det.score >= min_score:
+        return True
+    return det.track_id is not None and det.score >= tracked_min_score
 
 
 def _family_min_score(family: ClassFamily, th: DecisionThresholds) -> float:
@@ -340,7 +348,9 @@ def _family_min_score(family: ClassFamily, th: DecisionThresholds) -> float:
 
 
 def _is_family_evidence(det: DecisionDetection, family: ClassFamily, th: DecisionThresholds) -> bool:
-    return class_family(det.class_name) == family and _has_evidence(det, _family_min_score(family, th))
+    return class_family(det.class_name) == family and _has_evidence(
+        det, _family_min_score(family, th), th.tracked_min_score
+    )
 
 
 def _is_vehicle_evidence(det: DecisionDetection, th: DecisionThresholds) -> bool:

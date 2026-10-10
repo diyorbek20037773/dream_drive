@@ -21,7 +21,9 @@ FROM ${PYTHON_IMAGE} AS base
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
-RUN groupadd --gid 10001 app \
+# The base image's own setuptools/wheel carry fixable CVEs and are unused (the app runs from the uv venv).
+RUN python -m pip uninstall -y setuptools wheel \
+    && groupadd --gid 10001 app \
     && useradd --uid 10001 --gid 10001 --create-home --home-dir /home/app --shell /usr/sbin/nologin app \
     && mkdir -p /models /app/inference /app/config \
     && chown 10001:10001 /models

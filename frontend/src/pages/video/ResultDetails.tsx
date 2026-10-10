@@ -61,13 +61,29 @@ function SummaryMetrics({ results }: { results: JobResults }) {
   );
 }
 
-function TracksTable({ results, onSeekTrack, canSeek }: { results: JobResults; onSeekTrack: (t: number) => void; canSeek: boolean }) {
+function TracksTable({
+  results,
+  onSeekTrack,
+  canSeek,
+  minScore,
+}: {
+  results: JobResults;
+  onSeekTrack: (t: number) => void;
+  canSeek: boolean;
+  minScore: number;
+}) {
   const { t } = useI18n();
   const f = useFormat();
   const tracks = results.summary.tracks;
+  const dropped = results.summary.low_score_tracks_dropped ?? 0;
   return (
     <Card className="card-pad" testId="tracks">
       <CardHeader title={t.video.tracksTitle} icon={<Boxes className="size-5" />} subtitle={t.video.scoreNote} />
+      {dropped > 0 && (
+        <p className="mt-2 text-xs text-muted" data-testid="tracks-low-score-note">
+          {t.video.lowScoreTracks(dropped, minScore.toFixed(2))}
+        </p>
+      )}
       {tracks.length === 0 ? (
         <p className="mt-4 text-sm text-muted">{t.video.tracksEmpty}</p>
       ) : (
@@ -112,13 +128,18 @@ function TracksTable({ results, onSeekTrack, canSeek }: { results: JobResults; o
   );
 }
 
-function ClassesCard({ results }: { results: JobResults }) {
+function ClassesCard({ results, minScore, showLow }: { results: JobResults; minScore: number; showLow: boolean }) {
   const { t } = useI18n();
   const f = useFormat();
   const { capabilities } = useApp();
   const video = capabilities?.video_analysis;
   const counts = results.summary.class_counts;
-  const supported = new Set([...(video?.supported_classes ?? []), ...Object.keys(counts)]);
+  const lowCounts = results.summary.class_counts_low_score ?? {};
+  const supported = new Set([
+    ...(video?.supported_classes ?? []),
+    ...Object.keys(counts),
+    ...(showLow ? Object.keys(lowCounts) : []),
+  ]);
   const unsupported = video?.unsupported_examples ?? [];
   const analyzed = results.summary.analyzed_frames > 0;
   return (
@@ -127,6 +148,9 @@ function ClassesCard({ results }: { results: JobResults }) {
       <div className="mt-4 space-y-4">
         <div>
           <p className="label-caps mb-2">{t.video.classCounts}</p>
+          <p className="mb-2 text-xs text-muted" data-testid="classes-threshold-note">
+            {t.video.reportThreshold(minScore.toFixed(2))}
+          </p>
           {supported.size === 0 ? (
             <p className="text-sm text-muted">{t.common.none}</p>
           ) : (
@@ -134,7 +158,14 @@ function ClassesCard({ results }: { results: JobResults }) {
               {[...supported].map((name) => (
                 <li key={name} className="flex items-center justify-between py-1.5 text-sm" data-class-name={name}>
                   <span>{name}</span>
-                  <span className="num font-semibold">{analyzed ? f.int(counts[name] ?? 0) : t.common.notMeasured}</span>
+                  <span className="num font-semibold">
+                    {analyzed ? f.int(counts[name] ?? 0) : t.common.notMeasured}
+                    {analyzed && showLow && (lowCounts[name] ?? 0) > 0 && (
+                      <span className="ml-2 text-xs font-normal text-warning" data-testid="class-low-count">
+                        {t.video.lowScoreCount(lowCounts[name] ?? 0)}
+                      </span>
+                    )}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -292,11 +323,15 @@ export function ResultDetails({
   results,
   onSeekTrack,
   canSeek,
+  minScore,
+  showLow,
 }: {
   job: Job;
   results: JobResults;
   onSeekTrack: (firstT: number) => void;
   canSeek: boolean;
+  minScore: number;
+  showLow: boolean;
 }) {
   const { t } = useI18n();
   return (
@@ -304,9 +339,9 @@ export function ResultDetails({
       <SummaryMetrics results={results} />
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <TracksTable results={results} onSeekTrack={onSeekTrack} canSeek={canSeek} />
+          <TracksTable results={results} onSeekTrack={onSeekTrack} canSeek={canSeek} minScore={minScore} />
         </div>
-        <ClassesCard results={results} />
+        <ClassesCard results={results} minScore={minScore} showLow={showLow} />
       </div>
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <Distribution results={results} />

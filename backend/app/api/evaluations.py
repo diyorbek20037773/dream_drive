@@ -20,8 +20,9 @@ from app.api.params import EvaluationIdPath
 from app.config import Settings
 from app.db import utc_now
 from app.errors import ApiError, error_responses
+from app.evaluation.datasets import LITEROAD_SYNTHETIC_SCENARIOS
 from app.jobs.queue import enqueue_eval_job
-from app.schemas.api import ErrorCode, Evaluation, EvaluationCreate, EvaluationList
+from app.schemas.api import ErrorCode, Evaluation, EvaluationCreate, EvaluationDataset, EvaluationList
 from app.storage import artifacts, repo
 
 router = APIRouter(prefix="/evaluations", tags=["evaluations"])
@@ -73,6 +74,7 @@ def _from_row(row: repo.EvaluationRow, settings: Settings) -> Evaluation:
         model_sha256=None,
         seeds=row.seeds,
         error_code=row.error_code,
+        dataset=EvaluationDataset.model_validate(LITEROAD_SYNTHETIC_SCENARIOS),
     )
 
 

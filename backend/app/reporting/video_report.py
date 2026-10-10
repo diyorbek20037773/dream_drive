@@ -9,6 +9,11 @@ report.json stays strictly contract-valid (no extra top-level keys). With the tw
 detection counts (`detections_<class>`), per-class confirmed track counts (`tracks_<class>`), detections per model
 (`detections_from_<model_id>`), class refinements and traffic-light HSV-heuristic state counts
 (`traffic_light_hsv_<state>`) are measured count metrics.
+
+Reporting threshold (Settings.detection_report_min_score, DETECTION_REPORT_MIN_SCORE, default 0.4): `detections_<class>`
+and the track list/`tracks_<class>` count only detections with score >= the threshold and tracks whose max_score
+reaches it; lower-score detections are reported as `low_score_detections_<class>` and a limitation line states the
+threshold and how many tracks were dropped. timeline.json is unaffected (every detection with its score).
 """
 
 from __future__ import annotations
@@ -84,6 +89,10 @@ class VideoRunFacts:
     track_counts_by_class: dict[str, int] = field(default_factory=dict)
     light_state_counts: dict[str, int] = field(default_factory=dict)  # per evaluated traffic-light detection
     frame_light_state_counts: dict[str, int] = field(default_factory=dict)  # aggregated relevant state per frame
+    # Reporting threshold: class_counts/tracks hold findings with score >= report_min_score; the rest is listed here.
+    class_counts_low_score: dict[str, int] = field(default_factory=dict)
+    report_min_score: float | None = None
+    low_score_tracks_dropped: int = 0
 
     @property
     def coverage_ratio(self) -> float:
@@ -183,13 +192,24 @@ def _metric_key(text: str) -> str:
 def _count_metrics(f: VideoRunFacts, analyzed: int) -> dict[str, Metric]:
     """Measured counts over the analyzed frames (no accuracy implied)."""
     out: dict[str, Metric] = {}
+    thr = f.report_min_score
+    score_rule = "all scores" if thr is None else f"score >= {thr:g}"
     for name, count in sorted(f.class_counts.items()):
         out[f"detections_{_metric_key(name)}"] = Metric.measured(
-            count, "detections", analyzed, f"class '{name}' detections over analyzed frames, all scores"
+            count, "detections", analyzed, f"class '{name}' detections over analyzed frames, {score_rule}"
         )
+    if thr is not None:
+        for name, count in sorted(f.class_counts_low_score.items()):
+            out[f"low_score_detections_{_metric_key(name)}"] = Metric.measured(
+                count,
+                "detections",
+                analyzed,
+                f"class '{name}' detections with score < {thr:g} (kept for tracking, not counted as findings)",
+            )
+    track_rule = "" if thr is None else f" and max_score >= {thr:g}"
     for name, count in sorted(f.track_counts_by_class.items()):
         out[f"tracks_{_metric_key(name)}"] = Metric.measured(
-            count, "tracks", analyzed, f"ByteTrack confirmed tracks whose majority class is '{name}'"
+            count, "tracks", analyzed, f"ByteTrack confirmed tracks whose majority class is '{name}'{track_rule}"
         )
     if len(f.models) > 1:
         for model_id, count in sorted(f.detection_counts_by_model.items()):
@@ -232,6 +252,22 @@ def model_identity_lines(f: VideoRunFacts) -> list[str]:
     ]
 
 
+def report_threshold_lines(f: VideoRunFacts) -> list[str]:
+    """Limitation line stating the reporting threshold and what it moved out of the findings."""
+    if f.report_min_score is None:
+        return []
+    low = sum(f.class_counts_low_score.values())
+    low_text = ", ".join(f"{k}={v}" for k, v in sorted(f.class_counts_low_score.items())) or "none"
+    return [
+        f"Reporting threshold {f.report_min_score:g} (DETECTION_REPORT_MIN_SCORE): detection counts and the track "
+        f"list include only detections with score >= {f.report_min_score:g} and tracks whose max_score reaches it. "
+        f"{low} lower-score detection(s) ({low_text}) are reported separately as low_score_detections_<class> and "
+        f"{f.low_score_tracks_dropped} low-score track(s) were left out of the track list; the inference service "
+        "returns boxes down to its lower confidence threshold for ByteTrack association, and timeline.json keeps "
+        "every detection with its score."
+    ]
+
+
 def build_run_report(f: VideoRunFacts) -> dict[str, Any]:
     report = RunReport(
         run_id=f.job_id,
@@ -243,7 +279,7 @@ def build_run_report(f: VideoRunFacts) -> dict[str, Any]:
         input_manifest_sha256=f.input_sha256,
         generated_utc=f.generated_utc,
         metrics=build_metrics(f),
-        limitations=[*model_identity_lines(f), *f.limitations],
+        limitations=[*model_identity_lines(f), *report_threshold_lines(f), *f.limitations],
         evaluation_truth_used=False,
     )
     return report.model_dump(mode="json")
@@ -345,12 +381,21 @@ def render_report_html(f: VideoRunFacts, report: Mapping[str, Any], poster_jpeg:
             f'<img alt="annotated poster frame" src="data:image/jpeg;base64,{b64}"></div>'
         )
     limitations = "".join(f"<li>{_e(item)}</li>" for item in report["limitations"])
+    thr_text = "all scores" if f.report_min_score is None else f"score &gt;= {_e(f'{f.report_min_score:g}')}"
+    threshold_note = f'<p class="muted">Counted as findings: {thr_text}. / Topilma sifatida sanalgan: {thr_text}.</p>'
+    low_note = (
+        '<p class="muted">Below the reporting threshold; kept for ByteTrack association and listed in timeline.json, '
+        "not counted as findings. / Hisobot chegarasidan past; topilma sifatida sanalmaydi.</p>"
+    )
     supported = ", ".join(sorted(set(f.class_map.values()))) or "-"
     has_second = bool(set(f.class_map.values()) & {"person", "traffic_light", "stop_sign"})
     unsupported = (
         "general traffic signs other than stop_sign, road markings, animals, debris"
         if has_second
         else "person, traffic_light, traffic_sign"
+    )
+    report_rule = (
+        "all scores" if f.report_min_score is None else f"score >= {f.report_min_score:g} (DETECTION_REPORT_MIN_SCORE)"
     )
     summary_pairs = [
         ("job_id", f.job_id),
@@ -363,6 +408,7 @@ def render_report_html(f: VideoRunFacts, report: Mapping[str, Any], poster_jpeg:
         ("video", ", ".join(f"{k}={_fmt(v)}" for k, v in f.video.items())),
         ("probe_tool", f.probe_tool),
         ("analysis_fps", f.analysis_fps),
+        ("detection report threshold", report_rule),
         (
             "decoded / sampled / analyzed / failed frames",
             f"{f.decoded_frames} / {f.sampled_frames} / {f.analyzed_frames} / {f.failed_frames}",
@@ -407,7 +453,10 @@ boshqarilmadi.</p>
 <tr><th>metric</th><th>value</th><th>unit</th><th>samples</th><th>status</th><th>note</th></tr>{metric_rows}</table></div>
 <h2>Decisions / Qarorlar</h2><div class="card">{_count_table(f.decision_counts, "state")}</div>
 <h2>Reason codes / Sabab kodlari</h2><div class="card">{_count_table(f.reason_counts, "reason_code")}</div>
-<h2>Detected classes / Aniqlangan sinflar</h2><div class="card">{_count_table(f.class_counts, "class_name")}</div>
+<h2>Detected classes / Aniqlangan sinflar</h2>
+<div class="card">{threshold_note}{_count_table(f.class_counts, "class_name")}</div>
+<h2>Low-confidence detections / Past ishonchli aniqlashlar</h2>
+<div class="card">{low_note}{_count_table(f.class_counts_low_score, "class_name")}</div>
 <h2>Tracks per class / Sinf bo&#8216;yicha treklar</h2>
 <div class="card">{_count_table(f.track_counts_by_class, "class_name")}</div>
 {_light_section(f)}

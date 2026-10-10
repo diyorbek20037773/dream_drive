@@ -36,6 +36,11 @@ class Settings(BaseSettings):
 
     analysis_fps: float = Field(default=5.0, gt=0, le=30)
     inference_conf_threshold: float = Field(default=0.1, ge=0.01, le=0.9)
+    # Display/reporting threshold (DETECTION_REPORT_MIN_SCORE). Inference keeps boxes down to
+    # inference_conf_threshold because ByteTrack's second association needs low-score boxes; job summaries,
+    # report.json/html and the UI count only detections/tracks with score >= this value as findings and list the
+    # rest separately as low-confidence. timeline.json keeps every detection with its score.
+    detection_report_min_score: float = Field(default=0.4, ge=0.0, le=1.0)
     inference_base_url: str = "http://inference:8001"
     inference_timeout_seconds: float = Field(default=30, gt=0)
     sim_inference_timeout_seconds: float = Field(default=5, gt=0)

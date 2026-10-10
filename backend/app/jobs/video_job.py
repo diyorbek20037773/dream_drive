@@ -90,7 +90,12 @@ def model_identity(client: Any) -> dict[str, Any] | None:
         or info.precision not in ("fp32", "fp16")
     ):
         return None
-    return {"model_id": info.model_id, "sha256": info.sha256, "device": info.device, "precision": info.precision}
+    model_id, sha256 = info.model_id, info.sha256
+    # Two-model service (spec section 2.1): the job ran on the ensemble, so its identity is the ensemble id/sha256
+    # (the same identity the pipeline puts into every WorldState and report.json), not the first member's.
+    if len(info.models) >= 2 and info.ensemble_id and info.ensemble_sha256:
+        model_id, sha256 = info.ensemble_id, info.ensemble_sha256
+    return {"model_id": model_id, "sha256": sha256, "device": info.device, "precision": info.precision}
 
 
 def run_analysis(**kwargs: Any) -> dict[str, Any]:

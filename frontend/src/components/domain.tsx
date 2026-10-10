@@ -5,7 +5,8 @@ import type { Metric } from '../api/types';
 import { useI18n } from '../i18n';
 import { useApp } from '../state/app';
 import { LoadingBlock } from './ui/Feedback';
-import { errorText, humanizeKey, reasonText, useFormat } from '../lib/format';
+import { metricLabel } from '../lib/evaluation';
+import { errorText, reasonText, useFormat } from '../lib/format';
 import type { Tone } from '../lib/tones';
 import { Pill } from './ui/Status';
 
@@ -95,7 +96,7 @@ export function MetricTable({ metrics, testId }: { metrics: Record<string, Metri
           {entries.map(([name, metric]) => (
             <tr key={name} className="border-b border-line/70 align-top last:border-0" data-metric={name} data-status={metric.status}>
               <th scope="row" className="px-1 py-2 font-medium">
-                {humanizeKey(name)}
+                {metricLabel(name, t)}
                 <code className="block font-mono text-[11px] font-normal text-muted">{name}</code>
               </th>
               <td className="num px-1 py-2 text-right font-semibold">

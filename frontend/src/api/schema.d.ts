@@ -689,6 +689,8 @@ export interface components {
              * Format: date-time
              */
             created_utc: string;
+            /** @description Dataset the samples came from; null for records made before this field existed. */
+            dataset: components["schemas"]["EvaluationDataset"] | null;
             /** Error Code */
             error_code: string | null;
             /** Finished Utc */
@@ -728,6 +730,39 @@ export interface components {
             kind: "synthetic_scenario_suite";
             /** Seeds */
             seeds?: number[];
+        };
+        /**
+         * EvaluationDataset
+         * @description What an evaluation was measured on (metadata only; values come from the dataset manifests/docs).
+         */
+        EvaluationDataset: {
+            /**
+             * Id
+             * @description Manifest id, e.g. coco_val2017_street_v1, or literoad_synthetic_scenarios.
+             */
+            id: string;
+            /**
+             * Licence
+             * @description Licence of the data used; 'generated' for synthetic.
+             */
+            licence: string | null;
+            /** Name */
+            name: string;
+            /**
+             * Sample Unit
+             * @description What one sample is, e.g. image or scenario_run.
+             */
+            sample_unit: string;
+            /**
+             * Split
+             * @description Dataset split, e.g. val2017 / training / test.
+             */
+            split: string | null;
+            /**
+             * Url
+             * @description Public dataset page; null for generated data.
+             */
+            url: string | null;
         };
         /** @enum {string} */
         EvaluationKind: "synthetic_scenario_suite" | "model_benchmark" | "video_ml_accuracy";
@@ -957,9 +992,16 @@ export interface components {
             audio: "removed";
             /**
              * Class Counts
-             * @description Class name -> detection count over analyzed frames.
+             * @description Class name -> detection count over analyzed frames with score >= detection_report_min_score (all scores for older jobs where detection_report_min_score is null).
              */
             class_counts: {
+                [key: string]: number;
+            };
+            /**
+             * Class Counts Low Score
+             * @description Class name -> detections below detection_report_min_score (kept for ByteTrack association; not findings). Empty for older jobs.
+             */
+            class_counts_low_score: {
                 [key: string]: number;
             };
             /** Coverage Ratio */
@@ -973,6 +1015,11 @@ export interface components {
             };
             /** Decoded Frames */
             decoded_frames: number;
+            /**
+             * Detection Report Min Score
+             * @description Reporting threshold (DETECTION_REPORT_MIN_SCORE) used for class_counts and tracks; null for jobs analyzed before the threshold existed.
+             */
+            detection_report_min_score: number | null;
             /** Duration S */
             duration_s: number;
             /**
@@ -981,6 +1028,12 @@ export interface components {
              */
             effective_analyzed_fps: number;
             /**
+             * Low Score Tracks Dropped
+             * @description Confirmed tracks left out of `tracks` because max_score < the threshold.
+             * @default 0
+             */
+            low_score_tracks_dropped: number;
+            /**
              * Reason Counts
              * @description Reason code -> analyzed frame count.
              */
@@ -988,7 +1041,10 @@ export interface components {
                 [key: string]: number;
             };
             timing_ms: components["schemas"]["JobTimingMs"];
-            /** Tracks */
+            /**
+             * Tracks
+             * @description Confirmed tracks whose max_score >= detection_report_min_score (all tracks for older jobs).
+             */
             tracks: components["schemas"]["TrackSummary"][];
         };
         /**

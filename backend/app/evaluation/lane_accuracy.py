@@ -54,6 +54,7 @@ import httpx
 import numpy as np
 from numpy.typing import NDArray
 
+from app.evaluation.datasets import ROBOFLOW_LANE_MARKING_V2
 from app.evaluation.registry import write_evaluation
 from app.evaluation.segmentation_accuracy import (
     _COMMIT,
@@ -780,6 +781,7 @@ def run_lane_accuracy(
         "finished_utc": datetime.now(UTC).isoformat(),
         "source": "learned_model",
         "sample_count": len(rows),
+        "dataset": dict(ROBOFLOW_LANE_MARKING_V2),
         "metrics": {k: v.model_dump(mode="json") for k, v in metrics.items()},
         "limitations": limitations,
         "code_commit": code_commit if _is_commit(code_commit) else None,

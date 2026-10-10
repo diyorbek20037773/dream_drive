@@ -6,6 +6,14 @@
   "finished_utc": "2026-10-10T12:13:36.821177+00:00",
   "source": "synthetic_rgb_cv",
   "sample_count": 15,
+  "dataset": {
+    "id": "literoad_synthetic_scenarios",
+    "name": "LiteRoad synthetic scenarios",
+    "split": null,
+    "sample_unit": "scenario_run",
+    "licence": "generated (no external data)",
+    "url": null
+  },
   "metrics": {
     "normal_arrival_rate": {
       "value": 1.0,

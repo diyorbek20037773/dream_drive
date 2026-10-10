@@ -14,6 +14,12 @@ the ensemble id and ensemble sha256; the timeline/report list each model with it
 provenance (`model_id`, `refined_from_model`) and the traffic-light HSV heuristic (`light_state`,
 `light_state_method: hsv_heuristic`) are timeline extras next to each WorldState record.
 
+Reporting threshold: the inference service returns boxes down to INFERENCE_CONF_THRESHOLD (0.1) because ByteTrack's
+second association needs low-score boxes. Findings - `summary.class_counts`, the summary/report track list and the
+report's per-class counts - include only detections with score >= DETECTION_REPORT_MIN_SCORE (default 0.4) and tracks
+whose max_score reaches it; lower-score detections are counted separately in `class_counts_low_score` and dropped
+tracks in `low_score_tracks_dropped`, so nothing is hidden. timeline.json keeps every detection with its score.
+
 Inference failures on single frames are recorded honestly (perception source `unavailable`, reason INFERENCE_FAILED)
 and the job continues; it fails with `inference_failed` / `inference_unavailable` after 3 consecutive failures or
 when more than 10 % of the samples failed.
@@ -78,6 +84,21 @@ PROGRESS_INTERVAL_S = 0.5
 MODEL_LABELS = {"yolopv2": "YOLOPv2", "rfdetr_nano": "RF-DETR-N"}
 # Classes of the second detector (spec section 2.1); used only to word the limitations honestly.
 RFDETR_CLASSES = frozenset({"person", "bicycle", "motorcycle", "bus", "truck", "traffic_light", "stop_sign"})
+
+
+def split_class_counts(detections: list[TrackedDetection], min_score: float) -> tuple[Counter[str], Counter[str]]:
+    """(class -> count with score >= min_score, class -> count below it) for one frame's detections."""
+    high: Counter[str] = Counter()
+    low: Counter[str] = Counter()
+    for d in detections:
+        (high if d.score >= min_score else low)[d.class_name] += 1
+    return high, low
+
+
+def report_tracks(tracks: list[dict[str, Any]], min_score: float) -> tuple[list[dict[str, Any]], int]:
+    """Tracks whose max_score reaches the reporting threshold, plus the number of dropped low-score tracks."""
+    kept = [t for t in tracks if float(t.get("max_score", 0.0)) >= min_score]
+    return kept, len(tracks) - len(kept)
 
 
 def model_label(identity: PerceptionIdentity) -> str:
@@ -329,7 +350,9 @@ def run_video_analysis(
         last_failure_unavailable = False
         decisions: Counter[str] = Counter()
         reasons: Counter[str] = Counter()
+        report_min_score = float(settings.detection_report_min_score)
         classes: Counter[str] = Counter()
+        classes_low: Counter[str] = Counter()
         model_dets: Counter[str] = Counter()
         refined_dets: Counter[str] = Counter()
         light_states: Counter[str] = Counter()
@@ -391,7 +414,9 @@ def run_video_analysis(
                 if drivable is None or lane is None:
                     decision.uncertainty_reasons.append("mask_invalid")
                 model_ref: ModelRef | None = ModelRef(ident.model_id, ident.sha256)
-                classes.update(d.class_name for d in dets)
+                high, low = split_class_counts(dets, report_min_score)
+                classes.update(high)
+                classes_low.update(low)
                 # Single-model service: every box is that model's. Ensemble: never guess a missing attribution.
                 fallback_id = "unattributed" if ident.is_ensemble else ident.models[0].model_id
                 model_dets.update(d.model_id or fallback_id for d in dets)
@@ -511,8 +536,8 @@ def run_video_analysis(
 
         video_meta = probe.as_job_video()
         analyzed = len(frames) - failed
-        tracks = tracker.track_summaries()
-        track_counts = tracker.track_counts_by_class()
+        tracks, low_score_tracks = report_tracks(tracker.track_summaries(), report_min_score)
+        track_counts = dict(sorted(Counter(str(t["class_name"]) for t in tracks).items()))
         models = _model_entries(info, model)
         timeline = {
             "schema_version": TIMELINE_SCHEMA_VERSION,
@@ -605,6 +630,9 @@ def run_video_analysis(
             decision_counts=dict(decisions),
             reason_counts=dict(reasons),
             class_counts=dict(classes),
+            class_counts_low_score=dict(classes_low),
+            report_min_score=report_min_score,
+            low_score_tracks_dropped=low_score_tracks,
             tracks=tracks,
             limitations=_limitations(
                 class_map,
@@ -648,6 +676,9 @@ def run_video_analysis(
             "reason_counts": dict(reasons),
             "tracks": tracks,
             "class_counts": dict(classes),
+            "class_counts_low_score": dict(classes_low),
+            "detection_report_min_score": report_min_score,
+            "low_score_tracks_dropped": low_score_tracks,
             "audio": "removed",
         }
     except BaseException:

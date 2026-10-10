@@ -4,7 +4,9 @@ Overlays: drivable-area mask green (alpha 0.35), lane mask cyan, ego-corridor ou
 the perception source (e.g. "YOLOPv2 + RF-DETR-N | learned_model | CPU"), the original PTS and the analytical
 decision. All text drawn into frames is ASCII (OpenCV Hershey fonts cannot render other glyphs).
 
-Boxes are drawn when they carry a confirmed track id or score >= 0.5. Colour per class family (RGB):
+Boxes are drawn when score >= 0.5, or when they carry a confirmed track id and score >= the decision
+thresholds' tracked_min_score (0.4): the same evidence rule the decisions use, so low-score ByteTrack continuation
+boxes (kept for association only) never appear as findings. Colour per class family (RGB):
 vehicle/bus/truck orange (yellow when untracked), person magenta, bicycle/motorcycle azure, traffic light in the
 colour of its HSV-heuristic state (red / amber / green / light grey for unknown), stop sign crimson, classes outside
 the enabled set grey. Labels read "class #track score" (e.g. "person #4 0.83"); traffic lights append the heuristic
@@ -160,7 +162,8 @@ def annotate_frame(
         _put_text(out, label, (x1 + 2, label_y), scale * 0.7, _text_color(color), max(1, thick - 1), background=color)
 
     for i, det in enumerate(detections):
-        if det.track_id is None and det.score < BOX_DRAW_MIN_SCORE:
+        tracked_ok = det.track_id is not None and det.score >= thresholds.tracked_min_score
+        if det.score < BOX_DRAW_MIN_SCORE and not tracked_ok:
             continue
         draw_box(i, det)
         drawn.append((i, round(det.xyxy_pixels[0]), round(det.xyxy_pixels[1])))

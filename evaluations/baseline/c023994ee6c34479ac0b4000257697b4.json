@@ -6,6 +6,14 @@
   "finished_utc": "2026-10-10T13:44:24.060981+00:00",
   "source": "learned_model",
   "sample_count": 289,
+  "dataset": {
+    "id": "kitti_road_training_v1",
+    "name": "KITTI Road benchmark, training split",
+    "split": "training",
+    "sample_unit": "image",
+    "licence": "CC BY-NC-SA 3.0",
+    "url": "https://www.cvlibs.net/datasets/kitti/"
+  },
   "metrics": {
     "drivable_iou_overall": {
       "value": 0.8467,

@@ -15,7 +15,8 @@ import { useResync } from '../../hooks/useEvents';
 import { useResource } from '../../hooks/useResource';
 import { useInterval, useNow } from '../../hooks/useTimers';
 import { useI18n } from '../../i18n';
-import { elapsedSeconds, humanizeKey, shortHash, useFormat } from '../../lib/format';
+import { evaluationTitle, metricLabel } from '../../lib/evaluation';
+import { elapsedSeconds, shortHash, useFormat } from '../../lib/format';
 import { EVALUATION_TONE } from '../../lib/tones';
 import { useApp } from '../../state/app';
 
@@ -49,7 +50,7 @@ function EvaluationDetail({ evaluation }: { evaluation: Evaluation }) {
       <CardHeader
         title={t.evaluation.detailTitle}
         icon={<Microscope className="size-5" />}
-        subtitle={t.evaluation.kinds[evaluation.kind]}
+        subtitle={[t.evaluation.kinds[evaluation.kind], evaluationTitle(evaluation, t, f.int)].filter(Boolean).join(' — ')}
         actions={
           <Pill tone={EVALUATION_TONE[evaluation.state]} dot testId="evaluation-detail-state">
             {t.states.evaluation[evaluation.state]}
@@ -70,6 +71,32 @@ function EvaluationDetail({ evaluation }: { evaluation: Evaluation }) {
             { label: t.evaluation.colKind, value: <code className="font-mono text-xs">{evaluation.kind}</code> },
             { label: t.evaluation.colSource, value: <code className="font-mono text-xs">{evaluation.source}</code> },
             { label: t.evaluation.colSamples, value: f.int(evaluation.sample_count), testId: 'evaluation-samples' },
+            ...(evaluation.dataset
+              ? [
+                  {
+                    label: t.evaluation.colDataset,
+                    value: (
+                      <span data-testid="evaluation-dataset-detail">
+                        {evaluation.dataset.url ? (
+                          <a href={evaluation.dataset.url} target="_blank" rel="noreferrer noopener" className="text-accent-strong hover:underline">
+                            {evaluationTitle(evaluation, t, f.int)}
+                          </a>
+                        ) : (
+                          evaluationTitle(evaluation, t, f.int)
+                        )}
+                        <span className="block text-xs text-muted">
+                          {[
+                            evaluation.dataset.split ? `${t.evaluation.datasetSplit}: ${evaluation.dataset.split}` : null,
+                            evaluation.dataset.licence ? `${t.evaluation.datasetLicence}: ${evaluation.dataset.licence}` : null,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </span>
+                      </span>
+                    ),
+                  },
+                ]
+              : []),
             { label: t.evaluation.seedsLabel, value: evaluation.seeds?.join(', ') ?? '—' },
           ]}
         />
@@ -124,6 +151,7 @@ function Comparison({ items }: { items: Evaluation[] }) {
                   <span className="block font-normal">
                     {shortHash(item.code_commit, 8)} · {item.source}
                   </span>
+                  {item.dataset && <span className="block font-normal text-ink">{evaluationTitle(item, t, f.int)}</span>}
                 </th>
               ))}
             </tr>
@@ -137,7 +165,7 @@ function Comparison({ items }: { items: Evaluation[] }) {
             </tr>
             {names.map((name) => (
               <tr key={name} className="border-b border-line/70 last:border-0">
-                <th scope="row" className="px-2 py-2 font-medium">{humanizeKey(name)}</th>
+                <th scope="row" className="px-2 py-2 font-medium">{metricLabel(name, t)}</th>
                 {items.map((item) => {
                   const metric = item.metrics[name];
                   return (
@@ -241,6 +269,7 @@ export function EvaluationPage() {
                           <span className="sr-only">{t.evaluation.compare}</span>
                         </th>
                         <th scope="col" className="px-3 py-2 font-medium">{t.evaluation.colKind}</th>
+                        <th scope="col" className="px-3 py-2 font-medium">{t.evaluation.colDataset}</th>
                         <th scope="col" className="px-3 py-2 font-medium">{t.evaluation.colState}</th>
                         <th scope="col" className="px-3 py-2 font-medium">{t.evaluation.colSource}</th>
                         <th scope="col" className="px-3 py-2 font-medium">{t.evaluation.colCreated}</th>
@@ -271,6 +300,9 @@ export function EvaluationPage() {
                             <Link to={`/evaluation/${item.id}`} className="font-medium text-accent-strong hover:underline" data-testid="evaluation-open">
                               {t.evaluation.kinds[item.kind]}
                             </Link>
+                          </td>
+                          <td className="min-w-[180px] px-3 py-2 text-xs" data-testid="evaluation-dataset">
+                            {evaluationTitle(item, t, f.int) ?? '—'}
                           </td>
                           <td className="px-3 py-2">
                             <Pill tone={EVALUATION_TONE[item.state]} dot>
@@ -371,13 +403,18 @@ export function EvaluationPage() {
                         {t.states.evaluation[item.state]}
                       </Pill>
                     </div>
+                    {item.dataset && (
+                      <p className="mt-1 text-sm font-medium" data-testid="ml-dataset" data-dataset-id={item.dataset.id}>
+                        {evaluationTitle(item, t, f.int)}
+                      </p>
+                    )}
                     <p className="num mt-1 text-xs text-muted">
                       {item.source} · {t.evaluation.colSamples}: {f.int(item.sample_count)}
                     </p>
                     <ul className="mt-2 space-y-1.5">
                       {Object.entries(item.metrics).map(([name, metric]) => (
                         <li key={name} className="text-sm" data-testid="ml-metric" data-status={metric.status}>
-                          <span className="font-medium">{humanizeKey(name)}:</span>{' '}
+                          <span className="font-medium">{metricLabel(name, t)}:</span>{' '}
                           {metric.status === 'measured' && metric.value !== null ? (
                             <span className="num">
                               {f.num(metric.value, 3)} {metric.unit} (n={metric.sample_count})

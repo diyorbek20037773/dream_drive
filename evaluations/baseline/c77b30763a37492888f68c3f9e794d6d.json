@@ -6,6 +6,14 @@
   "finished_utc": "2026-10-10T13:42:01.046661+00:00",
   "source": "learned_model",
   "sample_count": 300,
+  "dataset": {
+    "id": "coco_val2017_street_v1",
+    "name": "COCO 2017 val street subset",
+    "split": "val2017",
+    "sample_unit": "image",
+    "licence": "CC BY 4.0 (annotations); images keep their per-image Flickr licences",
+    "url": "https://cocodataset.org/"
+  },
   "metrics": {
     "ap50_person": {
       "value": 0.7414,

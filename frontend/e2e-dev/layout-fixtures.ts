@@ -125,7 +125,7 @@ export const capabilities = {
   monitoring: { metrics: true },
 };
 
-const model = { model_id: 'yolopv2', sha256: FAKE_SHA, device: 'cpu', precision: 'fp32' };
+const model = { model_id: 'yolopv2+rfdetr_nano', sha256: FAKE_SHA, device: 'cpu', precision: 'fp32' };
 const baseJob = {
   kind: 'video_analysis',
   analysis_fps: 5,
@@ -152,6 +152,16 @@ export const timeline = {
   schema_version: '1.0',
   job_id: jobs[0]?.id,
   analysis_fps: 5,
+  model: {
+    model_id: 'yolopv2+rfdetr_nano',
+    sha256: FAKE_SHA,
+    device: 'cpu',
+    precision: 'fp32',
+    models: [
+      { model_id: 'yolopv2', label: 'YOLOPv2' },
+      { model_id: 'rfdetr_nano', label: 'RF-DETR-N' },
+    ],
+  },
   frames: Array.from({ length: 60 }, (_, k) => {
     const decision = reasonsFor(k);
     return {
@@ -159,9 +169,12 @@ export const timeline = {
       frame: { id: k, timestamp_seconds: k * 0.2, width: 1280, height: 720, quality_status: 'valid' },
       perception: {
         source: 'learned_model',
-        model_id: 'yolopv2',
+        model_id: 'yolopv2+rfdetr_nano',
         model_sha256: FAKE_SHA,
         detections: [
+          // Low-score boxes the service returns for ByteTrack association (below the 0.4 reporting threshold).
+          { track_id: null, class_id: 101, class_name: 'person', score: 0.22, xyxy_pixels: [80, 300, 120, 420], model_id: 'rfdetr_nano' },
+          { track_id: null, class_id: 113, class_name: 'stop_sign', score: 0.1, xyxy_pixels: [1100, 200, 1140, 240], model_id: 'rfdetr_nano' },
           ...(k >= 12 && k < 31
             ? [{ track_id: 3, class_id: 0, class_name: 'vehicle', score: 0.8, xyxy_pixels: [560, 330, 760, 470] }]
             : []),
@@ -200,6 +213,9 @@ export const results = {
       { track_id: 7, class_name: 'vehicle', first_t: 9.0, last_t: 9.6, frames: 4, max_score: 0.4 },
     ],
     class_counts: { vehicle: 23 },
+    class_counts_low_score: { person: 60, stop_sign: 60 },
+    detection_report_min_score: 0.4,
+    low_score_tracks_dropped: 2,
     audio: 'removed',
   },
   artifacts: ['annotated.mp4', 'input', 'report.json', 'report.html', 'timeline.json', 'poster.jpg'].map((name) => ({
@@ -322,6 +338,7 @@ export const evaluations = [
     source: 'literoad_synthetic_rgb_cv',
     sample_count: 15,
     seeds: [1, 2, 3],
+    dataset: { id: 'literoad_synthetic_scenarios', name: 'LiteRoad synthetic scenarios', split: null, sample_unit: 'scenario_run', licence: 'generated (no external data)', url: null },
     metrics: {
       completion_rate: { value: 0.8, unit: 'ratio', sample_count: 15, status: 'measured', note: 'fixture' },
       collisions: { value: 0, unit: 'count', sample_count: 15, status: 'measured', note: 'fixture' },
@@ -341,7 +358,17 @@ export const evaluations = [
     source: 'none',
     sample_count: 0,
     seeds: null,
+    dataset: {
+      id: 'coco_val2017_street_v1',
+      name: 'COCO 2017 val street subset',
+      split: 'val2017',
+      sample_unit: 'image',
+      licence: 'CC BY 4.0 (annotations); images keep their per-image Flickr licences',
+      url: 'https://cocodataset.org/',
+    },
     metrics: {
+      ap50_person: { value: 0.5, unit: 'ratio', sample_count: 10, status: 'measured', note: 'LAYOUT FIXTURE value' },
+      map50_enabled_classes: { value: 0.4, unit: 'ratio', sample_count: 10, status: 'measured', note: 'LAYOUT FIXTURE value' },
       lane_iou: { value: null, unit: 'ratio', sample_count: 0, status: 'not_evaluated', note: 'not evaluated: no labeled subset' },
       vehicle_map50: { value: null, unit: 'ratio', sample_count: 0, status: 'not_evaluated', note: 'not evaluated: no labeled subset' },
     },

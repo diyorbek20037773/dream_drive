@@ -21,18 +21,31 @@ import { ResultDetails } from './ResultDetails';
 const MODEL_DISPLAY: Record<string, string> = {
   yolopv2: 'YOLOPv2',
   rfdetr_nano: 'RF-DETR-N',
-  'yolopv2+rfdetr_nano': 'YOLOPv2 + RF-DETR-N',
 };
 
-function overlayLabel(results: JobResults): string {
-  const model = results.model;
-  const name = model ? (MODEL_DISPLAY[model.model_id] ?? model.model_id) : '—';
-  const device = model?.device ? model.device.toUpperCase() : '—';
-  return `${name} · ${results.perception_source} · ${device}`;
+/** Fallback when an older job stored no reporting threshold (DETECTION_REPORT_MIN_SCORE default). */
+const DEFAULT_REPORT_MIN_SCORE = 0.4;
+
+/** Display name of the perception identity: the timeline's member list when present (the identity every analyzed
+ * frame carries), else the job's model id split into its "+"-joined members. Never hard-coded. */
+function modelDisplayName(results: JobResults, timeline: TimelineFile | null | undefined): string {
+  const members = timeline?.model?.models;
+  if (members && members.length > 0) return members.map((m) => m.label ?? MODEL_DISPLAY[m.model_id] ?? m.model_id).join(' + ');
+  const id = timeline?.model?.model_id ?? results.model?.model_id;
+  if (!id) return '—';
+  return id
+    .split('+')
+    .map((part) => MODEL_DISPLAY[part] ?? part)
+    .join(' + ');
+}
+
+function overlayLabel(results: JobResults, timeline: TimelineFile | null | undefined): string {
+  const device = results.model?.device ?? timeline?.model?.device;
+  return `${modelDisplayName(results, timeline)} · ${results.perception_source} · ${device ? device.toUpperCase() : '—'}`;
 }
 
 /** Detection boxes of the nearest analyzed frame drawn over the original video (same pixel geometry). */
-function BoxesOverlay({ frame }: { frame: TimelineFrame }) {
+function BoxesOverlay({ frame, minScore, showLow }: { frame: TimelineFrame; minScore: number; showLow: boolean }) {
   const { width, height } = frame.frame;
   return (
     <svg
@@ -43,11 +56,22 @@ function BoxesOverlay({ frame }: { frame: TimelineFrame }) {
       data-testid="video-boxes-overlay"
     >
       {frame.perception.detections.map((det, index) => {
+        const low = det.score < minScore;
+        if (low && !showLow) return null;
         const [x1, y1, x2, y2] = det.xyxy_pixels;
         const stroke = Math.max(2, width / 400);
         return (
-          <g key={index}>
-            <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1} fill="none" stroke="#f97316" strokeWidth={stroke} />
+          <g key={index} data-low-confidence={low ? 'true' : undefined} opacity={low ? 0.7 : 1}>
+            <rect
+              x={x1}
+              y={y1}
+              width={x2 - x1}
+              height={y2 - y1}
+              fill="none"
+              stroke={low ? '#a3a3a3' : '#f97316'}
+              strokeWidth={stroke}
+              strokeDasharray={low ? `${stroke * 3} ${stroke * 2}` : undefined}
+            />
             <text x={x1 + stroke} y={Math.max(y1 - stroke * 2, stroke * 8)} fill="#fff7ed" fontSize={Math.max(12, width / 70)} fontWeight={600} paintOrder="stroke" stroke="#7c2d12" strokeWidth={stroke}>
               {det.class_name}
               {det.track_id !== null ? ` #${det.track_id}` : ''} {det.score.toFixed(2)}
@@ -175,15 +199,34 @@ function Recommendation({ state, reasons, compact = false }: { state: DecisionSt
   );
 }
 
-function CurrentDecision({ frame, index }: { frame: TimelineFrame | undefined; index: number }) {
+function CurrentDecision({
+  frame,
+  index,
+  minScore,
+  showLow,
+  onShowLow,
+}: {
+  frame: TimelineFrame | undefined;
+  index: number;
+  minScore: number;
+  showLow: boolean;
+  onShowLow: (value: boolean) => void;
+}) {
   const { t } = useI18n();
   const f = useFormat();
   if (!frame) return null;
-  const counts = new Map<string, { count: number; max: number }>();
+  const counts = new Map<string, { label: string; count: number; max: number; low: boolean }>();
+  let hiddenLow = 0;
   for (const det of frame.perception.detections) {
+    const low = det.score < minScore;
+    if (low && !showLow) {
+      hiddenLow += 1;
+      continue;
+    }
     // Heuristic traffic-light colour is shown separately from the detector class, never merged into it.
-    const key = det.light_state ? `${det.class_name} · ${det.light_state} (${t.video.heuristic})` : det.class_name;
-    const entry = counts.get(key) ?? { count: 0, max: 0 };
+    const label = det.light_state ? `${det.class_name} · ${det.light_state} (${t.video.heuristic})` : det.class_name;
+    const key = `${low ? 'low' : 'ok'}:${label}`;
+    const entry = counts.get(key) ?? { label, count: 0, max: 0, low };
     entry.count += 1;
     entry.max = Math.max(entry.max, det.score);
     counts.set(key, entry);
@@ -221,18 +264,29 @@ function CurrentDecision({ frame, index }: { frame: TimelineFrame | undefined; i
         <div>
           <p className="label-caps mb-1.5">{t.video.detections}</p>
           {counts.size === 0 ? (
-            <p className="text-sm text-muted">{t.video.noDetections}</p>
+            <p className="text-sm text-muted" data-testid="no-detections">
+              {t.video.noDetections}
+            </p>
           ) : (
-            <ul className="flex flex-wrap gap-1.5">
-              {[...counts.entries()].map(([name, entry]) => (
-                <li key={name}>
-                  <Pill tone="neutral">
-                    {name} × {entry.count} · max {entry.max.toFixed(2)}
+            <ul className="flex flex-wrap gap-1.5" data-testid="detection-chips">
+              {[...counts.entries()].map(([key, entry]) => (
+                <li key={key} data-testid="detection-chip" data-low-confidence={entry.low ? 'true' : 'false'}>
+                  <Pill tone={entry.low ? 'warning' : 'neutral'}>
+                    {entry.label} × {entry.count} · max {entry.max.toFixed(2)}
+                    {entry.low ? ` · ${t.video.lowConfidence}` : ''}
                   </Pill>
                 </li>
               ))}
             </ul>
           )}
+          <p className="mt-1.5 text-xs text-muted" data-testid="report-threshold-note">
+            {t.video.reportThreshold(minScore.toFixed(2))}
+            {!showLow && hiddenLow > 0 ? ` ${t.video.hiddenLowConfidence(hiddenLow)}.` : ''}
+          </p>
+          <label className="mt-1.5 inline-flex items-center gap-2 text-xs text-muted">
+            <input type="checkbox" checked={showLow} onChange={(e) => onShowLow(e.target.checked)} data-testid="toggle-low-confidence" />
+            {t.video.lowConfidenceToggle}
+          </label>
         </div>
         <p className="text-xs text-muted">{t.video.analyticalOnly}</p>
       </div>
@@ -357,6 +411,8 @@ export function ResultWorkspace({ job, results, side }: { job: Job; results: Job
   const [playing, setPlaying] = useState(false);
   const [videoError, setVideoError] = useState<VideoView | null>(null);
   const [showBoxes, setShowBoxes] = useState(false);
+  const [showLow, setShowLow] = useState(false);
+  const minScore = results.summary.detection_report_min_score ?? DEFAULT_REPORT_MIN_SCORE;
   const videoRef = useRef<HTMLVideoElement>(null);
   const pendingSeek = useRef<number | null>(null);
 
@@ -439,13 +495,14 @@ export function ResultWorkspace({ job, results, side }: { job: Job; results: Job
               ) : (
                 <p className="absolute inset-0 flex items-center justify-center p-6 text-sm text-white/80">{t.video.artifactMissing}</p>
               )}
-              {view === 'original' && showBoxes && currentFrame && <BoxesOverlay frame={currentFrame} />}
-              <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-2">
+              {view === 'original' && showBoxes && currentFrame && <BoxesOverlay frame={currentFrame} minScore={minScore} showLow={showLow} />}
+              {/* Top-right: the annotated frames carry their own HUD text burned into the top-left corner. */}
+              <div className="pointer-events-none absolute top-3 right-3 flex max-w-[70%] flex-wrap justify-end gap-2">
                 <span
                   className="rounded-full bg-black/65 px-2.5 py-1 font-mono text-xs font-medium text-white backdrop-blur"
                   data-testid="video-source-label"
                 >
-                  {view === 'annotated' ? overlayLabel(results) : t.video.originalLabel}
+                  {view === 'annotated' ? overlayLabel(results, timeline) : t.video.originalLabel}
                 </span>
               </div>
               {videoError === view && (
@@ -468,7 +525,7 @@ export function ResultWorkspace({ job, results, side }: { job: Job; results: Job
         <div className="contents lg:block lg:col-span-4 lg:space-y-6">
           <div className="order-2">
             {timeline && timeline.frames.length > 0 ? (
-              <CurrentDecision frame={currentFrame} index={playhead} />
+              <CurrentDecision frame={currentFrame} index={playhead} minScore={minScore} showLow={showLow} onShowLow={setShowLow} />
             ) : timeline ? (
               <Notice tone="neutral">{t.video.timelineEmpty}</Notice>
             ) : null}
@@ -490,6 +547,8 @@ export function ResultWorkspace({ job, results, side }: { job: Job; results: Job
             if (timeline) seekTo(firstIndexAtOrAfter(timeline.frames, firstT));
           }}
           canSeek={Boolean(timeline)}
+          minScore={minScore}
+          showLow={showLow}
         />
       </div>
     </div>

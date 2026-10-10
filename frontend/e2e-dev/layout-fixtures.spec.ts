@@ -145,7 +145,15 @@ test.describe('layout fixtures (dev only)', () => {
 
     await page.goto(`/video/jobs/${fx.jobs[0]?.id}`);
     await expect(page.getByTestId('result-player')).toBeVisible();
-    await expect(page.getByTestId('video-source-label')).toHaveText('YOLOPv2 · learned_model · CPU');
+    await expect(page.getByTestId('video-source-label')).toHaveText('YOLOPv2 + RF-DETR-N · learned_model · CPU');
+    // Low-score boxes (0.22 person, 0.10 stop sign) are hidden from the chips by default and revealed on demand.
+    await expect(page.getByTestId('detection-chip').filter({ hasText: 'stop_sign' })).toHaveCount(0);
+    await expect(page.getByTestId('report-threshold-note')).toContainText('0.40');
+    await page.getByTestId('toggle-low-confidence').check();
+    await expect(page.getByTestId('detection-chip').filter({ hasText: 'stop_sign' })).toHaveAttribute('data-low-confidence', 'true');
+    await expect(page.getByTestId('class-low-count').first()).toBeVisible();
+    await expect(page.getByTestId('tracks-low-score-note')).toBeVisible();
+    await page.getByTestId('toggle-low-confidence').uncheck();
     // Seeking via the events table moves the playhead to that analyzed frame.
     const seek = page.getByTestId('timeline-event-seek').nth(2);
     const index = await seek.getAttribute('data-frame-index');
@@ -226,6 +234,10 @@ test.describe('layout fixtures (dev only)', () => {
     await page.goto(`/evaluation/${fx.evaluations[0]?.id}`);
     await expect(page.getByTestId('evaluation-detail')).toBeVisible();
     await expect(page.getByTestId('ml-accuracy')).toContainText('not evaluated: no labeled subset');
+    await expect(page.getByTestId('ml-dataset').first()).toHaveText('COCO val2017 ko\u2018cha to\u2018plami · obyekt aniqlash');
+    await expect(page.getByTestId('ml-accuracy')).toContainText('AP50 · odam');
+    await expect(page.getByTestId('ml-accuracy')).toContainText('mAP50 (yoqilgan sinflar)');
+    await expect(page.getByTestId('evaluation-dataset').first()).toContainText('LiteRoad sintetik ssenariylar');
     const boxes = page.getByTestId('evaluation-row').locator('input[type="checkbox"]');
     await boxes.nth(0).check();
     await boxes.nth(1).check();

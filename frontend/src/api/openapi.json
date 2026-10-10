@@ -717,6 +717,17 @@
             "title": "Created Utc",
             "type": "string"
           },
+          "dataset": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationDataset"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Dataset the samples came from; null for records made before this field existed."
+          },
           "error_code": {
             "anyOf": [
               {
@@ -814,7 +825,8 @@
           "code_commit",
           "model_sha256",
           "seeds",
-          "error_code"
+          "error_code",
+          "dataset"
         ],
         "title": "Evaluation",
         "type": "object"
@@ -842,6 +854,71 @@
           }
         },
         "title": "EvaluationCreate",
+        "type": "object"
+      },
+      "EvaluationDataset": {
+        "description": "What an evaluation was measured on (metadata only; values come from the dataset manifests/docs).",
+        "properties": {
+          "id": {
+            "description": "Manifest id, e.g. coco_val2017_street_v1, or literoad_synthetic_scenarios.",
+            "title": "Id",
+            "type": "string"
+          },
+          "licence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Licence of the data used; 'generated' for synthetic.",
+            "title": "Licence"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sample_unit": {
+            "description": "What one sample is, e.g. image or scenario_run.",
+            "title": "Sample Unit",
+            "type": "string"
+          },
+          "split": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Dataset split, e.g. val2017 / training / test.",
+            "title": "Split"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Public dataset page; null for generated data.",
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "split",
+          "sample_unit",
+          "licence",
+          "url"
+        ],
+        "title": "EvaluationDataset",
         "type": "object"
       },
       "EvaluationKind": {
@@ -1478,8 +1555,16 @@
             "additionalProperties": {
               "type": "integer"
             },
-            "description": "Class name -> detection count over analyzed frames.",
+            "description": "Class name -> detection count over analyzed frames with score >= detection_report_min_score (all scores for older jobs where detection_report_min_score is null).",
             "title": "Class Counts",
+            "type": "object"
+          },
+          "class_counts_low_score": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Class name -> detections below detection_report_min_score (kept for ByteTrack association; not findings). Empty for older jobs.",
+            "title": "Class Counts Low Score",
             "type": "object"
           },
           "coverage_ratio": {
@@ -1501,6 +1586,20 @@
             "title": "Decoded Frames",
             "type": "integer"
           },
+          "detection_report_min_score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Reporting threshold (DETECTION_REPORT_MIN_SCORE) used for class_counts and tracks; null for jobs analyzed before the threshold existed.",
+            "title": "Detection Report Min Score"
+          },
           "duration_s": {
             "minimum": 0.0,
             "title": "Duration S",
@@ -1511,6 +1610,13 @@
             "minimum": 0.0,
             "title": "Effective Analyzed Fps",
             "type": "number"
+          },
+          "low_score_tracks_dropped": {
+            "default": 0,
+            "description": "Confirmed tracks left out of `tracks` because max_score < the threshold.",
+            "minimum": 0.0,
+            "title": "Low Score Tracks Dropped",
+            "type": "integer"
           },
           "reason_counts": {
             "additionalProperties": {
@@ -1524,6 +1630,7 @@
             "$ref": "#/components/schemas/JobTimingMs"
           },
           "tracks": {
+            "description": "Confirmed tracks whose max_score >= detection_report_min_score (all tracks for older jobs).",
             "items": {
               "$ref": "#/components/schemas/TrackSummary"
             },
@@ -1542,6 +1649,9 @@
           "reason_counts",
           "tracks",
           "class_counts",
+          "class_counts_low_score",
+          "detection_report_min_score",
+          "low_score_tracks_dropped",
           "audio"
         ],
         "title": "JobSummary",

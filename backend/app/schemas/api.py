@@ -330,8 +330,28 @@ class JobSummary(ResponseModel):
     timing_ms: JobTimingMs
     decision_counts: dict[str, int] = Field(description="Analytical decision state -> analyzed frame count.")
     reason_counts: dict[str, int] = Field(description="Reason code -> analyzed frame count.")
-    tracks: list[TrackSummary]
-    class_counts: dict[str, int] = Field(description="Class name -> detection count over analyzed frames.")
+    tracks: list[TrackSummary] = Field(
+        description="Confirmed tracks whose max_score >= detection_report_min_score (all tracks for older jobs)."
+    )
+    class_counts: dict[str, int] = Field(
+        description="Class name -> detection count over analyzed frames with score >= detection_report_min_score "
+        "(all scores for older jobs where detection_report_min_score is null)."
+    )
+    class_counts_low_score: dict[str, int] = Field(
+        default_factory=dict,
+        description="Class name -> detections below detection_report_min_score (kept for ByteTrack association; "
+        "not findings). Empty for older jobs.",
+    )
+    detection_report_min_score: float | None = Field(
+        default=None,
+        ge=0,
+        le=1,
+        description="Reporting threshold (DETECTION_REPORT_MIN_SCORE) used for class_counts and tracks; null for "
+        "jobs analyzed before the threshold existed.",
+    )
+    low_score_tracks_dropped: int = Field(
+        default=0, ge=0, description="Confirmed tracks left out of `tracks` because max_score < the threshold."
+    )
     audio: Literal["removed"] = "removed"
 
 
@@ -629,6 +649,17 @@ class RunReportResponse(RunReport):
 # ---------------------------------------------------------------------------------------------------------------------
 # Evaluations
 # ---------------------------------------------------------------------------------------------------------------------
+class EvaluationDataset(ResponseModel):
+    """What an evaluation was measured on (metadata only; values come from the dataset manifests/docs)."""
+
+    id: str = Field(description="Manifest id, e.g. coco_val2017_street_v1, or literoad_synthetic_scenarios.")
+    name: str
+    split: str | None = Field(default=None, description="Dataset split, e.g. val2017 / training / test.")
+    sample_unit: str = Field(description="What one sample is, e.g. image or scenario_run.")
+    licence: str | None = Field(default=None, description="Licence of the data used; 'generated' for synthetic.")
+    url: str | None = Field(default=None, description="Public dataset page; null for generated data.")
+
+
 class Evaluation(ResponseModel):
     id: str
     kind: EvaluationKind
@@ -643,6 +674,9 @@ class Evaluation(ResponseModel):
     model_sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)
     seeds: list[int] | None = None
     error_code: str | None = None
+    dataset: EvaluationDataset | None = Field(
+        default=None, description="Dataset the samples came from; null for records made before this field existed."
+    )
 
 
 class EvaluationList(ResponseModel):
