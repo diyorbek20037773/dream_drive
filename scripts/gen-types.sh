@@ -83,8 +83,9 @@ if [[ "$MODE" == "write" ]]; then
   exit 0
 fi
 
-# --check: generate into a scratch dir under node_modules (git-ignored, visible to a containerised node too).
-SCRATCH_REL="node_modules/.cache/dd-gen-types"
+# --check: generate into a git-ignored scratch dir inside frontend/ (visible to a containerised node too). It must
+# not live under node_modules: `npm ci` (run by gen_ts when node_modules is missing) deletes that tree.
+SCRATCH_REL=".gen-types-check"
 SCRATCH="$FRONTEND/$SCRATCH_REL"
 rm -rf "$SCRATCH"
 mkdir -p "$SCRATCH"

@@ -10,6 +10,10 @@ MAKEFLAGS += --no-builtin-rules --no-print-directory
 
 include scripts/tool-images.env
 
+# Created by the invoking user before any container bind-mounts it; otherwise Docker creates the missing host
+# directory as root and the fixtures download (host uid) cannot write into it (seen on Linux CI runners).
+$(shell mkdir -p tests/fixtures/cache)
+
 # Git Bash would rewrite container paths such as /evidence into C:/Program Files/Git/evidence.
 export MSYS_NO_PATHCONV := 1
 export MSYS2_ARG_CONV_EXCL := *
