@@ -23,6 +23,10 @@ Base `/api/v1`; return UTC ISO timestamps and explicit seconds/units. Client typ
 | GET /api/v1/runs/{id}/frame | Latest actual JPEG, frame/time identity headers, no cache |
 | GET /api/v1/runs/{id}/report | Measured report; running state reports unavailable |
 | GET /api/v1/evaluations | Real evaluation artifacts, sources and sample counts |
+| POST /api/v1/evaluations | Enqueue a synthetic scenario suite (or a configured accuracy run); 202 accepted |
+| GET /api/v1/evaluations/{id} | One evaluation with metrics, sample counts and limitations |
+| GET /api/v1/runs | Caller's simulation runs (UI re-attach after reload) |
+| POST /api/v1/admin/cleanup | Operator-only retention cleanup |
 | GET /api/v1/events | Owner-filtered SSE, event ID and reconnect/resync |
 | GET /metrics | Internal Prometheus route; public gateway denies it |
 

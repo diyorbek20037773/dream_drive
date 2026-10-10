@@ -1,0 +1,71 @@
+# Shared DreamDrive gateway snippets, imported by Caddyfile (local HTTP) and Caddyfile.prod (HTTPS).
+# Routing contract (docs/IMPLEMENTATION_SPEC.md section 1):
+#   /api/*    -> api:8000 (SSE needs flush_interval -1 so events are not buffered)
+#   /health/* -> api:8000
+#   /metrics  -> 404 (Prometheus endpoints are scraped on the internal network only)
+#   else      -> web:8080 (static SPA)
+
+# Defaults only: "?" sets a header when the upstream did not. The web container sends its own stricter CSP
+# (frontend/nginx-security-headers.conf), which is kept as is; API responses (JSON, artifacts such as
+# report.html) get this baseline unless the API sets its own.
+(dreamdrive_security_headers) {
+	header {
+		?X-Content-Type-Options "nosniff"
+		?X-Frame-Options "SAMEORIGIN"
+		?Referrer-Policy "strict-origin-when-cross-origin"
+		?Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		?Cross-Origin-Opener-Policy "same-origin"
+		?Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+		-Server
+	}
+}
+
+(dreamdrive_access_log) {
+	log {
+		output stdout
+		# Cookie/Authorization values are already redacted by Caddy (log_credentials off).
+		# The CSRF token header is removed as well; request bodies are never logged.
+		format filter {
+			fields {
+				request>headers>X-Csrf-Token delete
+				resp_headers>Set-Cookie delete
+			}
+			wrap json
+		}
+	}
+}
+
+(dreamdrive_routes) {
+	# Uploads are capped at MAX_UPLOAD_BYTES (100 MiB) by the API; the gateway allows multipart overhead.
+	request_body {
+		max_size 110MB
+	}
+
+	handle /metrics {
+		respond 404
+	}
+	handle /metrics/* {
+		respond 404
+	}
+
+	# Liveness of the gateway process itself (does not touch api/web).
+	handle /gateway/health {
+		respond "ok" 200
+	}
+
+	handle /api/* {
+		reverse_proxy api:8000 {
+			# Server-sent events: write every chunk immediately, never buffer.
+			flush_interval -1
+		}
+	}
+
+	handle /health/* {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		encode zstd gzip
+		reverse_proxy web:8080
+	}
+}

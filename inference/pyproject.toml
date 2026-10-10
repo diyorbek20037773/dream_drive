@@ -15,6 +15,7 @@ dependencies = [
   "prometheus-client",
   "python-multipart",
   "pyyaml",
+  "rfdetr==1.11.2",
 ]
 
 [dependency-groups]
@@ -31,3 +32,26 @@ torchvision = { index = "pytorch-cpu" }
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["app/vendored/yolopv2_utils.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+ignore = ["S101", "S603", "S607", "B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = false
+exclude = ["app/vendored/"]
+
+[[tool.mypy.overrides]]
+module = ["app.vendored.*"]
+ignore_errors = true

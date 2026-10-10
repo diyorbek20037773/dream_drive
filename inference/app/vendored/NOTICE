@@ -1,0 +1,37 @@
+Third-party code vendored into DreamDrive's inference service
+=============================================================
+
+File: app/vendored/yolopv2_utils.py
+Origin: YOLOPv2, https://github.com/CAIC-AD/YOLOPv2, file utils/utils.py
+Pinned upstream commit: 9388c6aa55f3bf5a878679a1338bb090cff6a256 (2023-03-24)
+License: MIT (reproduced below, copied from the upstream LICENSE file at that commit)
+Modifications: listed in the module docstring of app/vendored/yolopv2_utils.py
+(explicit meshgrid indexing, no in-place mutation of the caller's prediction list,
+logging instead of print; unused upstream helpers omitted).
+
+The YOLOPv2 checkpoint (yolopv2.pt, GitHub release V0.0.1) is NOT vendored or
+redistributed in this repository or its images; model-init downloads it from the
+upstream release URL and verifies the SHA256 recorded in config/models.resolved.yaml.
+
+----------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2022 CAIC-AD
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

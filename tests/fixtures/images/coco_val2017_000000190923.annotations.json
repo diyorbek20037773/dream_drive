@@ -1,0 +1,241 @@
+{
+  "source": "COCO 2017 val instances annotations (annotations_trainval2017.zip, instances_val2017.json), image id 190923, all annotations of that image, bbox fields copied unmodified (xywh, pixels)",
+  "annotations_license": "CC BY 4.0 (COCO Consortium, https://cocodataset.org/#termsofuse)",
+  "image": {
+    "id": 190923,
+    "file_name": "000000190923.jpg",
+    "width": 375,
+    "height": 500,
+    "license": 4,
+    "coco_url": "http://images.cocodataset.org/val2017/000000190923.jpg",
+    "flickr_url": "http://farm3.staticflickr.com/2669/3706332805_237c47a25d_z.jpg"
+  },
+  "image_license": {
+    "id": 4,
+    "name": "Attribution License",
+    "url": "http://creativecommons.org/licenses/by/2.0/"
+  },
+  "annotations": [
+    {
+      "id": 407358,
+      "category_id": 10,
+      "category_name": "traffic light",
+      "bbox_xywh": [
+        261.26,
+        1.69,
+        68.69,
+        109.23
+      ],
+      "area": 6831.4285500000005,
+      "iscrowd": 0
+    },
+    {
+      "id": 1173865,
+      "category_id": 31,
+      "category_name": "handbag",
+      "bbox_xywh": [
+        307.71,
+        352.23,
+        64.73,
+        108.66
+      ],
+      "area": 2126.0061000000005,
+      "iscrowd": 0
+    },
+    {
+      "id": 1276437,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        328.01,
+        296.88,
+        46.99,
+        203.12
+      ],
+      "area": 6468.991050000002,
+      "iscrowd": 0
+    },
+    {
+      "id": 1282516,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        0.0,
+        225.84,
+        33.71,
+        161.8
+      ],
+      "area": 2926.584949999999,
+      "iscrowd": 0
+    },
+    {
+      "id": 1293396,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        317.99,
+        294.26,
+        10.22,
+        32.29
+      ],
+      "area": 201.83514999999989,
+      "iscrowd": 0
+    },
+    {
+      "id": 1293704,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        303.43,
+        289.99,
+        8.72,
+        33.55
+      ],
+      "area": 173.0535499999994,
+      "iscrowd": 0
+    },
+    {
+      "id": 1309617,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        297.46,
+        289.53,
+        7.87,
+        35.34
+      ],
+      "area": 166.71410000000017,
+      "iscrowd": 0
+    },
+    {
+      "id": 1314969,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        292.76,
+        287.01,
+        6.8,
+        35.26
+      ],
+      "area": 163.95624999999964,
+      "iscrowd": 0
+    },
+    {
+      "id": 1315306,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        331.31,
+        296.29,
+        13.63,
+        31.93
+      ],
+      "area": 260.4668000000002,
+      "iscrowd": 0
+    },
+    {
+      "id": 1318943,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        214.38,
+        272.8,
+        7.17,
+        27.67
+      ],
+      "area": 114.19755000000015,
+      "iscrowd": 0
+    },
+    {
+      "id": 1330421,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        207.37,
+        272.1,
+        5.54,
+        25.55
+      ],
+      "area": 88.14184999999988,
+      "iscrowd": 0
+    },
+    {
+      "id": 1693838,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        272.61,
+        281.64,
+        6.55,
+        32.43
+      ],
+      "area": 130.99089999999987,
+      "iscrowd": 0
+    },
+    {
+      "id": 1740788,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        202.75,
+        269.29,
+        6.79,
+        22.49
+      ],
+      "area": 112.93524999999998,
+      "iscrowd": 0
+    },
+    {
+      "id": 1799476,
+      "category_id": 8,
+      "category_name": "truck",
+      "bbox_xywh": [
+        10.44,
+        196.25,
+        41.86,
+        58.91
+      ],
+      "area": 1776.32935,
+      "iscrowd": 0
+    },
+    {
+      "id": 2006082,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        178.09,
+        263.56,
+        5.36,
+        18.01
+      ],
+      "area": 74.28234999999991,
+      "iscrowd": 0
+    },
+    {
+      "id": 2154714,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        164.33,
+        258.48,
+        6.17,
+        22.22
+      ],
+      "area": 106.50914999999983,
+      "iscrowd": 0
+    },
+    {
+      "id": 900100190923,
+      "category_id": 1,
+      "category_name": "person",
+      "bbox_xywh": [
+        58,
+        236,
+        175,
+        70
+      ],
+      "area": 1490,
+      "iscrowd": 1
+    }
+  ]
+}

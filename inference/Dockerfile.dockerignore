@@ -1,0 +1,21 @@
+# Build context filter for inference/Dockerfile (context = repository root). BuildKit prefers this file over the
+# root .dockerignore for this Dockerfile. Allowlist: only what the inference images copy.
+*
+!inference/pyproject.toml
+!inference/uv.lock
+!inference/app/**
+!inference/gpu/pyproject.toml
+!inference/gpu/uv.lock
+!config/models.resolved.yaml
+!tests/unit/inference/**
+!tests/model_smoke/**
+!tests/fixtures/images/**
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/*.pt
+**/*.pth
+**/*.part

@@ -1,0 +1,16 @@
+[project]
+name = "dreamdrive-eval-crosscheck"
+version = "0.1.0"
+description = "Independent pycocotools cross-check of DreamDrive's NumPy COCO AP implementation (docs/EVALUATION.md)."
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "numpy",
+    "pycocotools",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"

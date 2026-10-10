@@ -1,0 +1,95 @@
+# DreamDrive alert rules (docs/OBSERVABILITY.md). Proven by promtool unit tests in alerts_test.yml:
+#   make ops-check   (promtool check config / check rules / test rules via the prom/prometheus image)
+# Thresholds are starting hypotheses for the bounded single-node demo, not measured SLOs; tune them after real
+# traffic. No alert destination is configured.
+groups:
+  - name: dreamdrive-availability
+    rules:
+      - alert: DreamDriveServiceDown
+        expr: up{job=~"api|worker|inference"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} metrics target is down"
+          description: "Prometheus could not scrape {{ $labels.instance }} for more than 2 minutes."
+          runbook: "docs/RUNBOOK.md#worker-crash-or-service-down"
+
+      - alert: DreamDriveModelNotReady
+        # Inference reports 0 until the verified checkpoint is loaded and warmed up (start-up takes < 3 min).
+        expr: max by (model, device) (dreamdrive_model_ready) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model {{ $labels.model }} on {{ $labels.device }} is not ready"
+          description: "Video analysis is unavailable; uploads return model_not_ready."
+          runbook: "docs/RUNBOOK.md#model-not-ready"
+
+      - alert: DreamDriveWorkerHeartbeatStale
+        # The heartbeat gauge reports seconds since the worker slot last completed a loop iteration.
+        expr: max by (slot) (dreamdrive_worker_heartbeat_age_seconds) > 120
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Worker slot {{ $labels.slot }} heartbeat is stale"
+          description: "The worker slot has not reported progress for more than 120 seconds."
+          runbook: "docs/RUNBOOK.md#worker-crash-or-service-down"
+
+  - name: dreamdrive-queue
+    rules:
+      - alert: DreamDriveQueueOldestJobAboveSLA
+        # 15 minutes: a 120 s clip at 5 analyzed FPS is ~600 CPU inferences (~0.4-0.6 s each in the spike),
+        # so a full queue of 10 jobs can legitimately wait longer; this flags a stuck or starved queue.
+        expr: max by (queue) (dreamdrive_queue_oldest_age_seconds) > 900
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Oldest queued job in {{ $labels.queue }} is older than 15 minutes"
+          description: "Jobs are not being picked up fast enough (worker down, stuck job or backlog)."
+          runbook: "docs/RUNBOOK.md#queue-backlog"
+
+      - alert: DreamDriveJobFailuresElevated
+        expr: sum by (kind) (increase(dreamdrive_jobs_total{status=~"failed|interrupted"}[15m])) >= 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.kind }} jobs are failing"
+          description: "At least 3 {{ $labels.kind }} jobs failed or were interrupted in the last 15 minutes."
+          runbook: "docs/RUNBOOK.md#corrupt-video-or-failing-jobs"
+
+  - name: dreamdrive-storage
+    rules:
+      - alert: DreamDriveDataVolumeLow
+        expr: dreamdrive_data_volume_free_bytes < 5e9
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Less than 5 GB free on the application data volume"
+          description: "Uploads, artifacts and SQLite WAL share this volume; new jobs will start failing."
+          runbook: "docs/RUNBOOK.md#disk-full"
+
+      - alert: DreamDriveDiskMetricMissing
+        # Guard so the disk-low rule cannot be silently inert: the API is up but no free-space metric exists.
+        expr: absent(dreamdrive_data_volume_free_bytes) and on() (max(up{job="api"}) == 1)
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "No data-volume free-space metric is exported"
+          description: "DreamDriveDataVolumeLow cannot fire until dreamdrive_data_volume_free_bytes is exported."
+          runbook: "docs/RUNBOOK.md#disk-full"
+
+      - alert: DreamDriveArtifactStorageHigh
+        expr: sum(dreamdrive_artifact_bytes) > 20e9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Stored artifacts exceed 20 GB"
+          description: "Retention cleanup may be failing or the retention window is too long for the disk."
+          runbook: "docs/RUNBOOK.md#disk-full"

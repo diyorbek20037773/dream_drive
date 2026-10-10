@@ -1,0 +1,38 @@
+# Optional CUDA variant of the inference service (dreamdrive-inference-gpu). Same application code as the CPU image;
+# only the torch/torchvision wheels differ (PyTorch cu126 index; compatible with NVIDIA drivers supporting CUDA >= 12.6).
+# torch/torchvision are pinned to the versions resolved in ../uv.lock so CPU and GPU results are comparable.
+[project]
+name = "dreamdrive-inference-gpu"
+version = "0.1.0"
+description = "DreamDrive internal YOLOPv2 inference service (CUDA variant)"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "torch==2.14.1",
+  "torchvision==0.29.1",
+  "numpy",
+  "opencv-python-headless",
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "pydantic-settings",
+  "prometheus-client",
+  "python-multipart",
+  "pyyaml",
+  "rfdetr==1.11.2",
+]
+
+[dependency-groups]
+dev = ["pytest", "httpx", "ruff", "mypy"]
+
+[tool.uv]
+package = false
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu126" }
+torchvision = { index = "pytorch-cu126" }
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true

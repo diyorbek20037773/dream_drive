@@ -1,0 +1,182 @@
+# Monitoring + MLOps profile (optional). All UIs bind to 127.0.0.1 only; nothing is routed by the gateway.
+#   make init-env                                   # generates GRAFANA_ADMIN_PASSWORD into .env (not printed)
+#   docker compose -f compose.yaml -f compose.ops.yaml up -d      (or: make up OPS=1)
+#   Prometheus http://127.0.0.1:9090  Grafana http://127.0.0.1:3000 (user admin)  MLflow http://127.0.0.1:5000
+# Works on top of compose.yaml or compose.prod.yaml (same service/network/volume names).
+# No alert destinations are configured: alerts are visible in Prometheus/Grafana only (docs/OBSERVABILITY.md).
+services:
+  volume-init:
+    volumes:
+      - mlflow-data:/vol/mlflow
+
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --storage.tsdb.retention.size=2GB
+      - --web.listen-address=:9090
+    volumes:
+      - ./ops/prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:${DD_PROMETHEUS_PORT:-9090}:9090"
+    networks: [internal, ops]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  grafana:
+    image: grafana/grafana:13.0.10
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      # Generated locally by scripts/init-env.sh; there is deliberately no default.
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is not set; run make init-env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+      GF_SERVER_ROOT_URL: http://127.0.0.1:${DD_GRAFANA_PORT:-3000}/
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    volumes:
+      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/grafana/dashboards:/var/lib/grafana-dashboards/dreamdrive:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:${DD_GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks: [ops]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512m
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.17.0
+    user: "10001:10001"
+    command:
+      - mlflow
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+      - --workers
+      - "1"
+      - --backend-store-uri
+      - sqlite:////mlflow/mlflow.db
+      - --artifacts-destination
+      - /mlflow/artifacts
+      - --serve-artifacts
+      - --allowed-hosts
+      - mlflow,mlflow:5000,localhost,localhost:${DD_MLFLOW_PORT:-5000},127.0.0.1,127.0.0.1:${DD_MLFLOW_PORT:-5000}
+    environment:
+      HOME: /tmp
+      MLFLOW_DISABLE_TELEMETRY: "true"
+      DO_NOT_TRACK: "true"
+    volumes:
+      - mlflow-data:/mlflow
+    ports:
+      - "127.0.0.1:${DD_MLFLOW_PORT:-5000}:5000"
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+    # internal: reachable as http://mlflow:5000 by the evaluation logger; ops: loopback UI port.
+    networks: [internal, ops]
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=5)"]
+      interval: 20s
+      timeout: 8s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1g
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  # One-shot (profile "mlflow-log"): push local evaluation JSON (DATA_ROOT/evaluations) to MLflow.
+  #   make mlflow-log      (runs: docker compose -f compose.yaml -f compose.ops.yaml run --rm mlflow-log)
+  # Local JSON stays the source of truth; MLflow is an index of it.
+  mlflow-log:
+    image: ghcr.io/mlflow/mlflow:v3.17.0
+    profiles: ["mlflow-log"]
+    user: "10001:10001"
+    entrypoint: ["python", "/opt/dreamdrive/log_evaluations_to_mlflow.py"]
+    environment:
+      HOME: /tmp
+      MLFLOW_DISABLE_TELEMETRY: "true"
+      DO_NOT_TRACK: "true"
+      ENABLE_MLFLOW: ${ENABLE_MLFLOW:-false}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-http://mlflow:5000}
+      DATA_ROOT: /data
+      MODEL_MANIFEST_PATH: /opt/dreamdrive/config/models.resolved.yaml
+    volumes:
+      - app-data:/data:ro
+      - ./config:/opt/dreamdrive/config:ro
+      - ./scripts/log_evaluations_to_mlflow.py:/opt/dreamdrive/log_evaluations_to_mlflow.py:ro
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: "no"
+
+networks:
+  ops: {}
+
+volumes:
+  prometheus-data: {}
+  grafana-data: {}
+  mlflow-data: {}

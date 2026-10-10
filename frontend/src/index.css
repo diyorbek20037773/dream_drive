@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+
+/* Design tokens: docs/DESIGN.md (binding). Utilities are generated from these names, e.g. bg-canvas, text-ink. */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Consolas, monospace;
+
+  --color-canvas: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-ink: #12233b;
+  --color-muted: #63748a;
+  --color-accent: #2563eb;
+  --color-accent-strong: #1d4ed8;
+  --color-cyan: #0891b2;
+  /* Darker cyan for small text on white (the token cyan is used for strokes/fills, not body text). */
+  --color-cyan-ink: #0e7490;
+  --color-line: #e0e7ef;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+  /* Dark media panel (camera/video) */
+  --color-night: #0b1626;
+  --color-night-2: #15263d;
+  --color-night-line: #26384f;
+
+  --radius-card: 14px;
+  --radius-control: 12px;
+
+  --shadow-card: 0 1px 2px rgb(18 35 59 / 0.04), 0 2px 6px rgb(18 35 59 / 0.05);
+  --shadow-pop: 0 8px 24px rgb(18 35 59 / 0.12);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    font-size: 15px;
+    line-height: 1.5;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1,
+  h2,
+  h3 {
+    @apply text-ink;
+    letter-spacing: -0.01em;
+  }
+  /* One visible focus style for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  [data-on-dark] :focus-visible {
+    outline-color: #7dd3fc;
+  }
+  button:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+  input[type='range'] {
+    accent-color: var(--color-accent);
+  }
+  /* Grid items may shrink below their content width so wide tables scroll inside their own containers
+     instead of widening the page. */
+  .grid > * {
+    min-width: 0;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-card border border-line bg-surface shadow-card;
+  }
+  .card-pad {
+    @apply p-4 sm:p-6;
+  }
+  .label-caps {
+    @apply text-xs font-semibold tracking-wide text-muted uppercase;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .scroll-x {
+    @apply overflow-x-auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@keyframes dd-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.dd-indeterminate {
+  animation: dd-indeterminate 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .dd-indeterminate {
+    animation: none;
+    transform: none;
+    width: 100% !important;
+    opacity: 0.35;
+  }
+}

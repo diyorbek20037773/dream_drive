@@ -32,12 +32,98 @@
       "cpu_smoke": {
         "passed": true,
         "date": "2026-10-10",
-        "evidence": "docs/ENVIRONMENT.md#model-spike (spike); formal gate: tests/model_smoke"
+        "gate": "tests/model_smoke in image dreamdrive-inference:test (inference/Dockerfile), weights mounted at /models",
+        "image": "linux/amd64, python 3.11.17, torch 2.14.1+cpu, 6 torch threads",
+        "hardware": "Intel Core i5-13420H, Docker Desktop WSL2 VM (12 vCPU, 7.6 GiB), shared with concurrent builds",
+        "precision": "fp32",
+        "input": "tests/fixtures/images/yolopv2_example.jpg 1280x720 -> canvas 640x384",
+        "warmups": 2,
+        "timed_runs": 10,
+        "forward_ms_p50_p95": [
+          442.0,
+          484.6
+        ],
+        "server_total_ms_p50_p95": [
+          496.9,
+          759.8
+        ],
+        "cold_start_s": 3.21,
+        "example_outputs": "23 detections all class 3; drivable_fraction 0.2261; lane_fraction 0.0347",
+        "note": "Earlier run the same day: forward p50 356.6 ms / p95 404.9 ms. CPU latency varies with host load.",
+        "evidence": "artifacts/qa/spike/model_smoke_cpu.json (local, gitignored); release evidence goes to artifacts/qa/<commit>/"
       },
       "gpu_smoke": {
-        "passed": false,
-        "note": "Not yet tested. Host GPU is NVIDIA GeForce RTX 3050 6GB Laptop GPU (nvidia-smi), driver 576.52."
+        "passed": true,
+        "date": "2026-10-10",
+        "gate": "tests/model_smoke incl. test_yolopv2_cuda_agreement.py in image dreamdrive-inference-gpu:test (inference/Dockerfile.gpu), docker run --gpus all",
+        "image": "linux/amd64, python 3.11.17, torch 2.14.1+cu126 (inference/gpu/uv.lock)",
+        "hardware": "NVIDIA GeForce RTX 3050 6GB Laptop GPU, driver 576.52 (CUDA 12.9), Docker Desktop WSL2",
+        "precision": "fp16",
+        "input": "tests/fixtures/images/yolopv2_example.jpg 1280x720 -> canvas 640x384",
+        "warmups": 2,
+        "timed_runs": 10,
+        "forward_ms_p50_p95": [
+          20.45,
+          20.89
+        ],
+        "server_total_ms_p50_p95": [
+          45.3,
+          48.3
+        ],
+        "cold_start_s": 4.35,
+        "cuda_max_memory_allocated_mib": 138.2,
+        "cuda_max_memory_reserved_mib": 224.0,
+        "agreement_vs_cpu_fp32": "3 frames (example, h-flip, darkened): 74/74 CPU detections matched at IoU>=0.5 (mean IoU 0.997-0.999); drivable pixel agreement >=0.99996; lane pixel agreement >=0.99996",
+        "note": "Numerical consistency with CPU fp32 on unlabeled frames; not an accuracy measurement. fp32 on CUDA was not benchmarked.",
+        "evidence": "artifacts/qa/spike/model_smoke_cuda.json (local, gitignored)"
       }
+    },
+    {
+      "id": "rfdetr_nano",
+      "role": "video_object_detector_supplement",
+      "required_for_video": true,
+      "file_name": "rf-detr-nano.pth",
+      "repository": "https://github.com/roboflow/rf-detr",
+      "repository_tag": "1.11.2",
+      "repository_revision": "7433d5919d0f7e72cc6cb78663e0a731afd499e0",
+      "repository_revision_evidence": "git ls-remote https://github.com/roboflow/rf-detr refs/tags/1.11.2 -> 7433d5919d0f7e72cc6cb78663e0a731afd499e0 (checked 2026-10-10)",
+      "python_package": "rfdetr==1.11.2 (locked in inference/uv.lock and inference/gpu/uv.lock)",
+      "python_package_wheel_sha256": "2f23589567123b59302f1cfa9d14d23630f9f583ee6f3468c5891e33fb103b2a",
+      "checkpoint_url": "https://storage.googleapis.com/rfdetr/nano_coco/checkpoint_best_regular.pth",
+      "checkpoint_sha256": "d8d6b9ee57d4d0ed2b1f305163624712a0532cb7bce0c747317984fc5457440d",
+      "checkpoint_size_bytes": 366287238,
+      "checkpoint_md5_publisher": "fb6504cce7fbdc783f7a46991f07639f",
+      "checkpoint_md5_evidence": "rfdetr 1.11.2 rfdetr/assets/model_weights.py ModelWeights.RF_DETR_NANO = ('rf-detr-nano.pth', <checkpoint_url>, 'fb6504cce7fbdc783f7a46991f07639f'); the downloaded bytes match it.",
+      "format": "rfdetr_checkpoint_pth",
+      "architecture": "rfdetr.RFDETRNano (RFDETRNanoConfig in rfdetr 1.11.2): windowed DINOv2-small backbone with patch size 16 and 24x24 positional embeddings, out_feature_indexes [3,6,9,12], 2 decoder layers, 300 queries, 384x384 input. The checkpoint carries all weights; the backbone is built from the JSON config bundled in the package (no Hugging Face download).",
+      "code_license": "Apache-2.0 (rfdetr package metadata 'Apache License 2.0'; repository LICENSE)",
+      "weight_license_evidence": "README at 7433d5919d0f7e72cc6cb78663e0a731afd499e0, detection model table row: '|  N   |     `RFDETRNano`      | `rfdetr-nano`           |         67.6         |          48.4           |     2.3      |    30.5    |  384x384   | Apache 2.0 |'. README 'License' section: 'The open-source `rfdetr` package and Apache-designated model weights are licensed under Apache License 2.0.' The AP and latency numbers in that row are publisher claims, not DreamDrive measurements. COCO-pretrained (COCO annotations CC BY 4.0; images under their Flickr licences). Weights are NOT redistributed in DreamDrive images; model-init downloads and verifies them.",
+      "source_label_space": "coco2017_category_id",
+      "class_id_offset": 100,
+      "supported_class_map": {
+        "101": "person",
+        "102": "bicycle",
+        "104": "motorcycle",
+        "106": "bus",
+        "108": "truck",
+        "110": "traffic_light",
+        "113": "stop_sign"
+      },
+      "class_map_evidence": "rfdetr 1.11.2 predict() returns raw sparse COCO 2017 category ids (1..90) for COCO-pretrained checkpoints (condition: args.num_classes > 80 and class_names == COCO_CLASS_NAMES, checked at load). Names verified at load against rfdetr/assets/coco_classes.py COCO_CLASSES: 1 person, 2 bicycle, 4 motorcycle, 6 bus, 8 truck, 10 'traffic light', 13 'stop sign' (spaces -> underscores). DreamDrive id = 100 + COCO id. COCO 'car' (3) and all other categories are disabled (not returned).",
+      "disabled_policy": "COCO car is disabled because YOLOPv2 'vehicle' covers cars. All other COCO categories are not returned. General traffic signs other than stop sign are unsupported (COCO has no such category). Traffic-light colour is not a model output.",
+      "ensemble_rules": "Runs on every /v1/infer frame after YOLOPv2 under the same lock. An RF-DETR bus/truck box with IoU >= 0.5 to a YOLOPv2 vehicle box replaces that vehicle box (refined_from_model='yolopv2'); greedy by RF-DETR score; each vehicle box replaced at most once.",
+      "input_policy_id": "rfdetr_resize384_imagenet_norm",
+      "input_shape_policy": "RGB uint8 frame (the same decoded frame YOLOPv2 sees) passed to rfdetr predict(): bilinear resize (antialias=False) of the whole frame to 384x384 without letterboxing, /255, ImageNet mean/std normalisation; rfdetr post-processing keeps the top 300 query/class pairs and scales boxes to the original frame size. DreamDrive keeps enabled classes with score >= conf_threshold (default 0.1) and clips boxes to the image. No extra NMS (upstream behaviour; the same box can appear under two classes, e.g. bus and truck).",
+      "unverified_class_policy": "Category ids outside supported_class_map are dropped by the service, never renamed."
     }
-  ]
+  ],
+  "ensemble": {
+    "ensemble_id": "yolopv2+rfdetr_nano",
+    "members": [
+      "yolopv2",
+      "rfdetr_nano"
+    ],
+    "ensemble_sha256_rule": "sha256 of the UTF-8 text 'yolopv2:<yolopv2 checkpoint sha256>\nrfdetr_nano:<rfdetr_nano checkpoint sha256>\n'",
+    "ensemble_sha256": "e514a67df0620326cb5a57c6a3a3db79d789dae42f43a96b71e7268867d34777"
+  }
 }

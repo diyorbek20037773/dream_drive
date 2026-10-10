@@ -1,0 +1,3 @@
+# Deployment state written by deploy/deploy.sh on the server (release identity + history). Not in git.
+*
+!.gitignore

@@ -1,0 +1,12 @@
+# Provisioned Prometheus datasource (compose.ops.yaml). The uid is referenced by every dashboard panel.
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: dd-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 15s

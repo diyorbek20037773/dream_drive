@@ -1,0 +1,258 @@
+# Publish immutable images for a commit that ALREADY passed validate.yml (verified via the GitHub API for exactly
+# that SHA), then scan and pull-only smoke the published digests. Only this workflow sees Docker Hub secrets
+# (DOCKERHUB_USERNAME / DOCKERHUB_TOKEN). Tags: sha-<full commit> (immutable, never overwritten) plus vX.Y.Z when
+# triggered by a version tag. A release is complete only when the release-<sha> artifact (release.env +
+# release-manifest.json) exists and the scan-smoke job passed; deploy/deploy.sh consumes that release.env.
+# Third-party actions are pinned to commit SHAs resolved with `gh api` on 2026-10-10 (version in the comment).
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Full 40-hex commit on main that already passed the validate workflow
+        required: true
+        type: string
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.commit || github.sha }}
+  cancel-in-progress: false
+
+env:
+  NAMESPACE: diyorbek7377
+
+jobs:
+  verify:
+    name: verify validate succeeded for this exact commit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+      version: ${{ steps.sha.outputs.version }}
+    steps:
+      - name: Resolve commit and version
+        id: sha
+        env:
+          INPUT_COMMIT: ${{ inputs.commit }}
+          EVENT_SHA: ${{ github.sha }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          sha=${INPUT_COMMIT:-$EVENT_SHA}
+          if [[ ! $sha =~ ^[0-9a-f]{40}$ ]]; then echo "::error::commit must be a full 40-hex SHA"; exit 1; fi
+          version=""
+          if [[ $REF_TYPE == tag ]]; then
+            version=$REF_NAME
+            if [[ ! $version =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then echo "::error::tag must be vMAJOR.MINOR.PATCH"; exit 1; fi
+          fi
+          echo "sha=$sha" >>"$GITHUB_OUTPUT"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+      - name: Commit must be contained in main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          status=$(gh api "repos/$GITHUB_REPOSITORY/compare/main...$SHA" --jq .status)
+          if [[ $status != identical && $status != behind ]]; then
+            echo "::error::$SHA is not contained in main (compare status: $status)"
+            exit 1
+          fi
+      - name: validate.yml must have succeeded for exactly this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          count=$(gh api -X GET "repos/$GITHUB_REPOSITORY/actions/workflows/validate.yml/runs" \
+            -f head_sha="$SHA" -f status=success -f per_page=100 \
+            --jq "[.workflow_runs[] | select(.head_sha == \"$SHA\" and .conclusion == \"success\")] | length")
+          if ((count < 1)); then echo "::error::no successful validate run for $SHA"; exit 1; fi
+          echo "validate succeeded for $SHA ($count run(s))"
+
+  publish:
+    name: build once, push sha-<commit> with SBOM + provenance
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    env:
+      SHA: ${{ needs.verify.outputs.sha }}
+      VERSION: ${{ needs.verify.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify.outputs.sha }}
+          persist-credentials: false
+      - name: Free runner disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Never overwrite an immutable sha- tag
+        id: existing
+        run: |
+          existing=0
+          for img in web backend inference; do
+            if docker buildx imagetools inspect "$NAMESPACE/dreamdrive-$img:sha-$SHA" >/dev/null 2>&1; then
+              existing=$((existing + 1))
+            fi
+          done
+          if ((existing == 3)); then
+            echo "All sha-$SHA tags already exist: reusing them, nothing is rebuilt."
+            echo "skip=true" >>"$GITHUB_OUTPUT"
+          elif ((existing > 0)); then
+            echo "::error::a partial release exists for $SHA; inspect the registry before publishing"
+            exit 1
+          else
+            echo "skip=false" >>"$GITHUB_OUTPUT"
+          fi
+      - name: Image tags
+        id: tags
+        run: |
+          for img in web backend inference; do
+            tags="$NAMESPACE/dreamdrive-$img:sha-$SHA"
+            if [[ -n $VERSION ]]; then tags="$tags,$NAMESPACE/dreamdrive-$img:$VERSION"; fi
+            echo "$img=$tags" >>"$GITHUB_OUTPUT"
+          done
+      - name: Build + push dreamdrive-web
+        id: web
+        if: steps.existing.outputs.skip == 'false'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: frontend/Dockerfile
+          target: web
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.web }}
+          build-args: |
+            GIT_COMMIT=${{ needs.verify.outputs.sha }}
+            BUILD_VERSION=${{ needs.verify.outputs.version || format('sha-{0}', needs.verify.outputs.sha) }}
+            BUILD_DIRTY=0
+          provenance: mode=max
+          sbom: true
+      - name: Build + push dreamdrive-backend
+        id: backend
+        if: steps.existing.outputs.skip == 'false'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: backend/Dockerfile
+          target: runtime
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.backend }}
+          build-args: |
+            GIT_COMMIT=${{ needs.verify.outputs.sha }}
+            BUILD_VERSION=${{ needs.verify.outputs.version || format('sha-{0}', needs.verify.outputs.sha) }}
+            BUILD_DIRTY=0
+          provenance: mode=max
+          sbom: true
+      - name: Build + push dreamdrive-inference (CPU)
+        id: inference
+        if: steps.existing.outputs.skip == 'false'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: inference/Dockerfile
+          target: runtime
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.inference }}
+          build-args: |
+            GIT_COMMIT=${{ needs.verify.outputs.sha }}
+            BUILD_VERSION=${{ needs.verify.outputs.version || format('sha-{0}', needs.verify.outputs.sha) }}
+            BUILD_DIRTY=0
+          provenance: mode=max
+          sbom: true
+      - name: Release manifest (digests read back from the registry)
+        run: bash scripts/release-manifest.sh --commit "$SHA" --namespace "$NAMESPACE" --out release
+      - name: Cross-check registry digests against the build outputs
+        if: steps.existing.outputs.skip == 'false'
+        env:
+          WEB: ${{ steps.web.outputs.digest }}
+          BACKEND: ${{ steps.backend.outputs.digest }}
+          INFERENCE: ${{ steps.inference.outputs.digest }}
+        run: |
+          grep -qx "WEB_IMAGE_DIGEST=$WEB" release/release.env
+          grep -qx "BACKEND_IMAGE_DIGEST=$BACKEND" release/release.env
+          grep -qx "INFERENCE_IMAGE_DIGEST=$INFERENCE" release/release.env
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ needs.verify.outputs.sha }}
+          path: release/
+          if-no-files-found: error
+          retention-days: 90
+
+  scan-smoke:
+    name: trivy scan + pull-only smoke of the published digests
+    needs: [verify, publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    permissions:
+      contents: read
+    env:
+      SHA: ${{ needs.verify.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify.outputs.sha }}
+          persist-credentials: false
+      - name: Free runner disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-${{ needs.verify.outputs.sha }}
+          path: release
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Trivy (fail on fixable HIGH/CRITICAL) on the published digests
+        run: |
+          source scripts/tool-images.env
+          for key in WEB BACKEND INFERENCE; do
+            digest=$(sed -n "s/^${key}_IMAGE_DIGEST=//p" release/release.env)
+            name=$(tr '[:upper:]' '[:lower:]' <<<"$key")
+            ref="$NAMESPACE/dreamdrive-$name@$digest"
+            echo "== trivy $ref"
+            docker run --rm -v dreamdrive-trivy-cache:/root/.cache/ "$TRIVY_IMAGE" image --scanners vuln \
+              --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress --timeout 20m "$ref"
+          done
+      - name: Licensed smoke clip (decoded with the published backend image)
+        run: |
+          digest=$(sed -n 's/^BACKEND_IMAGE_DIGEST=//p' release/release.env)
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD:/repo" -w /repo --entrypoint python \
+            "$NAMESPACE/dreamdrive-backend@$digest" scripts/fetch_fixtures.py
+      - name: Pull-only smoke (fresh project, digests only, model-init, HTTPS, real upload)
+        run: |
+          make smoke-published RELEASE_ENV=release/release.env EVIDENCE_DIR=./artifacts/smoke-published \
+            UPLOAD=tests/fixtures/cache/commons_dashcam_daylight_cc0_96s_10s.mp4
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### DreamDrive release $SHA"
+            echo '```json'
+            cat release/release-manifest.json
+            echo '```'
+          } >>"$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: release-smoke-${{ needs.verify.outputs.sha }}
+          path: |
+            artifacts/smoke-published/
+            !artifacts/smoke-published/local.env
+          if-no-files-found: warn
+          retention-days: 90

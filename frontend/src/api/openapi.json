@@ -1,0 +1,5642 @@
+{
+  "components": {
+    "schemas": {
+      "ActionKind": {
+        "enum": [
+          "analytical_only",
+          "simulator_control"
+        ],
+        "type": "string"
+      },
+      "ArtifactName": {
+        "enum": [
+          "input",
+          "annotated.mp4",
+          "timeline.json",
+          "report.json",
+          "report.html",
+          "poster.jpg"
+        ],
+        "type": "string"
+      },
+      "Body_upload_video": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "description": "MP4/MOV video; the content is validated, not the name or type.",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_video",
+        "type": "object"
+      },
+      "BuildInfo": {
+        "properties": {
+          "commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "40-64 hex git commit; null when not built from git.",
+            "title": "Commit"
+          },
+          "dirty": {
+            "title": "Dirty",
+            "type": "boolean"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "commit",
+          "version",
+          "dirty"
+        ],
+        "title": "BuildInfo",
+        "type": "object"
+      },
+      "Capabilities": {
+        "properties": {
+          "build": {
+            "$ref": "#/components/schemas/BuildInfo"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          },
+          "monitoring": {
+            "$ref": "#/components/schemas/MonitoringInfo"
+          },
+          "queue": {
+            "$ref": "#/components/schemas/QueueStatus"
+          },
+          "simulation": {
+            "$ref": "#/components/schemas/SimulationCapability"
+          },
+          "video_analysis": {
+            "$ref": "#/components/schemas/VideoAnalysisCapability"
+          }
+        },
+        "required": [
+          "build",
+          "video_analysis",
+          "simulation",
+          "queue",
+          "limits",
+          "monitoring"
+        ],
+        "title": "Capabilities",
+        "type": "object"
+      },
+      "CapabilityChangedPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "capability_changed",
+            "default": "capability_changed",
+            "title": "Kind",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "video_analysis_available": {
+            "title": "Video Analysis Available",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "video_analysis_available"
+        ],
+        "title": "CapabilityChangedPayload",
+        "type": "object"
+      },
+      "CleanupResult": {
+        "properties": {
+          "finished_utc": {
+            "format": "date-time",
+            "title": "Finished Utc",
+            "type": "string"
+          },
+          "removed_bytes": {
+            "minimum": 0.0,
+            "title": "Removed Bytes",
+            "type": "integer"
+          },
+          "removed_evaluations": {
+            "minimum": 0.0,
+            "title": "Removed Evaluations",
+            "type": "integer"
+          },
+          "removed_jobs": {
+            "minimum": 0.0,
+            "title": "Removed Jobs",
+            "type": "integer"
+          },
+          "removed_runs": {
+            "minimum": 0.0,
+            "title": "Removed Runs",
+            "type": "integer"
+          },
+          "retention_hours": {
+            "exclusiveMinimum": 0.0,
+            "title": "Retention Hours",
+            "type": "number"
+          },
+          "started_utc": {
+            "format": "date-time",
+            "title": "Started Utc",
+            "type": "string"
+          }
+        },
+        "required": [
+          "removed_jobs",
+          "removed_runs",
+          "removed_evaluations",
+          "removed_bytes",
+          "retention_hours",
+          "started_utc",
+          "finished_utc"
+        ],
+        "title": "CleanupResult",
+        "type": "object"
+      },
+      "DecisionBasisComparator": {
+        "enum": [
+          ">=",
+          ">",
+          "<=",
+          "<",
+          "==",
+          "!="
+        ],
+        "type": "string"
+      },
+      "DecisionBasisEffect": {
+        "enum": [
+          "slow",
+          "controlled_stop",
+          "safety_stop",
+          "steer_correction",
+          "speed_limit",
+          "pause",
+          "arrive",
+          "fail"
+        ],
+        "type": "string"
+      },
+      "DecisionBasisItem": {
+        "description": "One input that the safety supervisor, FSM or controller actually evaluated for this tick's decision, with\nthe threshold it was compared against. Never contains evaluator truth.",
+        "properties": {
+          "comparator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionBasisComparator"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Trigger condition is `value <comparator> threshold`."
+          },
+          "effect": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionBasisEffect"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the input drives when triggered."
+          },
+          "input_frame_id": {
+            "description": "Equals the command's input_frame_id (same camera frame).",
+            "minimum": 0.0,
+            "title": "Input Frame Id",
+            "type": "integer"
+          },
+          "key": {
+            "description": "Stable input name, e.g. image_obstacle_cue, frame_wall_age_s, target_speed_mps.",
+            "title": "Key",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/DecisionBasisSource"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Compared limit; null for informational inputs.",
+            "title": "Threshold"
+          },
+          "triggered": {
+            "description": "True when this input currently drives `effect` (gate: condition holds).",
+            "title": "Triggered",
+            "type": "boolean"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "SI unit of value/threshold (s, m, m/s, 1/m) or null.",
+            "title": "Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Evaluated value; null when the input was unavailable.",
+            "title": "Value"
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "unit",
+          "source",
+          "threshold",
+          "comparator",
+          "triggered",
+          "effect",
+          "input_frame_id"
+        ],
+        "title": "DecisionBasisItem",
+        "type": "object"
+      },
+      "DecisionBasisSource": {
+        "enum": [
+          "synthetic_rgb_cv",
+          "learned_model",
+          "ego_telemetry",
+          "route_graph",
+          "operator",
+          "safety_supervisor",
+          "controller"
+        ],
+        "type": "string"
+      },
+      "DecisionCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "brake": {
+            "title": "Brake",
+            "type": "number"
+          },
+          "steer": {
+            "title": "Steer",
+            "type": "number"
+          },
+          "throttle": {
+            "title": "Throttle",
+            "type": "number"
+          }
+        },
+        "required": [
+          "steer",
+          "throttle",
+          "brake"
+        ],
+        "title": "DecisionCommand",
+        "type": "object"
+      },
+      "DecisionManeuver": {
+        "additionalProperties": false,
+        "description": "Compact Run.live.maneuver (app.control.maneuver): what the simulated vehicle is doing.",
+        "properties": {
+          "lateral": {
+            "$ref": "#/components/schemas/ManeuverLateral"
+          },
+          "longitudinal": {
+            "$ref": "#/components/schemas/ManeuverLongitudinal"
+          },
+          "primary": {
+            "$ref": "#/components/schemas/ManeuverPrimary"
+          },
+          "since_sim_time_s": {
+            "description": "Simulated time (s) at which this maneuver began.",
+            "minimum": 0.0,
+            "title": "Since Sim Time S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "primary",
+          "longitudinal",
+          "lateral",
+          "since_sim_time_s"
+        ],
+        "title": "DecisionManeuver",
+        "type": "object"
+      },
+      "DecisionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "command": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionCommand"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "frame_id": {
+            "minimum": 0.0,
+            "title": "Frame Id",
+            "type": "integer"
+          },
+          "kind": {
+            "const": "decision",
+            "default": "decision",
+            "title": "Kind",
+            "type": "string"
+          },
+          "maneuver": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionManeuver"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reason Codes",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "sim_time_s": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Simulated time of frame_id, s.",
+            "title": "Sim Time S"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "frame_id",
+          "state",
+          "reason_codes"
+        ],
+        "title": "DecisionPayload",
+        "type": "object"
+      },
+      "DecisionState": {
+        "enum": [
+          "observe",
+          "follow_route",
+          "slow",
+          "controlled_stop",
+          "safety_stop",
+          "paused",
+          "arrived",
+          "failed"
+        ],
+        "type": "string"
+      },
+      "DeleteResult": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "description": "deletion_scheduled: the job was in progress; cancellation was requested and bytes are removed once the worker stops.",
+            "enum": [
+              "deleted",
+              "deletion_scheduled"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status"
+        ],
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "EnsembleMemberInfo": {
+        "description": "Identity, class map and readiness of one model of the ensemble (``ModelInfo.models``).",
+        "properties": {
+          "class_map": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Class Map",
+            "type": "object"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device"
+          },
+          "input_policy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Policy"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "precision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repository"
+          },
+          "repository_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repository Revision"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          }
+        },
+        "required": [
+          "model_id",
+          "ready"
+        ],
+        "title": "EnsembleMemberInfo",
+        "type": "object"
+      },
+      "ErrorCode": {
+        "description": "Machine-readable error codes used in ``ErrorEnvelope.code``. The frontend maps them to localized text.",
+        "enum": [
+          "validation_error",
+          "not_found",
+          "method_not_allowed",
+          "http_error",
+          "internal_error",
+          "not_implemented",
+          "service_unavailable",
+          "session_required",
+          "csrf_failed",
+          "operator_required",
+          "invalid_credentials",
+          "operator_login_disabled",
+          "rate_limited",
+          "session_queue_full",
+          "queue_full",
+          "simulation_busy",
+          "evaluation_busy",
+          "upload_too_large",
+          "upload_empty",
+          "unsupported_media_type",
+          "video_invalid",
+          "video_too_long",
+          "video_too_large_dimensions",
+          "video_no_stream",
+          "video_decode_failed",
+          "model_not_ready",
+          "inference_unavailable",
+          "results_unavailable",
+          "artifact_unavailable",
+          "range_not_satisfiable",
+          "simulator_unavailable",
+          "unsupported_mode",
+          "unsupported_scenario",
+          "unknown_node",
+          "destination_unreachable",
+          "invalid_transition",
+          "run_not_active",
+          "obstacle_limit_reached",
+          "report_unavailable",
+          "evaluation_unavailable"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "ErrorEnvelope": {
+        "description": "Every non-2xx JSON response. Never contains filesystem paths or stack traces.",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "details": {
+            "additionalProperties": true,
+            "description": "Structured, code-specific context.",
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "description": "Human-readable English message; the UI localizes by `code`.",
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "description": "Correlates with the X-Request-ID response header and server logs.",
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id",
+          "details"
+        ],
+        "title": "ErrorEnvelope",
+        "type": "object"
+      },
+      "ErrorPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "kind": {
+            "const": "error",
+            "default": "error",
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorPayload",
+        "type": "object"
+      },
+      "Evaluation": {
+        "properties": {
+          "code_commit": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{40,64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when not built from git.",
+            "title": "Code Commit"
+          },
+          "created_utc": {
+            "format": "date-time",
+            "title": "Created Utc",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "finished_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished Utc"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EvaluationKind"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Metric"
+            },
+            "title": "Metrics",
+            "type": "object"
+          },
+          "model_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Sha256"
+          },
+          "sample_count": {
+            "minimum": 0.0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "seeds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seeds"
+          },
+          "source": {
+            "description": "What produced the samples, e.g. literoad_synthetic_rgb_cv.",
+            "title": "Source",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/EvaluationState"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "state",
+          "created_utc",
+          "finished_utc",
+          "source",
+          "sample_count",
+          "metrics",
+          "limitations",
+          "code_commit",
+          "model_sha256",
+          "seeds",
+          "error_code"
+        ],
+        "title": "Evaluation",
+        "type": "object"
+      },
+      "EvaluationCreate": {
+        "additionalProperties": false,
+        "description": "Only the synthetic scenario suite can be started from the API; ML benchmarks are produced offline.",
+        "properties": {
+          "kind": {
+            "const": "synthetic_scenario_suite",
+            "default": "synthetic_scenario_suite",
+            "title": "Kind",
+            "type": "string"
+          },
+          "seeds": {
+            "items": {
+              "maximum": 1000000.0,
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Seeds",
+            "type": "array"
+          }
+        },
+        "title": "EvaluationCreate",
+        "type": "object"
+      },
+      "EvaluationKind": {
+        "enum": [
+          "synthetic_scenario_suite",
+          "model_benchmark",
+          "video_ml_accuracy"
+        ],
+        "type": "string"
+      },
+      "EvaluationList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Evaluation"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "EvaluationList",
+        "type": "object"
+      },
+      "EvaluationState": {
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed",
+          "interrupted"
+        ],
+        "type": "string"
+      },
+      "EventEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "minLength": 1,
+            "title": "Event Id",
+            "type": "string"
+          },
+          "payload": {
+            "discriminator": {
+              "mapping": {
+                "capability_changed": "#/components/schemas/CapabilityChangedPayload",
+                "decision": "#/components/schemas/DecisionPayload",
+                "error": "#/components/schemas/ErrorPayload",
+                "frame_ready": "#/components/schemas/FrameReadyPayload",
+                "job_progress": "#/components/schemas/JobProgressPayload",
+                "job_state": "#/components/schemas/JobStatePayload",
+                "run_state": "#/components/schemas/RunStatePayload"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/JobStatePayload"
+              },
+              {
+                "$ref": "#/components/schemas/JobProgressPayload"
+              },
+              {
+                "$ref": "#/components/schemas/RunStatePayload"
+              },
+              {
+                "$ref": "#/components/schemas/FrameReadyPayload"
+              },
+              {
+                "$ref": "#/components/schemas/DecisionPayload"
+              },
+              {
+                "$ref": "#/components/schemas/CapabilityChangedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/ErrorPayload"
+              }
+            ],
+            "title": "Payload"
+          },
+          "resource_id": {
+            "minLength": 1,
+            "title": "Resource Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "timestamp_utc": {
+            "format": "date-time",
+            "title": "Timestamp Utc",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "job_state",
+              "job_progress",
+              "run_state",
+              "frame_ready",
+              "decision",
+              "capability_changed",
+              "error"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "timestamp_utc",
+          "resource_id",
+          "type",
+          "payload"
+        ],
+        "title": "EventEnvelope",
+        "type": "object"
+      },
+      "FrameReadyPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "frame_id": {
+            "minimum": 0.0,
+            "title": "Frame Id",
+            "type": "integer"
+          },
+          "kind": {
+            "const": "frame_ready",
+            "default": "frame_ready",
+            "title": "Kind",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "sim_time_s": {
+            "minimum": 0.0,
+            "title": "Sim Time S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "run_id",
+          "frame_id",
+          "sim_time_s"
+        ],
+        "title": "FrameReadyPayload",
+        "type": "object"
+      },
+      "HealthCheck": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "ok",
+          "reason"
+        ],
+        "title": "HealthCheck",
+        "type": "object"
+      },
+      "HealthStatus": {
+        "properties": {
+          "checked_utc": {
+            "format": "date-time",
+            "title": "Checked Utc",
+            "type": "string"
+          },
+          "checks": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/HealthCheck"
+            },
+            "description": "Readiness dependencies (database, queue). Model readiness is separate.",
+            "title": "Checks",
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "checks",
+          "checked_utc"
+        ],
+        "title": "HealthStatus",
+        "type": "object"
+      },
+      "Job": {
+        "properties": {
+          "analysis_fps": {
+            "exclusiveMinimum": 0.0,
+            "title": "Analysis Fps",
+            "type": "number"
+          },
+          "created_utc": {
+            "format": "date-time",
+            "title": "Created Utc",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "finished_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished Utc"
+          },
+          "frames_done": {
+            "minimum": 0.0,
+            "title": "Frames Done",
+            "type": "integer"
+          },
+          "frames_total": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Planned analyzed frames, once known.",
+            "title": "Frames Total"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "input": {
+            "$ref": "#/components/schemas/JobInput"
+          },
+          "kind": {
+            "const": "video_analysis",
+            "default": "video_analysis",
+            "title": "Kind",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Immutable identity of the model used for this job."
+          },
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Current pipeline stage name, e.g. probe/decode/encode.",
+            "title": "Stage"
+          },
+          "started_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started Utc"
+          },
+          "state": {
+            "$ref": "#/components/schemas/JobState"
+          },
+          "video": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobVideo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "state",
+          "stage",
+          "progress",
+          "frames_done",
+          "frames_total",
+          "error_code",
+          "error_message",
+          "created_utc",
+          "started_utc",
+          "finished_utc",
+          "input",
+          "video",
+          "model",
+          "analysis_fps"
+        ],
+        "title": "Job",
+        "type": "object"
+      },
+      "JobArtifact": {
+        "properties": {
+          "bytes": {
+            "minimum": 0.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/ArtifactName"
+          },
+          "url": {
+            "description": "Same-origin, owner-checked relative URL.",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "content_type",
+          "bytes"
+        ],
+        "title": "JobArtifact",
+        "type": "object"
+      },
+      "JobInput": {
+        "properties": {
+          "bytes": {
+            "minimum": 0.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "ext": {
+            "description": "Accepted container extension, without a dot.",
+            "enum": [
+              "mp4",
+              "mov"
+            ],
+            "title": "Ext",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA256 of the uploaded bytes.",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sha256",
+          "bytes",
+          "ext"
+        ],
+        "title": "JobInput",
+        "type": "object"
+      },
+      "JobList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque cursor for the next page; null at the end.",
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "JobList",
+        "type": "object"
+      },
+      "JobProgressPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "frames_done": {
+            "minimum": 0.0,
+            "title": "Frames Done",
+            "type": "integer"
+          },
+          "frames_total": {
+            "minimum": 0.0,
+            "title": "Frames Total",
+            "type": "integer"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "job_progress",
+            "default": "job_progress",
+            "title": "Kind",
+            "type": "string"
+          },
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "progress",
+          "stage",
+          "frames_done",
+          "frames_total"
+        ],
+        "title": "JobProgressPayload",
+        "type": "object"
+      },
+      "JobResults": {
+        "properties": {
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/JobArtifact"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "mode": {
+            "const": "video_analysis",
+            "default": "video_analysis",
+            "title": "Mode",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Model that produced the results, if learned."
+          },
+          "perception_source": {
+            "$ref": "#/components/schemas/PerceptionSource",
+            "description": "Source of every perception in this job's results."
+          },
+          "state": {
+            "$ref": "#/components/schemas/JobState"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/JobSummary"
+          },
+          "timeline_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeline Url"
+          }
+        },
+        "required": [
+          "job_id",
+          "state",
+          "mode",
+          "perception_source",
+          "model",
+          "summary",
+          "artifacts",
+          "timeline_url",
+          "limitations"
+        ],
+        "title": "JobResults",
+        "type": "object"
+      },
+      "JobState": {
+        "enum": [
+          "queued",
+          "validating",
+          "running",
+          "cancelling",
+          "cancelled",
+          "succeeded",
+          "failed",
+          "interrupted"
+        ],
+        "type": "string"
+      },
+      "JobStatePayload": {
+        "additionalProperties": false,
+        "properties": {
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "job_state",
+            "default": "job_state",
+            "title": "Kind",
+            "type": "string"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "state"
+        ],
+        "title": "JobStatePayload",
+        "type": "object"
+      },
+      "JobSummary": {
+        "properties": {
+          "analyzed_frames": {
+            "minimum": 0.0,
+            "title": "Analyzed Frames",
+            "type": "integer"
+          },
+          "audio": {
+            "const": "removed",
+            "default": "removed",
+            "title": "Audio",
+            "type": "string"
+          },
+          "class_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Class name -> detection count over analyzed frames.",
+            "title": "Class Counts",
+            "type": "object"
+          },
+          "coverage_ratio": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Coverage Ratio",
+            "type": "number"
+          },
+          "decision_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Analytical decision state -> analyzed frame count.",
+            "title": "Decision Counts",
+            "type": "object"
+          },
+          "decoded_frames": {
+            "minimum": 0.0,
+            "title": "Decoded Frames",
+            "type": "integer"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "effective_analyzed_fps": {
+            "description": "Analyzed frames divided by total wall time.",
+            "minimum": 0.0,
+            "title": "Effective Analyzed Fps",
+            "type": "number"
+          },
+          "reason_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Reason code -> analyzed frame count.",
+            "title": "Reason Counts",
+            "type": "object"
+          },
+          "timing_ms": {
+            "$ref": "#/components/schemas/JobTimingMs"
+          },
+          "tracks": {
+            "items": {
+              "$ref": "#/components/schemas/TrackSummary"
+            },
+            "title": "Tracks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "analyzed_frames",
+          "decoded_frames",
+          "coverage_ratio",
+          "duration_s",
+          "effective_analyzed_fps",
+          "timing_ms",
+          "decision_counts",
+          "reason_counts",
+          "tracks",
+          "class_counts",
+          "audio"
+        ],
+        "title": "JobSummary",
+        "type": "object"
+      },
+      "JobTimingMs": {
+        "description": "Measured wall-clock timings in milliseconds. Inference percentiles are null when no frame was analyzed.",
+        "properties": {
+          "decode": {
+            "minimum": 0.0,
+            "title": "Decode",
+            "type": "number"
+          },
+          "encode": {
+            "minimum": 0.0,
+            "title": "Encode",
+            "type": "number"
+          },
+          "inference_p50": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inference P50"
+          },
+          "inference_p95": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inference P95"
+          },
+          "postprocess": {
+            "minimum": 0.0,
+            "title": "Postprocess",
+            "type": "number"
+          },
+          "total_wall": {
+            "minimum": 0.0,
+            "title": "Total Wall",
+            "type": "number"
+          }
+        },
+        "required": [
+          "decode",
+          "inference_p50",
+          "inference_p95",
+          "postprocess",
+          "encode",
+          "total_wall"
+        ],
+        "title": "JobTimingMs",
+        "type": "object"
+      },
+      "JobVideo": {
+        "description": "ffprobe-derived properties of the uploaded video.",
+        "properties": {
+          "codec": {
+            "title": "Codec",
+            "type": "string"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "fps_avg": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Average frame rate reported by the container.",
+            "title": "Fps Avg"
+          },
+          "height": {
+            "description": "Display height in pixels after rotation.",
+            "minimum": 1.0,
+            "title": "Height",
+            "type": "integer"
+          },
+          "rotation": {
+            "default": 0,
+            "description": "Rotation in degrees applied for display.",
+            "title": "Rotation",
+            "type": "integer"
+          },
+          "width": {
+            "description": "Display width in pixels after rotation.",
+            "minimum": 1.0,
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "duration_s",
+          "width",
+          "height",
+          "fps_avg",
+          "rotation",
+          "codec"
+        ],
+        "title": "JobVideo",
+        "type": "object"
+      },
+      "LaneStatus": {
+        "enum": [
+          "valid",
+          "uncertain",
+          "unsupported",
+          "unavailable"
+        ],
+        "type": "string"
+      },
+      "Limits": {
+        "description": "Configured engineering limits (not measured server capacity).",
+        "properties": {
+          "accepted_extensions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Accepted Extensions",
+            "type": "array"
+          },
+          "analysis_fps": {
+            "exclusiveMinimum": 0.0,
+            "title": "Analysis Fps",
+            "type": "number"
+          },
+          "artifact_retention_hours": {
+            "exclusiveMinimum": 0.0,
+            "title": "Artifact Retention Hours",
+            "type": "number"
+          },
+          "max_active_simulations": {
+            "minimum": 1.0,
+            "title": "Max Active Simulations",
+            "type": "integer"
+          },
+          "max_expensive_requests_per_minute": {
+            "minimum": 1.0,
+            "title": "Max Expensive Requests Per Minute",
+            "type": "integer"
+          },
+          "max_obstacles_per_run": {
+            "minimum": 0.0,
+            "title": "Max Obstacles Per Run",
+            "type": "integer"
+          },
+          "max_queued_per_session": {
+            "minimum": 1.0,
+            "title": "Max Queued Per Session",
+            "type": "integer"
+          },
+          "max_queued_total": {
+            "minimum": 1.0,
+            "title": "Max Queued Total",
+            "type": "integer"
+          },
+          "max_simulation_wall_s": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Simulation Wall S",
+            "type": "number"
+          },
+          "max_upload_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Upload Bytes",
+            "type": "integer"
+          },
+          "max_video_duration_s": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Video Duration S",
+            "type": "number"
+          },
+          "max_video_height_px": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Video Height Px",
+            "type": "integer"
+          },
+          "max_video_width_px": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Video Width Px",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_upload_bytes",
+          "max_video_duration_s",
+          "max_video_width_px",
+          "max_video_height_px",
+          "accepted_extensions",
+          "max_queued_per_session",
+          "max_queued_total",
+          "max_expensive_requests_per_minute",
+          "max_simulation_wall_s",
+          "max_active_simulations",
+          "max_obstacles_per_run",
+          "artifact_retention_hours",
+          "analysis_fps"
+        ],
+        "title": "Limits",
+        "type": "object"
+      },
+      "LiveCommand": {
+        "description": "Simulator-only actuation computed by the deterministic controller; never sent to a physical vehicle.",
+        "properties": {
+          "brake": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Brake",
+            "type": "number"
+          },
+          "input_frame_id": {
+            "minimum": 0.0,
+            "title": "Input Frame Id",
+            "type": "integer"
+          },
+          "reason_codes": {
+            "items": {
+              "$ref": "#/components/schemas/ReasonCode"
+            },
+            "minItems": 1,
+            "title": "Reason Codes",
+            "type": "array"
+          },
+          "safety_override": {
+            "title": "Safety Override",
+            "type": "boolean"
+          },
+          "source": {
+            "const": "dreamdrive_controller",
+            "default": "dreamdrive_controller",
+            "title": "Source",
+            "type": "string"
+          },
+          "steer": {
+            "description": "+1 = full left.",
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "title": "Steer",
+            "type": "number"
+          },
+          "throttle": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Throttle",
+            "type": "number"
+          }
+        },
+        "required": [
+          "steer",
+          "throttle",
+          "brake",
+          "input_frame_id",
+          "source",
+          "safety_override",
+          "reason_codes"
+        ],
+        "title": "LiveCommand",
+        "type": "object"
+      },
+      "LiveDecision": {
+        "properties": {
+          "action_kind": {
+            "$ref": "#/components/schemas/ActionKind"
+          },
+          "reason_codes": {
+            "items": {
+              "$ref": "#/components/schemas/ReasonCode"
+            },
+            "minItems": 1,
+            "title": "Reason Codes",
+            "type": "array"
+          },
+          "state": {
+            "$ref": "#/components/schemas/DecisionState"
+          }
+        },
+        "required": [
+          "state",
+          "reason_codes",
+          "action_kind"
+        ],
+        "title": "LiveDecision",
+        "type": "object"
+      },
+      "LiveEgo": {
+        "description": "Ego localization telemetry from the simulator (allowed runtime input), ENU frame.",
+        "properties": {
+          "source": {
+            "const": "ego_telemetry",
+            "default": "ego_telemetry",
+            "title": "Source",
+            "type": "string"
+          },
+          "speed_mps": {
+            "minimum": 0.0,
+            "title": "Speed Mps",
+            "type": "number"
+          },
+          "x_m": {
+            "title": "X M",
+            "type": "number"
+          },
+          "y_m": {
+            "title": "Y M",
+            "type": "number"
+          },
+          "yaw_rad": {
+            "description": "Radians, counter-clockwise from +x (east).",
+            "title": "Yaw Rad",
+            "type": "number"
+          }
+        },
+        "required": [
+          "source",
+          "x_m",
+          "y_m",
+          "yaw_rad",
+          "speed_mps"
+        ],
+        "title": "LiveEgo",
+        "type": "object"
+      },
+      "LiveManeuver": {
+        "description": "What the simulated vehicle is doing on this tick: a deterministic description classified from the applied\ncommand (after the safety supervisor) and ego telemetry (app.control.maneuver). It is not a controller.",
+        "properties": {
+          "accel_mps2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Longitudinal acceleration used for the label, m/s^2; null when no command applied.",
+            "title": "Accel Mps2"
+          },
+          "input_frame_id": {
+            "description": "Input frame id of the command this maneuver describes.",
+            "minimum": 0.0,
+            "title": "Input Frame Id",
+            "type": "integer"
+          },
+          "lateral": {
+            "$ref": "#/components/schemas/ManeuverLateral",
+            "description": "Turn direction; left = counter-clockwise yaw (steer > 0)."
+          },
+          "longitudinal": {
+            "$ref": "#/components/schemas/ManeuverLongitudinal"
+          },
+          "primary": {
+            "$ref": "#/components/schemas/ManeuverPrimary",
+            "description": "Display code; precedence HOLD > STOP > BRAKE > TURN_* > SLOW_DOWN > ACCELERATE > CRUISE."
+          },
+          "signal_source": {
+            "$ref": "#/components/schemas/ManeuverSignalSource",
+            "description": "ego_telemetry_window: measured over the last 0.5 s of simulated time; command_model: LiteRoad pedal/bicycle model of the applied command (first ticks); none: no command (hold)."
+          },
+          "since_sim_time_s": {
+            "description": "Simulated time (s) at which the current primary began.",
+            "minimum": 0.0,
+            "title": "Since Sim Time S",
+            "type": "number"
+          },
+          "speed_mps": {
+            "description": "Ego telemetry speed, m/s.",
+            "minimum": 0.0,
+            "title": "Speed Mps",
+            "type": "number"
+          },
+          "yaw_rate_radps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Yaw rate used for the label, rad/s (+ = left); null when no command applied.",
+            "title": "Yaw Rate Radps"
+          }
+        },
+        "required": [
+          "primary",
+          "longitudinal",
+          "lateral",
+          "since_sim_time_s",
+          "input_frame_id",
+          "speed_mps",
+          "accel_mps2",
+          "yaw_rate_radps",
+          "signal_source"
+        ],
+        "title": "LiveManeuver",
+        "type": "object"
+      },
+      "LivePerception": {
+        "properties": {
+          "frame_height": {
+            "minimum": 1.0,
+            "title": "Frame Height",
+            "type": "integer"
+          },
+          "frame_width": {
+            "minimum": 1.0,
+            "title": "Frame Width",
+            "type": "integer"
+          },
+          "image_lane_offset_normalized": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": -1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Lane Offset Normalized"
+          },
+          "image_obstacle_cue": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Obstacle Cue"
+          },
+          "lane_points": {
+            "description": "Perceived lane points [[x, y], ...] in frame pixels.",
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "title": "Lane Points",
+            "type": "array"
+          },
+          "lane_status": {
+            "$ref": "#/components/schemas/LaneStatus"
+          },
+          "obstacle_boxes": {
+            "description": "Perceived obstacle boxes [[x1, y1, x2, y2], ...] in frame pixels.",
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array"
+            },
+            "title": "Obstacle Boxes",
+            "type": "array"
+          },
+          "quality_status": {
+            "$ref": "#/components/schemas/QualityStatus"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PerceptionSource"
+          }
+        },
+        "required": [
+          "source",
+          "quality_status",
+          "lane_status",
+          "image_lane_offset_normalized",
+          "image_obstacle_cue",
+          "obstacle_boxes",
+          "lane_points",
+          "frame_width",
+          "frame_height"
+        ],
+        "title": "LivePerception",
+        "type": "object"
+      },
+      "ManeuverLateral": {
+        "enum": [
+          "straight",
+          "turning_left",
+          "turning_right"
+        ],
+        "type": "string"
+      },
+      "ManeuverLongitudinal": {
+        "enum": [
+          "accelerating",
+          "cruising",
+          "decelerating",
+          "braking_to_stop",
+          "stopped",
+          "holding"
+        ],
+        "type": "string"
+      },
+      "ManeuverPrimary": {
+        "enum": [
+          "STOP",
+          "BRAKE",
+          "SLOW_DOWN",
+          "ACCELERATE",
+          "CRUISE",
+          "TURN_LEFT",
+          "TURN_RIGHT",
+          "HOLD"
+        ],
+        "type": "string"
+      },
+      "ManeuverSignalSource": {
+        "enum": [
+          "ego_telemetry_window",
+          "command_model",
+          "none"
+        ],
+        "type": "string"
+      },
+      "Metric": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "sample_count": {
+            "minimum": 0.0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "measured",
+              "not_evaluated",
+              "unsupported"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "minLength": 1,
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "sample_count",
+          "status",
+          "note"
+        ],
+        "title": "Metric",
+        "type": "object"
+      },
+      "ModelIdentity": {
+        "properties": {
+          "device": {
+            "enum": [
+              "cpu",
+              "cuda"
+            ],
+            "title": "Device",
+            "type": "string"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "precision": {
+            "enum": [
+              "fp32",
+              "fp16"
+            ],
+            "title": "Precision",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id",
+          "sha256",
+          "device",
+          "precision"
+        ],
+        "title": "ModelIdentity",
+        "type": "object"
+      },
+      "ModelInfo": {
+        "properties": {
+          "class_map": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Class Map",
+            "type": "object"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device"
+          },
+          "ensemble_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ensemble Id"
+          },
+          "ensemble_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ensemble Sha256"
+          },
+          "input_policy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Policy"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/EnsembleMemberInfo"
+            },
+            "title": "Models",
+            "type": "array"
+          },
+          "precision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "repository_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repository Revision"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          },
+          "torch_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Torch Version"
+          }
+        },
+        "required": [
+          "model_id",
+          "ready"
+        ],
+        "title": "ModelInfo",
+        "type": "object"
+      },
+      "MonitoringInfo": {
+        "properties": {
+          "metrics": {
+            "description": "Prometheus metrics are exported (internal network only).",
+            "title": "Metrics",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "metrics"
+        ],
+        "title": "MonitoringInfo",
+        "type": "object"
+      },
+      "ObstacleInject": {
+        "additionalProperties": false,
+        "description": "Synthetic scenario injection of a visual obstacle (simulation only).",
+        "properties": {
+          "distance_ahead_m": {
+            "maximum": 40.0,
+            "minimum": 8.0,
+            "title": "Distance Ahead M",
+            "type": "number"
+          },
+          "lateral_offset_m": {
+            "maximum": 1.5,
+            "minimum": -1.5,
+            "title": "Lateral Offset M",
+            "type": "number"
+          }
+        },
+        "required": [
+          "distance_ahead_m",
+          "lateral_offset_m"
+        ],
+        "title": "ObstacleInject",
+        "type": "object"
+      },
+      "ObstacleInjectResult": {
+        "properties": {
+          "distance_ahead_m": {
+            "title": "Distance Ahead M",
+            "type": "number"
+          },
+          "injected_total": {
+            "description": "Injections accepted for this run including this one.",
+            "minimum": 1.0,
+            "title": "Injected Total",
+            "type": "integer"
+          },
+          "lateral_offset_m": {
+            "title": "Lateral Offset M",
+            "type": "number"
+          },
+          "max_per_run": {
+            "minimum": 1.0,
+            "title": "Max Per Run",
+            "type": "integer"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "source": {
+            "const": "synthetic_scenario_injection",
+            "default": "synthetic_scenario_injection",
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "source",
+          "distance_ahead_m",
+          "lateral_offset_m",
+          "injected_total",
+          "max_per_run"
+        ],
+        "title": "ObstacleInjectResult",
+        "type": "object"
+      },
+      "PerceptionModeInfo": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "id": {
+            "$ref": "#/components/schemas/SimPerceptionSource"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the mode is unavailable; null when available.",
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "id",
+          "available",
+          "reason"
+        ],
+        "title": "PerceptionModeInfo",
+        "type": "object"
+      },
+      "PerceptionSource": {
+        "enum": [
+          "learned_model",
+          "synthetic_rgb_cv",
+          "classical_lane_fallback",
+          "unavailable"
+        ],
+        "type": "string"
+      },
+      "QualityStatus": {
+        "enum": [
+          "valid",
+          "degraded",
+          "missing",
+          "invalid",
+          "stale"
+        ],
+        "type": "string"
+      },
+      "QueueStatus": {
+        "description": "Measured queue occupancy; counts are null (with reason) when the queue cannot be read.",
+        "properties": {
+          "capacity_total": {
+            "minimum": 1.0,
+            "title": "Capacity Total",
+            "type": "integer"
+          },
+          "per_session": {
+            "minimum": 1.0,
+            "title": "Per Session",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "sim_active": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sim Active"
+          },
+          "sim_capacity": {
+            "default": 1,
+            "minimum": 1.0,
+            "title": "Sim Capacity",
+            "type": "integer"
+          },
+          "video_queued": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Video Queued"
+          },
+          "video_running": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Video Running"
+          }
+        },
+        "required": [
+          "video_queued",
+          "video_running",
+          "capacity_total",
+          "per_session",
+          "sim_active",
+          "sim_capacity",
+          "reason"
+        ],
+        "title": "QueueStatus",
+        "type": "object"
+      },
+      "ReasonCode": {
+        "enum": [
+          "LANE_VALID",
+          "LANE_UNCERTAIN",
+          "LANE_UNAVAILABLE",
+          "DRIVABLE_AREA_LOW",
+          "VEHICLE_IN_CORRIDOR_NEAR",
+          "VEHICLE_IN_CORRIDOR",
+          "NO_VEHICLE_IN_CORRIDOR",
+          "FRAME_DARK",
+          "FRAME_BLURRY",
+          "INFERENCE_FAILED",
+          "PERSON_IN_CORRIDOR_NEAR",
+          "PERSON_IN_CORRIDOR",
+          "TWO_WHEELER_IN_CORRIDOR",
+          "TRAFFIC_LIGHT_VISIBLE",
+          "TRAFFIC_LIGHT_RED_HEURISTIC",
+          "TRAFFIC_LIGHT_YELLOW_HEURISTIC",
+          "TRAFFIC_LIGHT_GREEN_HEURISTIC",
+          "STOP_SIGN_VISIBLE",
+          "INITIALIZING",
+          "ROUTE_FOLLOWING",
+          "CURVE_SPEED_LIMIT",
+          "OBSTACLE_AHEAD_SLOW",
+          "OBSTACLE_AHEAD_STOP",
+          "OBSTACLE_CLEARED",
+          "LANE_UNCERTAIN_SLOW",
+          "CAMERA_BLACK",
+          "CAMERA_INVALID",
+          "FRAME_STALE",
+          "PERCEPTION_TIMEOUT",
+          "OPERATOR_PAUSE",
+          "OPERATOR_STOP",
+          "ARRIVED_AT_DESTINATION",
+          "CONTROL_CLAMPED",
+          "CONTROL_NAN_REJECTED",
+          "EGO_OUT_OF_BOUNDS",
+          "WALL_TIME_LIMIT",
+          "TICK_LIMIT",
+          "COLLISION_DETECTED_BY_EVALUATOR"
+        ],
+        "title": "ReasonCode",
+        "type": "string"
+      },
+      "RoadEdge": {
+        "properties": {
+          "from": {
+            "title": "From",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "polyline": {
+            "description": "[[x, y], ...] in metres from `from` to `to`.",
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "title": "Polyline",
+            "type": "array"
+          },
+          "to": {
+            "title": "To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "to",
+          "polyline"
+        ],
+        "title": "RoadEdge",
+        "type": "object"
+      },
+      "RoadGraphInfo": {
+        "properties": {
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/RoadEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "frame": {
+            "const": "ENU x-east y-north yaw CCW",
+            "default": "ENU x-east y-north yaw CCW",
+            "title": "Frame",
+            "type": "string"
+          },
+          "lane_width_m": {
+            "exclusiveMinimum": 0.0,
+            "title": "Lane Width M",
+            "type": "number"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/RoadNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "units": {
+            "const": "m",
+            "default": "m",
+            "title": "Units",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nodes",
+          "edges",
+          "lane_width_m",
+          "units",
+          "frame"
+        ],
+        "title": "RoadGraphInfo",
+        "type": "object"
+      },
+      "RoadNode": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label_en": {
+            "title": "Label En",
+            "type": "string"
+          },
+          "label_uz": {
+            "title": "Label Uz",
+            "type": "string"
+          },
+          "reachable_from_default": {
+            "title": "Reachable From Default",
+            "type": "boolean"
+          },
+          "x": {
+            "description": "East coordinate, metres.",
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "description": "North coordinate, metres.",
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "x",
+          "y",
+          "label_uz",
+          "label_en",
+          "reachable_from_default"
+        ],
+        "title": "RoadNode",
+        "type": "object"
+      },
+      "Run": {
+        "properties": {
+          "created_utc": {
+            "format": "date-time",
+            "title": "Created Utc",
+            "type": "string"
+          },
+          "destination_node": {
+            "title": "Destination Node",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "finished_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished Utc"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "live": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunLive"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Latest live state; null before the first frame."
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Terminal outcome, e.g. arrived, stopped_operator, stopped_before_obstacle, stopped_camera_invalid, failed_collision, failed_out_of_bounds, failed_wall_time, failed_tick_limit.",
+            "title": "Outcome"
+          },
+          "perception_source": {
+            "$ref": "#/components/schemas/SimPerceptionSource"
+          },
+          "route": {
+            "$ref": "#/components/schemas/RunRoute"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioId"
+          },
+          "seed": {
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "simulator": {
+            "$ref": "#/components/schemas/SimulatorId"
+          },
+          "start_node": {
+            "title": "Start Node",
+            "type": "string"
+          },
+          "started_utc": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started Utc"
+          },
+          "state": {
+            "$ref": "#/components/schemas/RunState"
+          }
+        },
+        "required": [
+          "id",
+          "state",
+          "outcome",
+          "simulator",
+          "perception_source",
+          "scenario",
+          "seed",
+          "start_node",
+          "destination_node",
+          "route",
+          "created_utc",
+          "started_utc",
+          "finished_utc",
+          "error_code",
+          "error_message",
+          "live"
+        ],
+        "title": "Run",
+        "type": "object"
+      },
+      "RunAction": {
+        "enum": [
+          "pause",
+          "resume",
+          "stop"
+        ],
+        "type": "string"
+      },
+      "RunControl": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/RunAction"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "RunControl",
+        "type": "object"
+      },
+      "RunCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "destination_node": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Destination Node",
+            "type": "string"
+          },
+          "perception_source": {
+            "$ref": "#/components/schemas/SimPerceptionSource",
+            "default": "synthetic_rgb_cv"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioId",
+            "default": "normal"
+          },
+          "seed": {
+            "default": 42,
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "simulator": {
+            "$ref": "#/components/schemas/SimulatorId",
+            "default": "lite"
+          },
+          "start_node": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Start Node",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_node",
+          "destination_node"
+        ],
+        "title": "RunCreate",
+        "type": "object"
+      },
+      "RunList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Run"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "RunList",
+        "type": "object"
+      },
+      "RunLive": {
+        "properties": {
+          "acquisition_age_s": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acquisition Age S"
+          },
+          "command": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiveCommand"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decision": {
+            "$ref": "#/components/schemas/LiveDecision"
+          },
+          "decision_basis": {
+            "description": "Inputs evaluated for this frame's decision, in pipeline order (frame checks, perception checks, ego/limits, FSM, controller, command).",
+            "items": {
+              "$ref": "#/components/schemas/DecisionBasisItem"
+            },
+            "title": "Decision Basis",
+            "type": "array"
+          },
+          "ego": {
+            "$ref": "#/components/schemas/LiveEgo"
+          },
+          "frame_id": {
+            "minimum": 0.0,
+            "title": "Frame Id",
+            "type": "integer"
+          },
+          "maneuver": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LiveManeuver"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Current maneuver; null for live states recorded before this field existed."
+          },
+          "perception": {
+            "$ref": "#/components/schemas/LivePerception"
+          },
+          "realtime_factor": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Measured sim time / wall time.",
+            "title": "Realtime Factor"
+          },
+          "route_progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Route Progress",
+            "type": "number"
+          },
+          "sim_time_s": {
+            "minimum": 0.0,
+            "title": "Sim Time S",
+            "type": "number"
+          },
+          "wall_time_s": {
+            "minimum": 0.0,
+            "title": "Wall Time S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "frame_id",
+          "sim_time_s",
+          "wall_time_s",
+          "realtime_factor",
+          "ego",
+          "decision",
+          "command",
+          "perception",
+          "route_progress",
+          "acquisition_age_s",
+          "maneuver",
+          "decision_basis"
+        ],
+        "title": "RunLive",
+        "type": "object"
+      },
+      "RunReportResponse": {
+        "additionalProperties": false,
+        "description": "contracts/run-report.schema.json plus run-specific ``details`` (command summary, decision counts, ...).",
+        "properties": {
+          "code_commit": {
+            "pattern": "^[a-f0-9]{40,64}$",
+            "title": "Code Commit",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "evaluation_truth_used": {
+            "title": "Evaluation Truth Used",
+            "type": "boolean"
+          },
+          "generated_utc": {
+            "format": "date-time",
+            "title": "Generated Utc",
+            "type": "string"
+          },
+          "input_manifest_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Manifest Sha256"
+          },
+          "kind": {
+            "enum": [
+              "video_analysis",
+              "simulation",
+              "evaluation"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Metric"
+            },
+            "title": "Metrics",
+            "type": "object"
+          },
+          "model_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Sha256"
+          },
+          "perception_source": {
+            "enum": [
+              "learned_model",
+              "synthetic_rgb_cv",
+              "classical_lane_fallback",
+              "unavailable"
+            ],
+            "title": "Perception Source",
+            "type": "string"
+          },
+          "run_id": {
+            "minLength": 1,
+            "title": "Run Id",
+            "type": "string"
+          },
+          "runtime_used_dynamic_ground_truth": {
+            "const": false,
+            "default": false,
+            "title": "Runtime Used Dynamic Ground Truth",
+            "type": "boolean"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "succeeded",
+              "failed",
+              "cancelled",
+              "interrupted",
+              "stopped",
+              "arrived"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "run_id",
+          "kind",
+          "status",
+          "perception_source",
+          "code_commit",
+          "model_sha256",
+          "input_manifest_sha256",
+          "generated_utc",
+          "metrics",
+          "limitations",
+          "evaluation_truth_used",
+          "runtime_used_dynamic_ground_truth",
+          "details"
+        ],
+        "title": "RunReportResponse",
+        "type": "object"
+      },
+      "RunRoute": {
+        "properties": {
+          "length_m": {
+            "minimum": 0.0,
+            "title": "Length M",
+            "type": "number"
+          },
+          "node_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Node Ids",
+            "type": "array"
+          },
+          "polyline": {
+            "description": "Lane-centre path [[x, y], ...] in metres.",
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "title": "Polyline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "node_ids",
+          "polyline",
+          "length_m"
+        ],
+        "title": "RunRoute",
+        "type": "object"
+      },
+      "RunState": {
+        "enum": [
+          "initializing",
+          "running",
+          "paused",
+          "stopping",
+          "stopped",
+          "arrived",
+          "failed"
+        ],
+        "type": "string"
+      },
+      "RunStatePayload": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "run_state",
+            "default": "run_state",
+            "title": "Kind",
+            "type": "string"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "state"
+        ],
+        "title": "RunStatePayload",
+        "type": "object"
+      },
+      "ScenarioId": {
+        "enum": [
+          "normal",
+          "bend",
+          "obstacle_stop",
+          "camera_blackout",
+          "stale_frame",
+          "pause_resume"
+        ],
+        "type": "string"
+      },
+      "ScenarioInfo": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "id": {
+            "$ref": "#/components/schemas/ScenarioId"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "id",
+          "available",
+          "reason"
+        ],
+        "title": "ScenarioInfo",
+        "type": "object"
+      },
+      "SessionCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "admin_password": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Operator login; omit for an anonymous session.",
+            "title": "Admin Password"
+          }
+        },
+        "title": "SessionCreate",
+        "type": "object"
+      },
+      "SessionInfo": {
+        "properties": {
+          "csrf_token": {
+            "description": "Send as X-CSRF-Token on every POST/DELETE except POST /session.",
+            "title": "Csrf Token",
+            "type": "string"
+          },
+          "expires_utc": {
+            "format": "date-time",
+            "title": "Expires Utc",
+            "type": "string"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/Limits"
+          },
+          "role": {
+            "$ref": "#/components/schemas/SessionRole"
+          },
+          "session_id_suffix": {
+            "description": "Last characters of the session id, for display/support only.",
+            "title": "Session Id Suffix",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id_suffix",
+          "role",
+          "csrf_token",
+          "expires_utc",
+          "limits"
+        ],
+        "title": "SessionInfo",
+        "type": "object"
+      },
+      "SessionRole": {
+        "enum": [
+          "anonymous",
+          "operator"
+        ],
+        "type": "string"
+      },
+      "SimPerceptionSource": {
+        "enum": [
+          "synthetic_rgb_cv",
+          "learned_model"
+        ],
+        "type": "string"
+      },
+      "SimulationCapability": {
+        "properties": {
+          "simulators": {
+            "items": {
+              "$ref": "#/components/schemas/Simulator"
+            },
+            "title": "Simulators",
+            "type": "array"
+          }
+        },
+        "required": [
+          "simulators"
+        ],
+        "title": "SimulationCapability",
+        "type": "object"
+      },
+      "Simulator": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "default_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Start"
+          },
+          "id": {
+            "$ref": "#/components/schemas/SimulatorId"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "perception_modes": {
+            "items": {
+              "$ref": "#/components/schemas/PerceptionModeInfo"
+            },
+            "title": "Perception Modes",
+            "type": "array"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "road_graph": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoadGraphInfo"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when the simulator is unavailable."
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioInfo"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "available",
+          "reason",
+          "perception_modes",
+          "scenarios",
+          "road_graph",
+          "default_start"
+        ],
+        "title": "Simulator",
+        "type": "object"
+      },
+      "SimulatorId": {
+        "enum": [
+          "lite",
+          "carla"
+        ],
+        "type": "string"
+      },
+      "SimulatorList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Simulator"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "SimulatorList",
+        "type": "object"
+      },
+      "TrackSummary": {
+        "properties": {
+          "class_name": {
+            "title": "Class Name",
+            "type": "string"
+          },
+          "first_t": {
+            "description": "First video PTS (seconds) the track was seen.",
+            "minimum": 0.0,
+            "title": "First T",
+            "type": "number"
+          },
+          "frames": {
+            "minimum": 1.0,
+            "title": "Frames",
+            "type": "integer"
+          },
+          "last_t": {
+            "description": "Last video PTS (seconds) the track was seen.",
+            "minimum": 0.0,
+            "title": "Last T",
+            "type": "number"
+          },
+          "max_score": {
+            "description": "Highest detector confidence (not a safety probability).",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Max Score",
+            "type": "number"
+          },
+          "track_id": {
+            "minimum": 0.0,
+            "title": "Track Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "track_id",
+          "class_name",
+          "first_t",
+          "last_t",
+          "frames",
+          "max_score"
+        ],
+        "title": "TrackSummary",
+        "type": "object"
+      },
+      "VideoAnalysisCapability": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "precision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precision"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why video analysis is unavailable (e.g. model_missing).",
+            "title": "Reason"
+          },
+          "supported_classes": {
+            "description": "Classes the verified checkpoint can report.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Classes",
+            "type": "array"
+          },
+          "unsupported_examples": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unsupported Examples",
+            "type": "array"
+          }
+        },
+        "required": [
+          "available",
+          "reason",
+          "model",
+          "device",
+          "precision",
+          "supported_classes",
+          "unsupported_examples"
+        ],
+        "title": "VideoAnalysisCapability",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "SessionCookie": {
+        "description": "Signed, HttpOnly session cookie set by POST /api/v1/session.",
+        "in": "cookie",
+        "name": "dd_session",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "DreamDrive simulation prototype API: uploaded-video perception analysis (observation only, no actuation) and simulator-only closed-loop driving. Every perception and command is tagged with its source and mode. Errors use the ErrorEnvelope schema.",
+    "title": "DreamDrive API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/admin/cleanup": {
+      "post": {
+        "description": "Removes expired artifact bytes and their database references.",
+        "operationId": "run_cleanup",
+        "parameters": [
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CleanupResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Run retention cleanup now (operator role)",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/capabilities": {
+      "get": {
+        "description": "Unavailable features are reported with `available=false` and a reason, never hidden or faked.",
+        "operationId": "get_capabilities",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Required service or model not ready (`model_not_ready`, `service_unavailable`, ...)"
+          }
+        },
+        "summary": "System capabilities",
+        "tags": [
+          "capabilities"
+        ]
+      }
+    },
+    "/api/v1/evaluations": {
+      "get": {
+        "description": "Only real evaluation artifacts; an empty list is returned (and explained by the UI) when none exist.",
+        "operationId": "list_evaluations",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "List evaluation runs",
+        "tags": [
+          "evaluations"
+        ]
+      },
+      "post": {
+        "description": "202 with the queued evaluation. 429 `evaluation_busy`/`simulation_busy`/`rate_limited`.",
+        "operationId": "create_evaluation",
+        "parameters": [
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit or queue admission denied (`rate_limited`, `*_queue_full`, `*_busy`); see Retry-After"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Required service or model not ready (`model_not_ready`, `service_unavailable`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Start a synthetic scenario suite",
+        "tags": [
+          "evaluations"
+        ]
+      }
+    },
+    "/api/v1/evaluations/{evaluation_id}": {
+      "get": {
+        "operationId": "get_evaluation",
+        "parameters": [
+          {
+            "description": "Evaluation id.",
+            "in": "path",
+            "name": "evaluation_id",
+            "required": true,
+            "schema": {
+              "description": "Evaluation id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Evaluation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Evaluation details and metrics",
+        "tags": [
+          "evaluations"
+        ]
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "operationId": "stream_events",
+        "parameters": [
+          {
+            "description": "Resume after this id (used when the header cannot be set).",
+            "in": "query",
+            "name": "last_event_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{1,20}-\\d{1,20}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Resume after this id (used when the header cannot be set).",
+              "title": "Last Event Id"
+            }
+          },
+          {
+            "description": "Resume after this id.",
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{1,20}-\\d{1,20}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Resume after this id.",
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventEnvelope"
+                }
+              }
+            },
+            "description": "SSE stream. Each message: `event: <type>`, `id: <stream id>`, `data: <EventEnvelope JSON>`; a `: ping` comment every 15 s. Missed camera frames are not replayed; resync via REST."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Required service or model not ready (`model_not_ready`, `service_unavailable`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Server-Sent Events for the caller's jobs and runs",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/api/v1/jobs": {
+      "get": {
+        "description": "Newest first, bounded page size.",
+        "operationId": "list_jobs",
+        "parameters": [
+          {
+            "description": "Maximum items per page.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Maximum items per page.",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Opaque cursor from a previous page.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Opaque cursor from a previous page.",
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "List the caller's jobs",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{job_id}": {
+      "delete": {
+        "description": "In-progress jobs are cancelled first and their bytes removed once the worker stops.",
+        "operationId": "delete_job",
+        "parameters": [
+          {
+            "description": "Video job id.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "description": "Video job id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Delete a job and its bytes (idempotent)",
+        "tags": [
+          "jobs"
+        ]
+      },
+      "get": {
+        "operationId": "get_job",
+        "parameters": [
+          {
+            "description": "Video job id.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "description": "Video job id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Job state, progress, error and model identity",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{job_id}/artifacts/{name}": {
+      "get": {
+        "description": "Only allowlisted names; owner-checked. 409 `artifact_unavailable` while the job has not produced it.",
+        "operationId": "get_job_artifact",
+        "parameters": [
+          {
+            "description": "Video job id.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "description": "Video job id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "enum": [
+                "input",
+                "annotated.mp4",
+                "timeline.json",
+                "report.json",
+                "report.html",
+                "poster.jpg"
+              ],
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Range",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "video/mp4": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "video/quicktime": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Artifact bytes",
+            "headers": {
+              "Accept-Ranges": {
+                "description": "bytes",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "206": {
+            "content": {
+              "video/mp4": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "video/quicktime": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Partial content for a satisfiable Range request",
+            "headers": {
+              "Content-Range": {
+                "description": "bytes start-end/total",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflicting resource state"
+          },
+          "416": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Requested byte range not satisfiable (`range_not_satisfiable`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Download an allowlisted artifact (byte ranges supported)",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{job_id}/cancel": {
+      "post": {
+        "description": "Queued jobs become `cancelled`; running jobs become `cancelling` until the worker stops between frames.\nTerminal jobs are returned unchanged.",
+        "operationId": "cancel_job",
+        "parameters": [
+          {
+            "description": "Video job id.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "description": "Video job id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Request cancellation (idempotent)",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{job_id}/results": {
+      "get": {
+        "description": "409 `results_unavailable` until the job has succeeded.",
+        "operationId": "get_job_results",
+        "parameters": [
+          {
+            "description": "Video job id.",
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "description": "Video job id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResults"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflicting resource state"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Structured result summary and artifact links",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/runs": {
+      "get": {
+        "description": "Newest first; lets the UI re-attach to an active run after reload.",
+        "operationId": "list_runs",
+        "parameters": [
+          {
+            "description": "Maximum items per page.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Maximum items per page.",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Opaque cursor from a previous page.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Opaque cursor from a previous page.",
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "List the caller's runs",
+        "tags": [
+          "runs"
+        ]
+      },
+      "post": {
+        "description": "202 with the run in `initializing`.\n\n422: `unknown_node`, `destination_unreachable`, `unsupported_mode`, `unsupported_scenario`.\n429: `simulation_busy`, `rate_limited`. 503: `simulator_unavailable`.",
+        "operationId": "create_run",
+        "parameters": [
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit or queue admission denied (`rate_limited`, `*_queue_full`, `*_busy`); see Retry-After"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Required service or model not ready (`model_not_ready`, `service_unavailable`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Start a simulation run",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}": {
+      "get": {
+        "operationId": "get_run",
+        "parameters": [
+          {
+            "description": "Simulation run id.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "description": "Simulation run id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Run state, ego telemetry, decision, command and metadata",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/control": {
+      "post": {
+        "description": "Stop after a terminal state returns that state unchanged and never starts another run.\n409 `invalid_transition` for pause/resume on a terminal run.",
+        "operationId": "control_run",
+        "parameters": [
+          {
+            "description": "Simulation run id.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "description": "Simulation run id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunControl"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflicting resource state"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Pause, resume or stop (idempotent transitions)",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/frame": {
+      "get": {
+        "operationId": "get_run_frame",
+        "parameters": [
+          {
+            "description": "Simulation run id.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "description": "Simulation run id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The exact RGB frame perception consumed, JPEG-encoded",
+            "headers": {
+              "Cache-Control": {
+                "description": "no-store",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Frame-Id": {
+                "description": "Simulator frame id of this exact image.",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-Perception-Source": {
+                "description": "Perception source that consumed it.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Sim-Time": {
+                "description": "Simulation time of the frame in seconds.",
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No frame captured yet"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Latest actual camera JPEG (no cache)",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/obstacles": {
+      "post": {
+        "description": "409 `run_not_active` unless running/paused; 409 `obstacle_limit_reached` after the per-run maximum.",
+        "operationId": "inject_obstacle",
+        "parameters": [
+          {
+            "description": "Simulation run id.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "description": "Simulation run id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObstacleInject"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObstacleInjectResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflicting resource state"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Inject a synthetic visual obstacle (scenario injection only)",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/runs/{run_id}/report": {
+      "get": {
+        "description": "409 `report_unavailable` while the run is not terminal.",
+        "operationId": "get_run_report",
+        "parameters": [
+          {
+            "description": "Simulation run id.",
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "description": "Simulation run id.",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunReportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found or not owned by this session (`not_found`)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflicting resource state"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Measured run report",
+        "tags": [
+          "runs"
+        ]
+      }
+    },
+    "/api/v1/session": {
+      "post": {
+        "description": "Sets the HttpOnly `dd_session` cookie and the JS-readable `dd_csrf` cookie.\n\nWith `admin_password`: 401 `invalid_credentials` on mismatch, 403 `operator_login_disabled` when no\noperator password is configured. No CSRF header is required for this endpoint.",
+        "operationId": "create_session",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SessionCreate"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit or queue admission denied (`rate_limited`, `*_queue_full`, `*_busy`); see Retry-After"
+          }
+        },
+        "summary": "Create or refresh the session",
+        "tags": [
+          "session"
+        ]
+      }
+    },
+    "/api/v1/simulators": {
+      "get": {
+        "operationId": "list_simulators",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulatorList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Supported simulators, perception modes, scenarios and road graphs",
+        "tags": [
+          "simulators"
+        ]
+      }
+    },
+    "/api/v1/videos": {
+      "post": {
+        "description": "202 with the queued job.\n\nErrors: 413 `upload_too_large`, 415 `unsupported_media_type`, 422 `upload_empty`/`video_*`,\n429 `rate_limited`/`session_queue_full`/`queue_full`, 503 `model_not_ready`.",
+        "operationId": "upload_video",
+        "parameters": [
+          {
+            "description": "CSRF token returned by POST /api/v1/session.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 256,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CSRF token returned by POST /api/v1/session.",
+              "title": "X-Csrf-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_video"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Session required (`session_required`)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "CSRF token invalid (`csrf_failed`) or operator role required (`operator_required`)"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Upload exceeds the configured size limit (`upload_too_large`)"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unsupported media type (`unsupported_media_type`)"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation failed or unsupported mode/scenario (`validation_error`, `unsupported_*`, ...)"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit or queue admission denied (`rate_limited`, `*_queue_full`, `*_busy`); see Retry-After"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Required service or model not ready (`model_not_ready`, `service_unavailable`, ...)"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Upload a video for analysis",
+        "tags": [
+          "videos"
+        ]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "health_live",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "API process liveness",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "description": "200 when SQLite and Redis are reachable, 503 with the same body shape otherwise.",
+        "operationId": "health_ready",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            },
+            "description": "A required dependency (database/queue) is not ready."
+          }
+        },
+        "summary": "Database and queue readiness",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "description": "Liveness and dependency readiness.",
+      "name": "health"
+    },
+    {
+      "description": "Anonymous signed sessions and operator login.",
+      "name": "session"
+    },
+    {
+      "description": "Model, device, classes, simulator modes, queue and limits.",
+      "name": "capabilities"
+    },
+    {
+      "description": "Video upload into the analysis queue.",
+      "name": "videos"
+    },
+    {
+      "description": "Video analysis jobs, results and artifacts.",
+      "name": "jobs"
+    },
+    {
+      "description": "Simulator adapters, perception modes, scenarios and road graphs.",
+      "name": "simulators"
+    },
+    {
+      "description": "Simulator-only closed-loop runs.",
+      "name": "runs"
+    },
+    {
+      "description": "Evaluation artifacts with real sample counts.",
+      "name": "evaluations"
+    },
+    {
+      "description": "Server-Sent Events.",
+      "name": "events"
+    },
+    {
+      "description": "Operator-only maintenance.",
+      "name": "admin"
+    }
+  ]
+}

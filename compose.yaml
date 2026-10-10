@@ -1,0 +1,379 @@
+# DreamDrive local stack (CPU default). Requires only Docker Engine + Compose v2.24+; no host Python/Node/GPU.
+#
+#   make init-env   # creates .env with generated secrets (never printed)
+#   make up         # builds images, runs volume-init + model-init, starts the stack
+#   open http://127.0.0.1:${DD_HTTP_PORT:-8080}
+#
+# Overrides: compose.gpu.yaml (CUDA inference), compose.ops.yaml (Prometheus/Grafana/MLflow on loopback),
+# compose.test.yaml (test images; profile "test"). Production uses compose.prod.yaml (registry digests only).
+# Only the gateway publishes a host port, and only on 127.0.0.1.
+name: dreamdrive
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-build-args: &build-args
+  GIT_COMMIT: ${GIT_COMMIT:-unknown}
+  BUILD_VERSION: ${BUILD_VERSION:-dev}
+  BUILD_DIRTY: ${BUILD_DIRTY:-0}
+
+x-backend-build: &backend-build
+  context: .
+  dockerfile: backend/Dockerfile
+  target: runtime
+  args: *build-args
+
+x-inference-build: &inference-build
+  context: .
+  dockerfile: inference/Dockerfile
+  target: runtime
+  args: *build-args
+
+# Runtime settings shared by api and worker (names: docs/IMPLEMENTATION_SPEC.md section 3.1).
+# Storage/queue locations are fixed to the named volumes and internal service names on purpose.
+# GIT_COMMIT/BUILD_VERSION/BUILD_DIRTY are baked into the image at build time and are NOT overridden here.
+x-backend-env: &backend-env
+  APP_ENV: ${APP_ENV:-development}
+  APP_SECRET: ${APP_SECRET:-}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+  PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:${DD_HTTP_PORT:-8080}}
+  DEFAULT_LOCALE: ${DEFAULT_LOCALE:-uz}
+  MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-104857600}
+  MAX_VIDEO_SECONDS: ${MAX_VIDEO_SECONDS:-120}
+  MAX_VIDEO_WIDTH: ${MAX_VIDEO_WIDTH:-1920}
+  MAX_VIDEO_HEIGHT: ${MAX_VIDEO_HEIGHT:-1080}
+  MAX_QUEUED_PER_SESSION: ${MAX_QUEUED_PER_SESSION:-2}
+  MAX_QUEUED_TOTAL: ${MAX_QUEUED_TOTAL:-10}
+  MAX_REQUESTS_PER_MINUTE: ${MAX_REQUESTS_PER_MINUTE:-10}
+  MAX_SIMULATION_WALL_SECONDS: ${MAX_SIMULATION_WALL_SECONDS:-120}
+  ARTIFACT_RETENTION_HOURS: ${ARTIFACT_RETENTION_HOURS:-24}
+  ANALYSIS_FPS: ${ANALYSIS_FPS:-5}
+  INFERENCE_CONF_THRESHOLD: ${INFERENCE_CONF_THRESHOLD:-0.1}
+  INFERENCE_BASE_URL: http://inference:8001
+  INFERENCE_TIMEOUT_SECONDS: ${INFERENCE_TIMEOUT_SECONDS:-30}
+  SIM_INFERENCE_TIMEOUT_SECONDS: ${SIM_INFERENCE_TIMEOUT_SECONDS:-5}
+  SIMULATOR: ${SIMULATOR:-lite}
+  SIM_PERCEPTION_SOURCE: ${SIM_PERCEPTION_SOURCE:-synthetic_rgb_cv}
+  SIM_FIXED_DT_SECONDS: ${SIM_FIXED_DT_SECONDS:-0.05}
+  LEARNED_SIM_MODE_ENABLED: ${LEARNED_SIM_MODE_ENABLED:-false}
+  CARLA_HOST: ${CARLA_HOST:-}
+  REDIS_URL: redis://redis:6379/0
+  SQLITE_PATH: /data/dreamdrive.db
+  DATA_ROOT: /data
+  ARTIFACT_ROOT: /data/artifacts
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  WORKER_METRICS_PORT: "9101"
+  ENABLE_MLFLOW: ${ENABLE_MLFLOW:-false}
+  MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-http://mlflow:5000}
+  # uvicorn honours X-Forwarded-For/-Proto only from these peers. The API has no host port and is reachable
+  # only through the gateway on the internal network, which overwrites client-supplied forwarding headers.
+  FORWARDED_ALLOW_IPS: "*"
+
+x-inference-env: &inference-env
+  MODEL_ROOT: /models
+  MODEL_MANIFEST_PATH: /app/config/models.resolved.yaml
+  INFERENCE_DEVICE: ${INFERENCE_DEVICE:-cpu}
+  INFERENCE_PRECISION: ${INFERENCE_PRECISION:-fp32}
+  INFERENCE_MAX_WAITERS: ${INFERENCE_MAX_WAITERS:-4}
+  INFERENCE_MAX_IMAGE_BYTES: ${INFERENCE_MAX_IMAGE_BYTES:-8388608}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  # Match torch intra-op threads to the CPU limit below instead of every host core.
+  OMP_NUM_THREADS: ${INFERENCE_CPUS:-4}
+  MKL_NUM_THREADS: ${INFERENCE_CPUS:-4}
+
+services:
+  # One-shot: make named volumes writable for the non-root runtime uid 10001. Dockerfiles also create these
+  # directories with the right owner (volume copy-up), this covers volumes created earlier or restored by root.
+  volume-init:
+    image: dreamdrive-backend:${DD_TAG:-dev}
+    build: *backend-build
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -eu
+        mkdir -p /vol/data/artifacts /vol/data/tmp /vol/data/evaluations
+        # Every volume mounted under /vol (overrides such as compose.ops.yaml add more) is handed to 10001.
+        for d in /vol/*/; do
+          find "$$d" -xdev \( ! -user 10001 -o ! -group 10001 \) -exec chown -h 10001:10001 {} +
+        done
+        echo "volume-init: named volumes owned by 10001:10001"
+    volumes:
+      - app-data:/vol/data
+      - model-cache:/vol/models
+      - caddy-data:/vol/caddy-data
+      - caddy-config:/vol/caddy-config
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
+    security_opt: ["no-new-privileges:true"]
+    restart: "no"
+    logging: *default-logging
+
+  # One-shot: download the pinned checkpoint, verify size + SHA256 against config/models.resolved.yaml, atomic
+  # rename into the model-cache volume. Exits 0 immediately when the cached file already verifies.
+  model-init:
+    image: dreamdrive-inference:${DD_TAG:-dev}
+    build: *inference-build
+    command: ["python", "-m", "app.model_init"]
+    user: "10001:10001"
+    environment: *inference-env
+    volumes:
+      - model-cache:/models
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+    networks: [egress]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512m
+    restart: "no"
+    logging: *default-logging
+
+  inference:
+    image: dreamdrive-inference:${DD_TAG:-dev}
+    build: *inference-build
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1"]
+    user: "10001:10001"
+    init: true
+    environment: *inference-env
+    volumes:
+      - model-cache:/models:ro
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      # Ready only after the checkpoint verified, loaded and passed a warm-up forward pass.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health/ready', timeout=5)"]
+      interval: 15s
+      timeout: 8s
+      retries: 3
+      start_period: 180s
+      start_interval: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "${INFERENCE_CPUS:-4}"
+          memory: 3g
+          pids: 512
+    restart: unless-stopped
+    stop_grace_period: 20s
+    logging: *default-logging
+
+  redis:
+    image: redis:7.4-alpine
+    # Run directly as the image's redis user (no root entrypoint chown); /data is owned by it in the image,
+    # so the empty named volume is copied up with that ownership.
+    user: "999:1000"
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - noeviction
+      - --protected-mode
+      - "no"
+    volumes:
+      - redis-data:/data
+    networks: [internal]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384m
+    restart: unless-stopped
+    logging: *default-logging
+
+  api:
+    image: dreamdrive-backend:${DD_TAG:-dev}
+    build: *backend-build
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    user: "10001:10001"
+    init: true
+    environment: *backend-env
+    volumes:
+      - app-data:/data
+    # The API does not wait for inference: without a ready model it stays live and reports
+    # capabilities.video_analysis=false with a reason (docs/ARCHITECTURE.md).
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      # Multipart uploads spool here before the API moves them into /data.
+      - /tmp:size=512m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+      start_interval: 2s
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1g
+          pids: 256
+    restart: unless-stopped
+    stop_grace_period: 15s
+    logging: *default-logging
+
+  worker:
+    image: dreamdrive-backend:${DD_TAG:-dev}
+    build: *backend-build
+    command: ["python", "-m", "app.jobs.worker_main"]
+    user: "10001:10001"
+    init: true
+    environment: *backend-env
+    volumes:
+      - app-data:/data
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      api:
+        # api applies the SQLite migrations at start-up.
+        condition: service_healthy
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      # Worker metrics server (WORKER_METRICS_PORT) runs in the worker main process.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9101/metrics', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 30s
+      start_interval: 2s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2g
+          pids: 512
+    restart: unless-stopped
+    # Give an active job time to persist its interrupted/cancelled state.
+    stop_grace_period: 60s
+    logging: *default-logging
+
+  web:
+    image: dreamdrive-web:${DD_TAG:-dev}
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: web
+      args: *build-args
+    networks: [internal]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128m
+    restart: unless-stopped
+    logging: *default-logging
+
+  gateway:
+    image: caddy:2.10-alpine
+    user: "10001:10001"
+    volumes:
+      - ./deploy/caddy:/etc/caddy:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    ports:
+      - "127.0.0.1:${DD_HTTP_PORT:-8080}:8080"
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    networks: [internal, edge]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop: [ALL]
+    # The caddy binary carries a file capability (cap_net_bind_service); exec fails if it is not in the
+    # bounding set, even though :8080 does not need it.
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/gateway/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+    restart: unless-stopped
+    logging: *default-logging
+
+networks:
+  # No internet access: api, worker, redis, inference and web only talk to each other.
+  internal:
+    internal: true
+  # Host-facing bridge for the published gateway port.
+  edge: {}
+  # Outbound access for model-init (checkpoint download) only.
+  egress: {}
+
+volumes:
+  app-data: {}
+  model-cache: {}
+  redis-data: {}
+  caddy-data: {}
+  caddy-config: {}

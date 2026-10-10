@@ -15,6 +15,20 @@ here conflicts with those documents, those documents win on *policy*; this file 
   `DreamDrive_Claude_Kit/`, `**/.venv`, `frontend/dist`.
 - Two Python packages are both named `app` (`backend/app`, `inference/app`). They never share an interpreter. Backend tests
   run in the backend `test` image, inference tests in the inference `test` image.
+- Image filesystem layout mirrors the repository under `/app`: `/app/backend` (WORKDIR of backend images, package `app`),
+  `/app/inference` (WORKDIR of inference images), `/app/config`, `/app/contracts`, `/app/tests` (test targets only).
+  Code finds repo files relative to its package (`Path(__file__).resolve().parents[N]`), never via absolute dev paths.
+- Shared cross-component call signatures:
+  - `app.perception.client.InferenceClient(base_url: str, timeout_s: float)` with `.model_info() -> ModelInfo`,
+    `.ready() -> bool`, `.infer(image_bytes: bytes, frame_id: int, content_type="image/jpeg", conf_threshold=0.1,
+    include_masks=True) -> InferenceResult`; raises `InferenceUnavailable`, `InferenceBusy`, `InferenceTimeout`,
+    `InferenceError` (all subclasses of `InferenceClientError`). Models from `app.schemas.inference`.
+  - `app.video.pipeline.run_video_analysis(job_id, input_path, out_dir, client, settings, progress_cb, cancel_check)
+    -> dict` (summary as in `JobResults.summary`); raises `app.video.errors.VideoError(code, message)` and
+    `app.video.errors.JobCancelled`.
+  - `app.evaluation.scenario_suite.run_scenario_suite(seeds: list[int], out_dir: Path, code_commit: str,
+    progress_cb=None) -> dict` (an `Evaluation` dict, see §3.4) and `app.evaluation.registry.list_evaluations(root: Path)
+    -> list[dict]`, `load_evaluation(root, eval_id) -> dict | None`.
 
 ## 1. Services
 | Service | Image | Port (internal) | Command |
@@ -75,6 +89,35 @@ Boxes: subtract pad, divide by scale, clip to image. Masks: crop canvas by pad, 
 on probabilities, then drivable = argmax(ch)==1, lane = prob>=0.5. Class ids not in class_map → `unverified_class_<id>`.
 Tests must prove: 1280x720 inversion equals upstream `driving_area_mask/lane_line_mask`; boxes on a padded synthetic
 image map back to the correct original pixels for at least landscape, portrait and 4:3 inputs.
+
+### 2.1 Second detector: RF-DETR Nano (owner request 2026-10-10: person, traffic light, stop sign)
+YOLOPv2's checkpoint detects only `vehicle` (class 3). The owner asked for people, traffic lights and signs, which is
+the documented trigger for the conditional extra detector (docs/ML_PIPELINE.md). Decision recorded in docs/DECISIONS.md.
+- Model: RF-DETR-N (rfdetr 1.11.2, git tag `7433d5919d0f7e72cc6cb78663e0a731afd499e0`, Apache 2.0 per README model
+  table), checkpoint `https://storage.googleapis.com/rfdetr/nano_coco/checkpoint_best_regular.pth`, 366,287,238 bytes,
+  publisher MD5 `fb6504cce7fbdc783f7a46991f07639f` (matched), SHA256
+  `d8d6b9ee57d4d0ed2b1f305163624712a0532cb7bce0c747317984fc5457440d`. COCO-pretrained, 384x384 input.
+- Same inference service, loaded once beside YOLOPv2; both models run on every `/v1/infer` frame; one lock.
+- Enabled RF-DETR classes and DreamDrive class ids (`100 + COCO category id`): person 101, bicycle 102, motorcycle 104,
+  bus 106, truck 108, traffic_light 110, stop_sign 113. COCO `car` is not enabled (YOLOPv2 `vehicle` covers cars,
+  in-domain BDD100K). A bus/truck box with IoU ≥ 0.5 to a YOLOPv2 vehicle replaces that vehicle box (class refinement);
+  the response records `refined_from_model`.
+- Wire additions (additive, backward compatible): `InferenceResult.models: list[ModelIdentity]` (every model that ran),
+  `InferenceResult.ensemble_id` (`"yolopv2+rfdetr_nano"`), `InferenceResult.ensemble_sha256` = sha256 of the UTF-8 text
+  `"yolopv2:<sha256>\nrfdetr_nano:<sha256>\n"`; `RawDetection.model_id` (`"yolopv2"` | `"rfdetr_nano"`).
+  `ModelInfo` gains `models: list[...]` with each model's identity, class map and readiness.
+- WorldState `perception.model_id` = ensemble id and `perception.model_sha256` = ensemble sha256 when both ran;
+  reports list each checkpoint SHA256 in `details`/limitations. If RF-DETR is not ready the service reports
+  `ready=false` (both models are required for the release configuration; no silent single-model fallback).
+- Traffic-light colour: a classical HSV classifier on each `traffic_light` crop → `red|yellow|green|unknown`, stored as
+  `light_state` in timeline extras and reason codes `TRAFFIC_LIGHT_RED_HEURISTIC` etc. It is a heuristic, never labelled
+  as model output.
+- New reason codes: `PERSON_IN_CORRIDOR_NEAR, PERSON_IN_CORRIDOR, TWO_WHEELER_IN_CORRIDOR, TRAFFIC_LIGHT_VISIBLE,
+  TRAFFIC_LIGHT_RED_HEURISTIC, TRAFFIC_LIGHT_YELLOW_HEURISTIC, TRAFFIC_LIGHT_GREEN_HEURISTIC, STOP_SIGN_VISIBLE`.
+- Accuracy: COCO val2017 street-scene subset (annotations CC BY 4.0; per-image Flickr licences recorded), evaluated
+  through the production `/v1/infer` path; per-class AP50 and AP50:95 with image/instance counts → Evaluation
+  `kind=video_ml_accuracy`. YOLOPv2 `vehicle` is scored against COCO car+bus+truck as a cross-dataset check. Lane and
+  drivable-area accuracy stay `not_evaluated` (no openly licensed labels; BDD100K requires owner registration).
 
 ## 3. Backend package (`backend/app`)
 ```

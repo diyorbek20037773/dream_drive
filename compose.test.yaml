@@ -1,0 +1,149 @@
+# Test images and one-shot test runners (profile "test": never started by `docker compose up`).
+# Used by the Makefile / scripts/qa.sh, always together with compose.yaml so runners share its networks/volumes:
+#   docker compose -f compose.yaml -f compose.test.yaml --profile test run --rm backend-test python -m pytest ...
+# DD_EVIDENCE_DIR (relative to the repo) receives junit XML, reports and screenshots.
+x-test-build-args: &test-build-args
+  GIT_COMMIT: ${GIT_COMMIT:-unknown}
+  BUILD_VERSION: ${BUILD_VERSION:-dev}
+  BUILD_DIRTY: ${BUILD_DIRTY:-0}
+
+services:
+  backend-test:
+    image: dreamdrive-backend-test:${DD_TAG:-dev}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: test
+      args: *test-build-args
+    profiles: ["test"]
+    user: "10001:10001"
+    working_dir: /app/backend
+    environment:
+      APP_ENV: test
+      DD_REQUIRE_LIVE: ${DD_REQUIRE_LIVE:-0}
+      DD_EVIDENCE_DIR: /evidence
+      # Live endpoints on the compose network (integration/security/eval tests).
+      DD_GATEWAY_URL: http://gateway:8080
+      DD_API_BASE_URL: http://gateway:8080
+      DD_API_URL: http://api:8000
+      INFERENCE_BASE_URL: http://inference:8001
+      # Live learned-model simulator validation (tests/scenarios) talks to the real inference service.
+      DD_INFERENCE_URL: http://inference:8001
+      # A separate Redis database so tests never touch the application's queues (db 0).
+      DD_TEST_REDIS_URL: redis://redis:6379/15
+      # Licensed clip from scripts/fetch_fixtures.py (mounted below; `make fixtures`).
+      DD_FIXTURE_VIDEO: /app/tests/fixtures/cache/commons_dashcam_daylight_cc0_96s_10s.mp4
+      # Unit tests must not write into the application volume.
+      DATA_ROOT: /tmp/dd-data
+      SQLITE_PATH: /tmp/dd-data/dreamdrive-test.db
+      ARTIFACT_ROOT: /tmp/dd-data/artifacts
+      PYTHONDONTWRITEBYTECODE: "1"
+      HOME: /tmp
+    volumes:
+      - ${DD_EVIDENCE_DIR:-./artifacts/qa/local}:/evidence
+      - ./scripts:/opt/dreamdrive/scripts:ro
+      # Downloaded licensed media (scripts/fetch_fixtures.py) are mounted, never baked into images.
+      - ./tests/fixtures/cache:/app/tests/fixtures/cache:ro
+    # egress: pip-audit queries the vulnerability database.
+    networks: [internal, egress]
+    tmpfs:
+      - /tmp:size=1g,exec
+    restart: "no"
+
+  inference-test:
+    image: dreamdrive-inference-test:${DD_TAG:-dev}
+    build:
+      context: .
+      dockerfile: inference/Dockerfile
+      target: test
+      args: *test-build-args
+    profiles: ["test"]
+    user: "10001:10001"
+    working_dir: /app/inference
+    environment:
+      DD_REQUIRE_LIVE: ${DD_REQUIRE_LIVE:-0}
+      DD_EVIDENCE_DIR: /evidence
+      MODEL_ROOT: /models
+      MODEL_MANIFEST_PATH: /app/config/models.resolved.yaml
+      INFERENCE_DEVICE: cpu
+      INFERENCE_PRECISION: fp32
+      INFERENCE_BASE_URL: http://inference:8001
+      OMP_NUM_THREADS: ${INFERENCE_CPUS:-4}
+      MKL_NUM_THREADS: ${INFERENCE_CPUS:-4}
+      PYTHONDONTWRITEBYTECODE: "1"
+      HOME: /tmp
+    volumes:
+      # Real verified weights from model-init (read-only); model smoke fails if they are absent.
+      - model-cache:/models:ro
+      - ${DD_EVIDENCE_DIR:-./artifacts/qa/local}:/evidence
+      - ./tests/fixtures/cache:/app/tests/fixtures/cache:ro
+    networks: [internal]
+    tmpfs:
+      - /tmp:size=1g,exec
+    deploy:
+      resources:
+        limits:
+          cpus: "${INFERENCE_CPUS:-4}"
+          memory: 3g
+    restart: "no"
+
+  # Frontend lint/typecheck/build/audit in a clean Node container (no host Node needed).
+  node:
+    image: node:22-bookworm-slim
+    profiles: ["test"]
+    working_dir: /repo/frontend
+    entrypoint: ["bash", "/opt/dreamdrive/scripts/container/frontend.sh"]
+    environment:
+      CI: "1"
+      npm_config_cache: /npm-cache
+      DD_HOST_UID: ${DD_HOST_UID:-0}
+      DD_HOST_GID: ${DD_HOST_GID:-0}
+    # The frontend is copied from /src/frontend into /repo/frontend (without host node_modules); siblings are
+    # mounted read-only so relative paths such as ../contracts resolve like in the repository.
+    volumes:
+      - ./frontend:/src/frontend:ro
+      - ./contracts:/repo/contracts:ro
+      - ./config:/repo/config:ro
+      - ./scripts:/opt/dreamdrive/scripts:ro
+      - npm-cache:/npm-cache
+      - ${DD_EVIDENCE_DIR:-./artifacts/qa/local}:/evidence
+    networks: [egress]
+    restart: "no"
+
+  # Playwright browser tests against the running gateway. The image tag must equal the @playwright/test version
+  # in frontend/package-lock.json (scripts/playwright-version.sh sets PLAYWRIGHT_VERSION).
+  e2e:
+    image: mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION:-0.0.0}-noble
+    profiles: ["test"]
+    working_dir: /repo/frontend
+    entrypoint: ["bash", "/opt/dreamdrive/scripts/container/e2e.sh"]
+    environment:
+      CI: "1"
+      PLAYWRIGHT_VERSION: ${PLAYWRIGHT_VERSION:-0.0.0}
+      # frontend/playwright.config.ts reads DD_BASE_URL and DD_FIXTURE_VIDEO (upload flow fails without it).
+      DD_BASE_URL: http://gateway:8080
+      DD_FIXTURE_VIDEO: /repo/tests/fixtures/cache/commons_dashcam_daylight_cc0_96s_10s.mp4
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: /evidence/junit-e2e.xml
+      PLAYWRIGHT_HTML_REPORT: /evidence/playwright-report
+      PLAYWRIGHT_HTML_OUTPUT_DIR: /evidence/playwright-report
+      PLAYWRIGHT_HTML_OPEN: never
+      DD_FIXTURES_DIR: /repo/tests/fixtures
+      npm_config_cache: /npm-cache
+      DD_HOST_UID: ${DD_HOST_UID:-0}
+      DD_HOST_GID: ${DD_HOST_GID:-0}
+    volumes:
+      - ./frontend:/src/frontend:ro
+      - ./tests:/repo/tests:ro
+      - ./contracts:/repo/contracts:ro
+      - ./config:/repo/config:ro
+      - ./scripts:/opt/dreamdrive/scripts:ro
+      - npm-cache:/npm-cache
+      - ${DD_EVIDENCE_DIR:-./artifacts/qa/local}:/evidence
+    # internal: reach the gateway by name; egress: npm ci.
+    networks: [internal, egress]
+    shm_size: "1gb"
+    init: true
+    restart: "no"
+
+volumes:
+  npm-cache: {}

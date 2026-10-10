@@ -1,0 +1,23 @@
+# DreamDrive production gateway (compose.prod.yaml). Caddy obtains and renews the certificate for {$DOMAIN}
+# automatically (ACME HTTP-01/TLS-ALPN-01), so DNS for DOMAIN must point at this host and ports 80/443 must be
+# reachable. HTTP is redirected to HTTPS automatically. DOMAIN=localhost uses Caddy's internal CA (local smoke only).
+{
+	admin off
+	persist_config off
+	skip_install_trust
+}
+
+import /etc/caddy/routes.caddy
+
+{$DOMAIN} {
+	import dreamdrive_security_headers
+	header Strict-Transport-Security "max-age=31536000"
+	import dreamdrive_access_log
+	import dreamdrive_routes
+}
+
+# Container healthcheck listener. Port 8081 is not published by compose.prod.yaml.
+http://:8081 {
+	respond /gateway/health "ok" 200
+	respond 404
+}

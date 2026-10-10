@@ -1,0 +1,16 @@
+# BuildKit uses this file instead of the root .dockerignore for frontend/Dockerfile (context = repo root).
+# Allow-list: only the frontend sources needed to build the static bundle.
+*
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/index.html
+!frontend/vite.config.ts
+!frontend/tsconfig.json
+!frontend/tsconfig.app.json
+!frontend/tsconfig.node.json
+!frontend/eslint.config.js
+!frontend/nginx.conf
+!frontend/nginx-main.conf
+!frontend/nginx-security-headers.conf
+!frontend/public/**
+!frontend/src/**

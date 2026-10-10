@@ -1,0 +1,194 @@
+# promtool unit tests for alerts.yml: each alert is shown NOT firing while pending/healthy and firing after its
+# "for" duration (an actual inactive -> pending -> firing transition), plus recovery where meaningful.
+#   docker run --rm -v "$PWD/ops/prometheus:/etc/prometheus:ro" --entrypoint promtool prom/prometheus:v3.15.0 \
+#     test rules /etc/prometheus/alerts_test.yml
+rule_files:
+  - alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  # --- service down: api scrape fails from t=2m, recovers at t=7m; worker stays up -------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'up{job="api", instance="api:8000"}'
+        values: "1 1 0 0 0 0 0 1 1"
+      - series: 'up{job="worker", instance="worker:9101"}'
+        values: "1x8"
+      - series: 'dreamdrive_data_volume_free_bytes{job="api", instance="api:8000"}'
+        values: "50e9x8"
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: DreamDriveServiceDown
+        exp_alerts: []
+      - eval_time: 3m # pending (down for 1m)
+        alertname: DreamDriveServiceDown
+        exp_alerts: []
+      - eval_time: 5m # firing (down for 3m > 2m)
+        alertname: DreamDriveServiceDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: api
+              instance: "api:8000"
+            exp_annotations:
+              summary: "api metrics target is down"
+              description: "Prometheus could not scrape api:8000 for more than 2 minutes."
+              runbook: "docs/RUNBOOK.md#worker-crash-or-service-down"
+      - eval_time: 8m # recovered
+        alertname: DreamDriveServiceDown
+        exp_alerts: []
+      - eval_time: 5m # free-space metric present -> the guard does not fire
+        alertname: DreamDriveDiskMetricMissing
+        exp_alerts: []
+
+  # --- model not ready for 5m; a ready model on another device never fires ----------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'dreamdrive_model_ready{job="inference", instance="inference:8001", model="yolopv2", device="cpu"}'
+        values: "0x8"
+      - series: 'dreamdrive_model_ready{job="inference", instance="inference-gpu:8001", model="yolopv2", device="cuda"}'
+        values: "1x8"
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: DreamDriveModelNotReady
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: DreamDriveModelNotReady
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              model: yolopv2
+              device: cpu
+            exp_annotations:
+              summary: "Model yolopv2 on cpu is not ready"
+              description: "Video analysis is unavailable; uploads return model_not_ready."
+              runbook: "docs/RUNBOOK.md#model-not-ready"
+
+  # --- worker heartbeat stale from t=3m ------------------------------------------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'dreamdrive_worker_heartbeat_age_seconds{job="worker", instance="worker:9101", slot="video"}'
+        values: "5 5 5 130 190 250 310"
+      - series: 'dreamdrive_worker_heartbeat_age_seconds{job="worker", instance="worker:9101", slot="sim"}'
+        values: "2x6"
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: DreamDriveWorkerHeartbeatStale
+        exp_alerts: []
+      - eval_time: 3m # pending
+        alertname: DreamDriveWorkerHeartbeatStale
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: DreamDriveWorkerHeartbeatStale
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              slot: video
+            exp_annotations:
+              summary: "Worker slot video heartbeat is stale"
+              description: "The worker slot has not reported progress for more than 120 seconds."
+              runbook: "docs/RUNBOOK.md#worker-crash-or-service-down"
+
+  # --- oldest queued job crosses 900 s at t=8m (960 s) -----------------------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'dreamdrive_queue_oldest_age_seconds{job="api", instance="api:8000", queue="video"}'
+        values: "0+120x12"
+      - series: 'dreamdrive_queue_oldest_age_seconds{job="api", instance="api:8000", queue="sim"}'
+        values: "0x12"
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: DreamDriveQueueOldestJobAboveSLA
+        exp_alerts: []
+      - eval_time: 9m # pending
+        alertname: DreamDriveQueueOldestJobAboveSLA
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: DreamDriveQueueOldestJobAboveSLA
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              queue: video
+            exp_annotations:
+              summary: "Oldest queued job in video is older than 15 minutes"
+              description: "Jobs are not being picked up fast enough (worker down, stuck job or backlog)."
+              runbook: "docs/RUNBOOK.md#queue-backlog"
+
+  # --- failed jobs: 4 failures within 15 minutes; successes are ignored ----------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'dreamdrive_jobs_total{job="worker", instance="worker:9101", kind="video_analysis", status="failed"}'
+        values: "0 0 1 2 3 4 4 4"
+      - series: 'dreamdrive_jobs_total{job="worker", instance="worker:9101", kind="video_analysis", status="succeeded"}'
+        values: "0+5x7"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: DreamDriveJobFailuresElevated
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: DreamDriveJobFailuresElevated
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              kind: video_analysis
+            exp_annotations:
+              summary: "video_analysis jobs are failing"
+              description: "At least 3 video_analysis jobs failed or were interrupted in the last 15 minutes."
+              runbook: "docs/RUNBOOK.md#corrupt-video-or-failing-jobs"
+
+  # --- data volume below 5 GB from t=2m; artifacts above 20 GB --------------------------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'dreamdrive_data_volume_free_bytes{job="api", instance="api:8000"}'
+        values: "10e9 10e9 4e9x10"
+      - series: 'dreamdrive_artifact_bytes{job="worker", instance="worker:9101", category="jobs"}'
+        values: "15e9x12"
+      - series: 'dreamdrive_artifact_bytes{job="worker", instance="worker:9101", category="runs"}'
+        values: "6e9x12"
+    alert_rule_test:
+      - eval_time: 6m # pending (low for 4m)
+        alertname: DreamDriveDataVolumeLow
+        exp_alerts: []
+      - eval_time: 8m
+        alertname: DreamDriveDataVolumeLow
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: api
+              instance: "api:8000"
+            exp_annotations:
+              summary: "Less than 5 GB free on the application data volume"
+              description: "Uploads, artifacts and SQLite WAL share this volume; new jobs will start failing."
+              runbook: "docs/RUNBOOK.md#disk-full"
+      - eval_time: 9m
+        alertname: DreamDriveArtifactStorageHigh
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: DreamDriveArtifactStorageHigh
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "Stored artifacts exceed 20 GB"
+              description: "Retention cleanup may be failing or the retention window is too long for the disk."
+              runbook: "docs/RUNBOOK.md#disk-full"
+
+  # --- API up but no free-space metric exported: the guard fires after 10m -----------------------------------------
+  - interval: 1m
+    input_series:
+      - series: 'up{job="api", instance="api:8000"}'
+        values: "1x14"
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: DreamDriveDiskMetricMissing
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: DreamDriveDiskMetricMissing
+        exp_alerts:
+          - exp_labels:
+              severity: info
+            exp_annotations:
+              summary: "No data-volume free-space metric is exported"
+              description: "DreamDriveDataVolumeLow cannot fire until dreamdrive_data_volume_free_bytes is exported."
+              runbook: "docs/RUNBOOK.md#disk-full"

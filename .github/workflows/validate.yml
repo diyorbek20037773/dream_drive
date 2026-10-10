@@ -1,0 +1,106 @@
+# Validation for every push/PR. No registry credentials or other secrets are used here.
+# Third-party actions are pinned to full commit SHAs resolved with `gh api repos/<owner>/<repo>/git/ref/tags/<tag>`
+# on 2026-10-10 (the version is in the trailing comment). Tool images are digest-pinned in scripts/tool-images.env.
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.event.pull_request.number || github.ref }}
+  # Never cancel main: release.yml requires a successful validate run for the exact commit it publishes.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DD_TAG: ci
+
+jobs:
+  static:
+    name: static (compose, deploy guards, alerts, dashboards, shell, workflows, secrets)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # gitleaks scans the full history
+          persist-credentials: false
+      - name: Compose combinations + deploy.sh guards
+        run: make deploy-check
+      - name: promtool config/rules/alert unit tests + dashboard drift
+        run: make ops-check
+      - name: Backup/restore helper + smoke client self-tests
+        run: make deploy-selftest
+      - name: MLflow evaluation logger self-tests
+        run: make mlflow-selftest
+      - name: shellcheck + actionlint
+        run: make lint-shell
+      - name: gitleaks (full history)
+        run: bash scripts/security.sh gitleaks
+
+  qa:
+    name: QA gates (build, lint, types, unit, model smoke, stack, integration, e2e, security, backup)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Free runner disk space (images + torch need ~25 GB)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - name: Model cache key (checkpoint SHA256 from the resolved manifest)
+        id: model
+        run: |
+          sha=$(sed -n 's/^ *"checkpoint_sha256": "\([0-9a-f]\{64\}\)".*/\1/p' config/models.resolved.yaml | head -n 1)
+          [[ $sha =~ ^[0-9a-f]{64}$ ]] || { echo "::error::checkpoint_sha256 missing"; exit 1; }
+          echo "sha=$sha" >>"$GITHUB_OUTPUT"
+      - name: Restore cached model
+        id: model-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/dreamdrive-model
+          key: yolopv2-${{ steps.model.outputs.sha }}
+      - name: Seed the model-cache volume (model-init re-verifies; downloads on a miss)
+        run: bash scripts/ci-model-cache.sh restore ~/.cache/dreamdrive-model
+      - name: Restore cached licensed fixtures
+        id: fixtures-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: tests/fixtures/cache
+          key: fixtures-${{ hashFiles('tests/fixtures/manifest.json') }}
+      - name: make qa (all gates; fails on any failed, blocked or skipped gate)
+        run: bash scripts/qa.sh
+      - name: Export the verified model for the cache
+        id: model-save
+        if: always() && steps.model-cache.outputs.cache-hit != 'true'
+        run: |
+          bash scripts/ci-model-cache.sh save ~/.cache/dreamdrive-model
+          if [[ -f ~/.cache/dreamdrive-model/model-cache.tar ]]; then echo "saved=true" >>"$GITHUB_OUTPUT"; fi
+      - name: Upload model cache
+        if: always() && steps.model-save.outputs.saved == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/dreamdrive-model
+          key: yolopv2-${{ steps.model.outputs.sha }}
+      - name: Upload fixtures cache
+        if: always() && steps.fixtures-cache.outputs.cache-hit != 'true' && hashFiles('tests/fixtures/cache/*.mp4') != ''
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: tests/fixtures/cache
+          key: fixtures-${{ hashFiles('tests/fixtures/manifest.json') }}
+      - name: Upload QA evidence (logs, junit, Playwright report + screenshots, SBOMs)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qa-evidence-${{ github.sha }}
+          path: artifacts/qa/
+          retention-days: 30
+          if-no-files-found: warn

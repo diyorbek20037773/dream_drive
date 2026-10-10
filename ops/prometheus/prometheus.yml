@@ -1,0 +1,33 @@
+# DreamDrive Prometheus (compose.ops.yaml). Scrapes the internal /metrics endpoints over the compose "internal"
+# network; the public gateway returns 404 for /metrics. No Alertmanager/destination is configured on purpose:
+# alerts are evaluated and visible in Prometheus (/alerts) and Grafana only (docs/OBSERVABILITY.md).
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels:
+    project: dreamdrive
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+scrape_configs:
+  - job_name: api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:8000"]
+
+  # The worker runs RQ jobs in its own processes; it exposes its own registry on WORKER_METRICS_PORT.
+  - job_name: worker
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["worker:9101"]
+
+  - job_name: inference
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["inference:8001"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

@@ -1,0 +1,278 @@
+{
+  "uid": "dreamdrive-inference",
+  "title": "DreamDrive / Inference",
+  "description": "Measured YOLOPv2 inference latency and throughput from the inference service.",
+  "tags": [
+    "dreamdrive"
+  ],
+  "timezone": "utc",
+  "editable": false,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "type": "text",
+      "title": "How to read this",
+      "options": {
+        "mode": "markdown",
+        "content": "Latency is the model forward pass plus decode/NMS/mask inversion **under the model lock**. It excludes queueing for the lock, image decode, PNG encoding and HTTP transfer (those appear in each response's `timing_ms`). GPU memory metrics are not exported on CPU."
+      },
+      "id": 1,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Inference latency p50 / p95 / p99",
+      "description": "Quantiles over 5 minutes of successful inferences, measured inside the inference service (the worker exports the same family per analyzed frame; it is excluded here).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dd-prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dd-prometheus"
+          },
+          "expr": "histogram_quantile(0.5, sum by (le, model, device) (rate(dreamdrive_inference_duration_seconds_bucket{job=\"inference\", outcome=\"ok\"}[5m])))",
+          "legendFormat": "p50 {{model}} {{device}}",
+          "range": true,
+          "instant": false
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dd-prometheus"
+          },
+          "expr": "histogram_quantile(0.95, sum by (le, model, device) (rate(dreamdrive_inference_duration_seconds_bucket{job=\"inference\", outcome=\"ok\"}[5m])))",
+          "legendFormat": "p95 {{model}} {{device}}",
+          "range": true,
+          "instant": false
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dd-prometheus"
+          },
+          "expr": "histogram_quantile(0.99, sum by (le, model, device) (rate(dreamdrive_inference_duration_seconds_bucket{job=\"inference\", outcome=\"ok\"}[5m])))",
+          "legendFormat": "p99 {{model}} {{device}}",
+          "range": true,
+          "instant": false
+        }
+      ],
+      "id": 2,
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 12,
+        "h": 9
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Inference throughput",
+      "description": "Successful forward passes per second (one at a time by design).",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dd-prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dd-prometheus"
+          },
+          "expr": "sum by (model, device) (rate(dreamdrive_inference_duration_seconds_count{job=\"inference\", outcome=\"ok\"}[5m]))",
+          "legendFormat": "{{model}} {{device}}",
+          "range": true,
+          "instant": false
+        }
+      ],
+      "id": 3,
+      "gridPos": {
+        "x": 12,
+        "y": 3,
+        "w": 12,
+        "h": 9
+      }
+    },
+    {
+      "type": "heatmap",
+      "title": "Inference latency distribution",
+      "description": "Histogram buckets per minute.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dd-prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "mode": "scheme",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "yAxis": {
+          "unit": "s",
+          "axisPlacement": "left"
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "yHistogram": true
+        },
+        "legend": {
+          "show": true
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dd-prometheus"
+          },
+          "expr": "sum by (le) (increase(dreamdrive_inference_duration_seconds_bucket{job=\"inference\", outcome=\"ok\"}[1m]))",
+          "legendFormat": "{{le}}",
+          "range": true,
+          "instant": false,
+          "format": "heatmap"
+        }
+      ],
+      "id": 4,
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 12,
+        "h": 9
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Inference requests by outcome",
+      "description": "ok, image_invalid, image_too_large, model_not_ready, inference_busy, inference_failed.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dd-prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dd-prometheus"
+          },
+          "expr": "sum by (outcome) (rate(dreamdrive_inference_requests_total[5m]))",
+          "legendFormat": "{{outcome}}",
+          "range": true,
+          "instant": false
+        }
+      ],
+      "id": 5,
+      "gridPos": {
+        "x": 12,
+        "y": 12,
+        "w": 12,
+        "h": 9
+      }
+    }
+  ]
+}

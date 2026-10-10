@@ -1,0 +1,7 @@
+node_modules/
+dist/
+test-results/
+test-results-dev/
+playwright-report/
+playwright-report-dev/
+blob-report/

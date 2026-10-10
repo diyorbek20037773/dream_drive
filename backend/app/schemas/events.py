@@ -7,6 +7,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.api import ManeuverLateral, ManeuverLongitudinal, ManeuverPrimary
+
 EventType = Literal["job_state", "job_progress", "run_state", "frame_ready", "decision", "capability_changed", "error"]
 
 
@@ -50,6 +52,15 @@ class DecisionCommand(_Payload):
     brake: float
 
 
+class DecisionManeuver(_Payload):
+    """Compact Run.live.maneuver (app.control.maneuver): what the simulated vehicle is doing."""
+
+    primary: ManeuverPrimary
+    longitudinal: ManeuverLongitudinal
+    lateral: ManeuverLateral
+    since_sim_time_s: float = Field(ge=0, description="Simulated time (s) at which this maneuver began.")
+
+
 class DecisionPayload(_Payload):
     kind: Literal["decision"] = "decision"
     run_id: str
@@ -57,6 +68,9 @@ class DecisionPayload(_Payload):
     state: str
     reason_codes: list[str]
     command: DecisionCommand | None = None
+    # Additive, optional (older producers omit them).
+    sim_time_s: float | None = Field(default=None, ge=0, description="Simulated time of frame_id, s.")
+    maneuver: DecisionManeuver | None = None
 
 
 class CapabilityChangedPayload(_Payload):

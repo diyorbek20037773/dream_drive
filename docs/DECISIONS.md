@@ -22,3 +22,14 @@
 Candidate package/runtime versions are selected and locked by Claude after install and compatibility tests. Prefer Python 3.11 if the actual checkpoint and chosen dependencies work; isolate legacy dependency constraints in inference instead of downgrading the entire app. Use an active Node LTS verified at implementation time. Do not blindly install the upstream 2022 requirements over a modern environment.
 
 Scope ladder: P0 real video product → P1 honest synthetic closed loop → P1b learned simulator adapter after validation → P2 optional CARLA/second detector/fine-tuning. Deliver all P0/P1 tasks before optional research. If learned sim fails, retain the P0 and synthetic labels instead of calling the fallback learned autonomy.
+
+## Decision record 2026-10-10: second detector enabled (owner request)
+The verified YOLOPv2 checkpoint detects one class (`vehicle`, class index 3). The owner asked that people, traffic lights
+and signs be detected and that accuracy be measured. This meets the conditional trigger in docs/ML_PIPELINE.md for an
+extra detector. RF-DETR-N (rfdetr 1.11.2, Apache 2.0 per the upstream model table, COCO-pretrained) is added beside
+YOLOPv2 in the same inference service: YOLOPv2 keeps lane/drivable segmentation and `vehicle`; RF-DETR adds person,
+bicycle, motorcycle, bus, truck, traffic_light and stop_sign. General traffic-sign categories other than stop sign remain
+unsupported (no verified, licence-clear checkpoint). Traffic-light colour is a labelled HSV heuristic, not model output.
+Detector accuracy is measured on a COCO val2017 street-scene subset through the production inference path; lane and
+drivable accuracy remain not evaluated until licensed labels (e.g. owner-registered BDD100K) are supplied.
+Details and wire format: docs/IMPLEMENTATION_SPEC.md section 2.1.

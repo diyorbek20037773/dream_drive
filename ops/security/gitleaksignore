@@ -1,0 +1,4 @@
+# gitleaks fingerprints of reviewed false positives (commit:file:rule:line). Each entry must say why.
+# MANIFEST_SHA256.json line 24 is the SHA256 digest of docs/API.md in the handoff integrity manifest; the
+# generic-api-key rule matches the "API" in the file name. It is a public file hash, not a credential.
+f85c397d5e8435aed29cafd1f4b5e54658d62202:MANIFEST_SHA256.json:generic-api-key:24

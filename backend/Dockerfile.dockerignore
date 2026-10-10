@@ -1,0 +1,27 @@
+# Build context filter for backend/Dockerfile (context = repository root). BuildKit prefers this file over the
+# root .dockerignore for this Dockerfile. Allowlist: only what the backend images copy.
+*
+!backend/pyproject.toml
+!backend/uv.lock
+!backend/app/**
+!config/**
+!contracts/**
+!docs/API.md
+!frontend/src/api/openapi.json
+!frontend/src/api/schema.d.ts
+!tests/unit/backend/**
+!tests/security/**
+!tests/integration/**
+!tests/scenarios/**
+!tests/fixtures/manifest.json
+!tests/fixtures/cache/*.mp4
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/*.db
+**/*.db-wal
+**/*.db-shm
+config/local.yaml

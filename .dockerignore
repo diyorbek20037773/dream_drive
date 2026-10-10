@@ -1,0 +1,53 @@
+# Build context is the repository root for every Dockerfile (docs/IMPLEMENTATION_SPEC.md section 0).
+# Keep: backend/, inference/, frontend/ sources, config/, contracts/, tests/ (test targets copy them).
+# Never send: VCS data, secrets, model weights, data/artifacts, local environments, generated output.
+.git
+.gitignore
+.gitattributes
+.github
+.claude
+**/.env
+**/.env.*
+.env*
+secrets/
+**/*.pem
+**/*.key
+
+# Model weights and data (weights are downloaded and verified by model-init, never baked into images)
+models/
+model/
+**/*.pt
+**/*.pth
+**/*.onnx
+**/*.engine
+data/
+uploads/
+datasets/
+artifacts/
+backups/
+runs/
+mlruns/
+**/*.db
+**/*.db-shm
+**/*.db-wal
+# Downloaded licensed test media are mounted at test time, not copied into images
+tests/fixtures/cache/
+
+# Local environments, caches and build output
+**/.venv
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+frontend/dist
+**/test-results
+**/playwright-report
+**/blob-report
+**/coverage
+
+# Handoff kit, deployment state and docs not needed in images
+DreamDrive_Claude_Kit/
+deploy/state/
+*(1).md
