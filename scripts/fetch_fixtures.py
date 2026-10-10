@@ -15,9 +15,12 @@ Usage (from the repository root, with the backend virtualenv or any Python that 
 Fixtures under attribution licences (e.g. CC BY 3.0) carry `source.license_note` with the required attribution and
 the list of changes; it is printed for every fixture and mirrored in docs/DATA_SOURCES.md.
 
-The derived-clip SHA256 is reproducible for the pinned PyAV/libx264 build (single-threaded x264); a different PyAV
-build may legitimately produce different bytes, in which case the run fails unless --allow-derived-mismatch is given
-(the source SHA256 is always enforced).
+The source SHA256 is always enforced: it is the provenance guarantee. The derived clip is reproducible byte for byte
+with the pinned PyAV/libx264 build on one machine, but CI runners showed different bytes for the same source and
+settings (CPU-dependent decode/convert/encode code paths). When the derived bytes differ from the manifest reference,
+the clip is accepted only if its decoded properties (frame count, width, height, frame rate) match the manifest
+exactly; the SHA256 observed on this machine is then recorded in <cache>/derived-observed.json so tests can verify
+that the cached clip is the one this script produced. Any property mismatch fails.
 """
 
 from __future__ import annotations
@@ -149,13 +152,37 @@ def derive_clip(source: Path, dest: Path, spec: dict[str, Any]) -> dict[str, Any
     return {"frames": frames, "width": out_w, "height": out_h, "fps": float(rate), "pyav_version": av.__version__}
 
 
+def clip_properties(path: Path) -> dict[str, Any]:
+    """Decoded frame count, size and average frame rate of a derived clip."""
+    import av  # local import: only needed for derived clips
+
+    with av.open(str(path)) as container:
+        stream = container.streams.video[0]
+        frames = sum(1 for _ in container.decode(stream))
+        rate = stream.average_rate
+        return {"frames": frames, "width": stream.width, "height": stream.height, "fps": float(rate) if rate else 0.0}
+
+
+def record_observed(cache_dir: Path, file_name: str, sha256: str) -> None:
+    """Remember the derived-clip SHA256 produced on this machine (tests compare the cached file against it)."""
+    index = cache_dir / "derived-observed.json"
+    data: dict[str, str] = {}
+    if index.exists():
+        try:
+            data = json.loads(index.read_text(encoding="utf-8"))
+        except ValueError:
+            data = {}
+    data[file_name] = sha256
+    index.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     ap.add_argument("--cache-dir", type=Path, default=DEFAULT_CACHE)
     ap.add_argument("--check", action="store_true", help="verify cached files only; never download")
     ap.add_argument("--record", action="store_true", help="record observed SHA256 values into the manifest")
-    ap.add_argument("--allow-derived-mismatch", action="store_true")
+    ap.add_argument("--allow-derived-mismatch", action="store_true", help="accept any derived bytes (maintainers only)")
     ap.add_argument("--timeout", type=float, default=60.0)
     args = ap.parse_args(argv)
 
@@ -164,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     failures = 0
     for entry in manifest["fixtures"]:
         print(f"[{entry['id']}] {entry['source']['title']} ({entry['source']['license']})")
-        if entry['source'].get('license_note'):
+        if entry["source"].get("license_note"):
             print(f"  attribution: {entry['source']['license_note']}")
         src_path = args.cache_dir / entry["source"]["file_name"]
         if not src_path.exists():
@@ -193,9 +220,23 @@ def main(argv: list[str] | None = None) -> int:
         _, sha256 = file_hashes(dst_path)
         expected = spec.get("sha256")
         if expected and sha256 != expected:
-            print(f"  derived SHA256 mismatch: {sha256} != {expected}")
-            if not args.allow_derived_mismatch:
+            props = clip_properties(dst_path)
+            wanted = {k: spec.get(k) for k in ("frames", "width", "height")}
+            fps_ok = abs(props["fps"] - float(spec.get("fps", 0))) < 1e-3
+            same = fps_ok and all(props[k] == v for k, v in wanted.items())
+            if same:
+                print(
+                    f"  derived bytes differ from the reference ({expected[:12]}...) on this machine; source SHA256 "
+                    f"verified and decoded properties match {props}"
+                )
+                record_observed(args.cache_dir, spec["file_name"], sha256)
+            elif args.allow_derived_mismatch:
+                print(f"  derived SHA256 mismatch accepted by --allow-derived-mismatch: {sha256} != {expected}")
+            else:
+                print(f"  derived clip mismatch: sha256 {sha256} != {expected} and properties {props} != {wanted}")
                 failures += 1
+        elif expected:
+            record_observed(args.cache_dir, spec["file_name"], sha256)
         elif not expected:
             if args.record:
                 spec["sha256"] = sha256
