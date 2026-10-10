@@ -38,7 +38,7 @@ def _key() -> str:
 
     key = load_roboflow_api_key(None)
     if not key:
-        raise SystemExit("no Roboflow login found; run: py -3.11 -c \"import roboflow; roboflow.login()\"")
+        raise SystemExit('no Roboflow login found; run: py -3.11 -c "import roboflow; roboflow.login()"')
     return str(key)
 
 

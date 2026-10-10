@@ -126,3 +126,43 @@ Licence mix of the 300 selected images (from the COCO `licenses` table):
 
 Because 207 of the 300 images carry NonCommercial terms, the images are used only for local, non-redistributed
 evaluation; they are not fixtures, are not shipped in any image and are not shown in the product UI.
+
+## KITTI Road training split (drivable-area evaluation)
+
+### KITTI Road benchmark - training split (drivable-area evaluation only)
+- Source: `https://s3.eu-central-1.amazonaws.com/avg-kitti/data_road.zip` (KITTI Vision Benchmark Suite,
+  https://www.cvlibs.net/datasets/kitti/eval_road.php). 470,992,343 bytes, SHA256
+  `45508c51ba09020235eb714e71c7d3ef15b4551be06d996772ecc8a20fc34a34`. Downloaded 2026-10-10 to
+  `datasets/raw/kitti_road/` (gitignored).
+- Licence: "All datasets and benchmarks on this page are copyright by us and published under the Creative Commons
+  Attribution-NonCommercial-ShareAlike 3.0 License" (https://www.cvlibs.net/datasets/kitti/). Non-commercial; not
+  redistributed; not used for training; used only for a local accuracy measurement.
+- Attribution: J. Fritsch, T. Kuehnl, A. Geiger, "A New Performance Measure and Evaluation Benchmark for Road
+  Detection Algorithms", ITSC 2013.
+- Used: 289 training images (`image_2`) and their `<cat>_road_<idx>.png` ground truth (um 95, umm 96, uu 98).
+  `um_lane` (ego-lane area) is hashed but not scored. Testing split and calibration files are unused.
+- Committed: `datasets/manifests/kitti_road_training_v1.json` (member names, sizes, SHA256, GT colour histograms;
+  no pixels). GT encoding taken from the official devkit (`devkit_road.zip`, SHA256
+  `6f7cba10eeeb82d26cb0fa64ea4771ae92ff818be50098b162a21fcab8e06156`): R plane = valid area, B plane = road.
+- Consumer: `backend/app/evaluation/segmentation_accuracy.py`; results and limitations in
+  `docs/EVALUATION_SEGMENTATION.md`.
+
+## Roboflow lane-marking dataset (lane-line evaluation)
+
+```yaml
+- id: roboflow_rtqi_lane_marking_v2
+  name: "Lane-Marking (RTQI), Roboflow Universe, version 2"
+  url: https://universe.roboflow.com/rtqi/lane-marking-9qzw7/dataset/2
+  licence: "CC BY 4.0"   # string from the Roboflow API and from the export README.dataset.txt
+  licence_url: https://creativecommons.org/licenses/by/4.0/
+  attribution: "RTQI, 'Lane-Marking' dataset (version 2), Roboflow Universe, https://universe.roboflow.com/rtqi/lane-marking-9qzw7, licensed CC BY 4.0."
+  use: evaluation only (YOLOPv2 lane-marking pixel accuracy); not used for training; not redistributed
+  format: coco-segmentation (instance polygons; classes LC, LD, MD, RC, RD)
+  split_used: test (193 images; first 150 by sorted file name evaluated on 2026-10-10)
+  preprocessing_by_author: auto-orient, stretch to 640x640; no augmentation
+  obtained: Roboflow REST export via tools/roboflow/rf_universe.py (owner's roboflow.login(); key never stored); zip SHA256 8d56f3cfdcaa47b588ef9d238cb43412f828e8ec3073ec335c3c2abb5c2fa310, 69153469 bytes (deleted after extracting test/)
+  local_path: datasets/raw/roboflow/lane-marking-9qzw7-v2/test/   # gitignored
+  manifest: datasets/manifests/roboflow_lane-marking-9qzw7_v2.json  # per-file SHA256, no images
+  evaluation: artifacts/evaluations/9e313020dd6c4f4eb89431e1a6c02840.json (docs/EVALUATION_LANES.md)
+  provenance_notes: frames of the author's own GoPro/phone videos (file names), Indian roads; capture details undocumented
+```

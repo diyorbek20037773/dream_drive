@@ -1,0 +1,3137 @@
+{
+ "schema_version": "1.0",
+ "manifest_id": "roboflow_lane-marking-9qzw7_v2",
+ "description": "Roboflow Universe lane-marking split used for the YOLOPv2 lane-line accuracy measurement. File names and SHA256 hashes only; images and labels are not redistributed.",
+ "source": {
+  "provider": "Roboflow Universe",
+  "workspace": "rtqi",
+  "workspace_name": "RTQI",
+  "project": "lane-marking-9qzw7",
+  "project_name": "Lane-Marking",
+  "version": 2,
+  "url": "https://universe.roboflow.com/rtqi/lane-marking-9qzw7/dataset/2",
+  "licence": "CC BY 4.0",
+  "licence_id": "CC-BY-4.0",
+  "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+  "attribution": "RTQI, 'Lane-Marking' dataset (version 2), Roboflow Universe, https://universe.roboflow.com/rtqi/lane-marking-9qzw7, licensed CC BY 4.0.",
+  "export_format": "coco-segmentation",
+  "annotation_type": "instance-segmentation polygons",
+  "preprocessing": {
+   "auto-orient": true,
+   "resize": {
+    "format": "Stretch to",
+    "width": 640,
+    "height": 640
+   }
+  },
+  "augmentation": null,
+  "obtained_via": "Roboflow REST API export (GET), key from the owner's roboflow.login() store; the signed download link was used once and not stored"
+ },
+ "split": "test",
+ "annotations_file": {
+  "name": "_annotations.coco.json",
+  "size_bytes": 364511,
+  "sha256": "a0d7b6a3c3247420b7758944ae06f6bf0ff33cf60e8a3215b339da0e59ac8118"
+ },
+ "other_files_in_split_dir": [],
+ "categories": {
+  "0": "lane-markings",
+  "1": "LC",
+  "2": "LD",
+  "3": "MD",
+  "4": "RC",
+  "5": "RD"
+ },
+ "categories_used_by_annotations": [
+  "LC",
+  "LD",
+  "MD",
+  "RC",
+  "RD"
+ ],
+ "counts": {
+  "images": 193,
+  "images_with_annotations": 193,
+  "annotations": 1189,
+  "polygons": 1189,
+  "annotations_by_class": {
+   "LC": 174,
+   "LD": 150,
+   "MD": 497,
+   "RC": 196,
+   "RD": 172
+  },
+  "image_sizes": {
+   "640x640": 193
+  }
+ },
+ "images": [
+  {
+   "file": "GH010126_MP4-0450_jpg.rf.02c37d5a5e0f338e6e9188280b265791.jpg",
+   "coco_image_id": 24,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 53874,
+   "sha256": "02e7a44b666bfad0b039564c02693ac02061d27c140bb3cb3b8c98c0aa63bd7a",
+   "annotations": 14,
+   "annotations_by_class": {
+    "LC": 4,
+    "LD": 5,
+    "RC": 1,
+    "RD": 4
+   },
+   "polygons": 14,
+   "gt_lane_px": 10602
+  },
+  {
+   "file": "GH010126_MP4-0700_jpg.rf.18a14ca547fe1cda90214251022c0228.jpg",
+   "coco_image_id": 87,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 54069,
+   "sha256": "81f49d47422935e88513de84e26b2382237a7a3399f5823d6080ab2aa297b2fb",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 2,
+    "RC": 1,
+    "RD": 2
+   },
+   "polygons": 6,
+   "gt_lane_px": 5813
+  },
+  {
+   "file": "GH010126_MP4-0971_jpg.rf.eef67ffd84bdc9967b3b738cfe99def2.jpg",
+   "coco_image_id": 101,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 53144,
+   "sha256": "65c79a2878fd935698ae0d1ef1847fdd051c97b29d26a6a90f5ab67ad13e36d2",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 2,
+    "RC": 1,
+    "RD": 2
+   },
+   "polygons": 6,
+   "gt_lane_px": 8513
+  },
+  {
+   "file": "GH010126_MP4-1081_jpg.rf.48c38801d7a2d95b7df36dffb097dfa6.jpg",
+   "coco_image_id": 118,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 54137,
+   "sha256": "c9a1e023cb4271d49b913ab91975c10e41c4f2c63e8aa33bfded2dbc1b2ff7bb",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 2,
+    "RC": 2,
+    "RD": 2
+   },
+   "polygons": 7,
+   "gt_lane_px": 7254
+  },
+  {
+   "file": "GH010126_MP4-2728_jpg.rf.ebe11e09b0e23c86495f6792a6cd9e01.jpg",
+   "coco_image_id": 55,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 61283,
+   "sha256": "4fc8fd547a212a55fa1cb1dedd52bdf1ddfbbdb240b8d8fd4c4d37d8aef3d866",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6037
+  },
+  {
+   "file": "GH010126_MP4-3039_jpg.rf.46fba16256ce86a47320df14eace4532.jpg",
+   "coco_image_id": 76,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 62020,
+   "sha256": "3a31c4766718f731c82a09592bc724e0593b9a1869ec482149e35fdd4e9f5c44",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 8972
+  },
+  {
+   "file": "GH010126_MP4-3146_jpg.rf.e7daba2df196cc96456120e897e6e2b8.jpg",
+   "coco_image_id": 90,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 61214,
+   "sha256": "9b5e82c5b1b5345ad66a999159f9e8626a7890d01f7b335b4ac3283faadbde27",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 2,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 8103
+  },
+  {
+   "file": "GH020156_MP4-0008_jpg.rf.0dbc44b61ee388eef8e49f9ac4be4b39.jpg",
+   "coco_image_id": 33,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30742,
+   "sha256": "febaaffda2846eff25f2d8423cd8c499bc469430d2d6c50998065b34beb804dd",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 4274
+  },
+  {
+   "file": "GH020156_MP4-0015_jpg.rf.bdd86da7b021397916810416d81eb16e.jpg",
+   "coco_image_id": 29,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29575,
+   "sha256": "eddefc0dbdeef08e041a5ae35d954e3c69d81941471031bdd4df3771008b0075",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 4406
+  },
+  {
+   "file": "GH020156_MP4-0018_jpg.rf.b04d2bce962eac90fbce6a06ccdd81cd.jpg",
+   "coco_image_id": 53,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29361,
+   "sha256": "ec09ed007133c8f839fa8c1430e206157f2a84141ed684d2e1f7ec023c71dc52",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 1
+   },
+   "polygons": 8,
+   "gt_lane_px": 4669
+  },
+  {
+   "file": "GH020156_MP4-0027_jpg.rf.32d29b3589b59ad2994ee87fb469794f.jpg",
+   "coco_image_id": 61,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26803,
+   "sha256": "cfeeb1f49c398b0d2eee9fee5e383fba5bdd1b402d63882fa32fbb9ef1150dee",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 4145
+  },
+  {
+   "file": "GH020156_MP4-0064_jpg.rf.c7c092b6d5d90c9f4d8b4946ef3e813c.jpg",
+   "coco_image_id": 11,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28270,
+   "sha256": "e34ba5c181a7c5a372e8e9d2198c8e798aa0381e5743c0ff6df680409aa2659b",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 3192
+  },
+  {
+   "file": "GH020156_MP4-0109_jpg.rf.bc46fe807de311fb67a33cfb1122cbe5.jpg",
+   "coco_image_id": 45,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31525,
+   "sha256": "84466eef58a6726709f13a609ac942cc1fecd9972c34baa6b3961ef7b97da138",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 3
+   },
+   "polygons": 8,
+   "gt_lane_px": 2731
+  },
+  {
+   "file": "GH020156_MP4-0162_jpg.rf.d6ec9e401d45d06d467be85fefdd07a1.jpg",
+   "coco_image_id": 89,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37238,
+   "sha256": "507064eaff7e5778bda5e172a5daeff545ccfb558838ffdd6c4a3d60e52f7019",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2021
+  },
+  {
+   "file": "GH020156_MP4-0184_jpg.rf.378489635e504b3bf06f07231e0370dd.jpg",
+   "coco_image_id": 96,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37140,
+   "sha256": "73e5fefb4515bb69aaf1c4d178739a0d064b9358b044c7c0ce77a58515df2cb1",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 1958
+  },
+  {
+   "file": "GH020156_MP4-0217_jpg.rf.cc8e9d0a2c61cce3cdc1a8789aa73db2.jpg",
+   "coco_image_id": 94,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40212,
+   "sha256": "4654fe706aeb4702df3055a3d7738fb40bd55ee9435604013bbf9487d835b8fd",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2464
+  },
+  {
+   "file": "GH020156_MP4-0221_jpg.rf.9fd3384d93f32e91a8a85ceead3bce8c.jpg",
+   "coco_image_id": 100,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40686,
+   "sha256": "b375417459a46ef522ffebadbe4e2ca790d8fc66452c52cd288127d98b45df8f",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2333
+  },
+  {
+   "file": "GH020156_MP4-0237_jpg.rf.600ed4f78b5d713aa67ed1b3173b4bb4.jpg",
+   "coco_image_id": 122,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 39842,
+   "sha256": "3254e0bfcced16a54110d67efb9d53484c670b7c25266124fa49f73905959484",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2869
+  },
+  {
+   "file": "GH020156_MP4-0385_jpg.rf.5dd5571e5db23aa180753fa27f62392b.jpg",
+   "coco_image_id": 58,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 33682,
+   "sha256": "f947fad9f02dd989871a46b061a8363bf82ba9a048339fc24bf0a04d083726d3",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2563
+  },
+  {
+   "file": "GH020156_MP4-0393_jpg.rf.8f6364ad1e158c23545c0508e963c0c7.jpg",
+   "coco_image_id": 80,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 34657,
+   "sha256": "3af4b61141c84750d2906ee906a43cfd5a92e43f644a4701336b6afbcfb5cef7",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2647
+  },
+  {
+   "file": "GH020156_MP4-0558_jpg.rf.1079b4367f3d565298670be7c55f4aeb.jpg",
+   "coco_image_id": 111,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 39348,
+   "sha256": "b60ebae1f8f9185adb135ea0c48c6beb97e8de1a97405a0ef524ec4f04182d7b",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 3851
+  },
+  {
+   "file": "GH030156_MP4-0017_jpg.rf.67faa3949808d311db71e81c039e12f8.jpg",
+   "coco_image_id": 60,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32392,
+   "sha256": "daecd40bfdcceeb7fbe2e924c1d31c0f49efb622827511f362d4fde6bfc240ce",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 4055
+  },
+  {
+   "file": "GH030156_MP4-0021_jpg.rf.e025ad3d5afc878240e409a1dcad7ba3.jpg",
+   "coco_image_id": 2,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32235,
+   "sha256": "71724fcdc2dab6350413f5f9e8ed027e15a31d9ba75ef875e663eb87446e3462",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2985
+  },
+  {
+   "file": "GH030156_MP4-0028_jpg.rf.e7ce0e207afd85272a563d7a116ec2d0.jpg",
+   "coco_image_id": 40,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30872,
+   "sha256": "ab9f31ed76dc885950c7f0c8d55bfe7a3df25344df91a0240bad58c61c3c1739",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2312
+  },
+  {
+   "file": "GH030156_MP4-0044_jpg.rf.bfdfa68b6ad840aee70d663022cac666.jpg",
+   "coco_image_id": 34,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29930,
+   "sha256": "2bca093a55b5e6ab96d6b9fde035967d44a87b68c836d30397adfcbd266e3a56",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2896
+  },
+  {
+   "file": "GH030156_MP4-0060_jpg.rf.4d0249275c22082562813c457b237309.jpg",
+   "coco_image_id": 78,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25700,
+   "sha256": "541f90736fd6ed51b1d8bfde4714c59c213bbe509a437085064e9acd091e88bc",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 3656
+  },
+  {
+   "file": "GH030156_MP4-0071_jpg.rf.49a42119030d1a5f60923c14de14a1e3.jpg",
+   "coco_image_id": 92,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26188,
+   "sha256": "a76c2e7b891ee1941ee5439ae2b87e53fe257062799546e3e87918c420fa0c4b",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6868
+  },
+  {
+   "file": "GH030156_MP4-0078_jpg.rf.67036827fd323546d3e549e90917864b.jpg",
+   "coco_image_id": 73,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26827,
+   "sha256": "916515837fa47645c722830238c6221419cae50781e5b4585274d13aace062a8",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7462
+  },
+  {
+   "file": "GH030156_MP4-0087_jpg.rf.c1936e7050e80e1f236913d4c9ed6d91.jpg",
+   "coco_image_id": 115,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27414,
+   "sha256": "d583a7d65c20a3d29814f09c5b426684b164c0a3ac5254987080a36ebad589f7",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6909
+  },
+  {
+   "file": "GH030156_MP4-0096_jpg.rf.60a242a26c050b9f93122dd437c2d5ef.jpg",
+   "coco_image_id": 19,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27425,
+   "sha256": "0a897500a336b5de2c3ec9f231ac3b2c0f7db6ce76529872852da0e6258bc30c",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5823
+  },
+  {
+   "file": "GH030156_MP4-0105_jpg.rf.7952774e29b1f9c59bfc79d16284e21d.jpg",
+   "coco_image_id": 37,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28105,
+   "sha256": "664349af303820244b772e32069905dc693b5590561323f1bed7c237fbb35622",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6606
+  },
+  {
+   "file": "GH030156_MP4-0115_jpg.rf.2f8098e8bffed0cdee28dac2989d3724.jpg",
+   "coco_image_id": 44,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29058,
+   "sha256": "8cf9294e96f12b6ae4aef38bd292b071b2172c87c62a1f68c161a63e150d704a",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 8628
+  },
+  {
+   "file": "GH030156_MP4-0125_jpg.rf.3adcbdc940bdfc6afafb538979212cd6.jpg",
+   "coco_image_id": 69,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30339,
+   "sha256": "fe9b0838c623b0e209fbb3822a8493fecc27e8f773a3e1c18af7fead2a5a9b59",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 8656
+  },
+  {
+   "file": "GH030156_MP4-0149_jpg.rf.50649990b2a984b9a0d7270e01efe0ab.jpg",
+   "coco_image_id": 144,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26632,
+   "sha256": "32178e7fdba1b3bc4f37357c9ab7a81391c240852dfd07d2045d1bafab626e28",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5906
+  },
+  {
+   "file": "GH030156_MP4-0155_jpg.rf.4bae2ce5bb4a8b80125709fd73c24051.jpg",
+   "coco_image_id": 136,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27004,
+   "sha256": "3fe13c202c45b9ac1612cc3a9b01223e71f499e5c012d35f3c899800662d4beb",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7130
+  },
+  {
+   "file": "GH030156_MP4-0157_jpg.rf.9eb624787cbf3e673dd962c71d684db7.jpg",
+   "coco_image_id": 129,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26861,
+   "sha256": "6cf850c2d945de152aa8a58ed181ab0d1f1180473beb2ee0f613609dd91cca4e",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6339
+  },
+  {
+   "file": "GH030156_MP4-0165_jpg.rf.ca10c3f4f7487b06ee6990026cdce89f.jpg",
+   "coco_image_id": 159,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26760,
+   "sha256": "a87f238dfe727f9c68037812369b09004435a65ee752c2c577a53e80cf01a4ae",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7319
+  },
+  {
+   "file": "GH030156_MP4-0167_jpg.rf.456b4daad51cfea4f42238d9e6f8bde0.jpg",
+   "coco_image_id": 142,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26629,
+   "sha256": "ef014ceb9ec049f8cf284d61ce4faa3015173bb30b454150d603e127e169d8e8",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5789
+  },
+  {
+   "file": "GH030156_MP4-0175_jpg.rf.d6d4f126d9bd2e7229d8bed93908c15d.jpg",
+   "coco_image_id": 132,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27731,
+   "sha256": "de7ad84cfd092a5e15e3d64cb05d7f3c99167c7662c39ef093acb17a6f8a73dc",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6679
+  },
+  {
+   "file": "GH030156_MP4-0177_jpg.rf.eb51c9b78e2942453d5d04df78f56c9a.jpg",
+   "coco_image_id": 133,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27917,
+   "sha256": "368bdf8856d7e3d2b50845ece0dc99b2eefefcc45c0412c4ecf50b91226076c9",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7252
+  },
+  {
+   "file": "GH030156_MP4-0188_jpg.rf.c54b0b20fc2d8ab412be660cf7b119be.jpg",
+   "coco_image_id": 150,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28991,
+   "sha256": "9f48888fd94f781a236fb30ba66d223b2fb98def13b1e78fa301648e2dc87089",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 8176
+  },
+  {
+   "file": "GH030156_MP4-0194_jpg.rf.e11a07d1841a4e73ca1d56807a5897a6.jpg",
+   "coco_image_id": 148,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28391,
+   "sha256": "16cf7d982c40d682174f6a8b52fd199bb3e12af8f7f85794bb19f1b12ef6bdce",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5889
+  },
+  {
+   "file": "GH030156_MP4-0196_jpg.rf.ab7f6662a08f2d035a1efd6eec3c7d2f.jpg",
+   "coco_image_id": 157,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28617,
+   "sha256": "350ed3e1c8a059d87ccbb6f8c1e3d8aac8aaf0f00c15633a3f7a7c0f291da80e",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 8370
+  },
+  {
+   "file": "GH030156_MP4-0199_jpg.rf.ffd655eabd0efac33b398e96c1129a3f.jpg",
+   "coco_image_id": 181,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28854,
+   "sha256": "8cc646619bc6547c46cb70e3174be1e41f17a6609e16d1595720844dd53a31d8",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6522
+  },
+  {
+   "file": "GH030156_MP4-0202_jpg.rf.dfb37a049a89c67b6a2777d7cab23ab9.jpg",
+   "coco_image_id": 188,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28964,
+   "sha256": "87668c3aac2807434ae79e401538f39e57a7320d0263e32652e50052e502745e",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 4659
+  },
+  {
+   "file": "GH030156_MP4-0212_jpg.rf.89a326b2cdc295ea247b9cf5b1bef672.jpg",
+   "coco_image_id": 166,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28204,
+   "sha256": "0a35f6d00abaebba03599cd7ac0abad54c00421ff955332ded3e7eb3427a8da2",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 8331
+  },
+  {
+   "file": "GH030156_MP4-0222_jpg.rf.ddc2d7f73ff5c1e1df4ff3952e344129.jpg",
+   "coco_image_id": 176,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28523,
+   "sha256": "1bb4f28edcca2d126148c8aee571f81123bc66915e7971f8c6aec12ece12d9c2",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7347
+  },
+  {
+   "file": "GH030156_MP4-0231_jpg.rf.5daa0752f1e301128828f6af1c8a8d4b.jpg",
+   "coco_image_id": 173,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29852,
+   "sha256": "0f291b335ad5294cb7bc30733264fa33f99946641f9d686bc59ab8ba79ec56b0",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5420
+  },
+  {
+   "file": "GH030156_MP4-0238_jpg.rf.4139384728828d3af4a40214bf491a74.jpg",
+   "coco_image_id": 178,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28410,
+   "sha256": "c33a21042901689e03a1cde168e77d90b3000e9293ec1366c369b90b0c5d8a12",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5235
+  },
+  {
+   "file": "GH030156_MP4-0242_jpg.rf.31367a6ecb5062dad1ce2e0de6fcd7a7.jpg",
+   "coco_image_id": 180,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27215,
+   "sha256": "5bc11eea7da8f93f71b22ab00853ab9fbe30a42023def442e11870ca9596390d",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6633
+  },
+  {
+   "file": "GH030156_MP4-0245_jpg.rf.cd4a088fa656c02f9009f64fcf9695f0.jpg",
+   "coco_image_id": 174,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27815,
+   "sha256": "4326c58b9f10a43c0ac9c82fded8453c096b0dce28892ed687af6e4a24df787b",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7058
+  },
+  {
+   "file": "GH030156_MP4-0285_jpg.rf.429a6a214a81467ebeb997fd3dae70f1.jpg",
+   "coco_image_id": 191,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26063,
+   "sha256": "d15883a9cd8d099bb820c067f1dc0431caa4e09bc3de782374cd4bb8d76b2113",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6797
+  },
+  {
+   "file": "GH030156_MP4-0293_jpg.rf.a205f0a0b15e9ad9c16d20c70b493680.jpg",
+   "coco_image_id": 186,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25958,
+   "sha256": "5c9a1351abd96ebf8d18de8594bb14b7d3f6d46af640facc8537dd3e899536e5",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5411
+  },
+  {
+   "file": "GH030156_MP4-0313_jpg.rf.c58c7e624d94ad76a9fd46739220887a.jpg",
+   "coco_image_id": 183,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27094,
+   "sha256": "9ec0aecb1f8d1379fa7e94d2fa85ef180985c2b2dfa60f4c358abda60541feb1",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 4153
+  },
+  {
+   "file": "GH030156_MP4-0324_jpg.rf.d81dbb73e8b1b89465b373e135d8f4e6.jpg",
+   "coco_image_id": 187,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27383,
+   "sha256": "a839e1b3aa4e65d474e37f8af459646656a1b65c3aadf018e10e34e02521054e",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 3468
+  },
+  {
+   "file": "GH030169_MP4-0006_jpg.rf.72b89a4b72fb59116ab4555c50c35649.jpg",
+   "coco_image_id": 68,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32240,
+   "sha256": "9beb9a3da30f8abe2900c391925aaff359a6cc51ec24144fb21fbedaa893ca1c",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 6333
+  },
+  {
+   "file": "GH030169_MP4-0025_jpg.rf.d0f085fe3f0c71fd3b1e040b7c3aae3c.jpg",
+   "coco_image_id": 3,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40480,
+   "sha256": "4f1f7273c17ce0d0ac26cc1e61026620e741a50d85dfb015aee96a1e4e997eb3",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 2
+   },
+   "polygons": 8,
+   "gt_lane_px": 5796
+  },
+  {
+   "file": "GH030169_MP4-0031_jpg.rf.d7f58a598ac2ad8c00d63d9525b44358.jpg",
+   "coco_image_id": 22,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 43269,
+   "sha256": "f68da0db29020fc2a4fec51885abe306c16e8299e85fc444da26a9984ec286eb",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 2
+   },
+   "polygons": 8,
+   "gt_lane_px": 6026
+  },
+  {
+   "file": "GH030169_MP4-0037_jpg.rf.8324056a12956e46b336198ba8a34b6e.jpg",
+   "coco_image_id": 13,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 44157,
+   "sha256": "b496f8a0ac0531b61762e234b5838df3c70ea224d968bc08660b555cb782bf31",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 2
+   },
+   "polygons": 9,
+   "gt_lane_px": 6089
+  },
+  {
+   "file": "GH030169_MP4-0043_jpg.rf.b843a0f568c16fbdf127e7b3e8526c2b.jpg",
+   "coco_image_id": 30,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 36856,
+   "sha256": "2bcd24a5c488ad22d99b0dd507426dd8e877ae53294d6ca7de27cd5e93abf16f",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 4395
+  },
+  {
+   "file": "GH030169_MP4-0056_jpg.rf.2decd8fcbd49eb8d06e34333d1332afa.jpg",
+   "coco_image_id": 50,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 43649,
+   "sha256": "96319419fafa2fc416e7f13e55cb7bb319a8941466a9dd358f2e458ff4d357b9",
+   "annotations": 12,
+   "annotations_by_class": {
+    "LC": 2,
+    "MD": 6,
+    "RC": 4
+   },
+   "polygons": 12,
+   "gt_lane_px": 6315
+  },
+  {
+   "file": "GH030169_MP4-0060_jpg.rf.9776b2fe9545b14f4d9df1cccc516bf5.jpg",
+   "coco_image_id": 67,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 46340,
+   "sha256": "97c46f132210312ccbb7f9e5634e641d58b783d8e8f34caee803d1bbea3931ef",
+   "annotations": 10,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 3
+   },
+   "polygons": 10,
+   "gt_lane_px": 4751
+  },
+  {
+   "file": "GH030169_MP4-0061_jpg.rf.e087e3677b1c5d1687ec33543a208881.jpg",
+   "coco_image_id": 72,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 46612,
+   "sha256": "2cda0018230ecd8b8c04fa45a5880dbee9e6fa6ee39e19c14599a5124013aafd",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 2
+   },
+   "polygons": 9,
+   "gt_lane_px": 4917
+  },
+  {
+   "file": "GH030169_MP4-0063_jpg.rf.aa737e7013c560e64ac7ee2c14fc0101.jpg",
+   "coco_image_id": 82,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 46632,
+   "sha256": "7321b976971dd8bbf4d6e9f9c48ead86df68962df309535f188de010bd16c53e",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 2
+   },
+   "polygons": 9,
+   "gt_lane_px": 4891
+  },
+  {
+   "file": "GH030169_MP4-0068_jpg.rf.963334bb60513bef2cb3ccdd65caa157.jpg",
+   "coco_image_id": 104,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29505,
+   "sha256": "0cae416e0347ca1464a74347c5064fea31c3bc350d5f259f03e9df6d8856f3dc",
+   "annotations": 14,
+   "annotations_by_class": {
+    "LC": 2,
+    "LD": 6,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 14,
+   "gt_lane_px": 4560
+  },
+  {
+   "file": "GH030169_MP4-0075_jpg.rf.a3ffb0e08b9e0d104494de5ad2248d21.jpg",
+   "coco_image_id": 97,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 49090,
+   "sha256": "59eb47c83a6105f7d83bf3059bbbebf76c7a1df3b41ed14d856b6dce69791d66",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 3
+   },
+   "polygons": 9,
+   "gt_lane_px": 5361
+  },
+  {
+   "file": "GH030169_MP4-0082_jpg.rf.86ea85bb6d33f0a4d341ec96b7cc65d9.jpg",
+   "coco_image_id": 103,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30852,
+   "sha256": "7d20fc90a5d71b3147e629a832294286f157f27754cb8348b71ee8a9b42d11a4",
+   "annotations": 6,
+   "annotations_by_class": {
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 2650
+  },
+  {
+   "file": "GH030169_MP4-0083_jpg.rf.44bbcf9bf71de1874f290e173f9a1ba3.jpg",
+   "coco_image_id": 93,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 52551,
+   "sha256": "93f9c6c2ea2b3ef3f59b6af19361314a23e36408825e3daf33cd2eeb84949b59",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 3
+   },
+   "polygons": 8,
+   "gt_lane_px": 5182
+  },
+  {
+   "file": "GH030169_MP4-0083_jpg.rf.c599aaae3d45b5bb749d05dc5b7c498d.jpg",
+   "coco_image_id": 123,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30026,
+   "sha256": "9f3571ba99fe9d20a50dafa3f0e929417e533f8500436090d36abe30dc3b6a75",
+   "annotations": 6,
+   "annotations_by_class": {
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 1398
+  },
+  {
+   "file": "GH030169_MP4-0087_jpg.rf.054df205b720ea3e5acc446fddf4db27.jpg",
+   "coco_image_id": 120,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31495,
+   "sha256": "479100a12f457bdc06cf41ccc530b7f8d176a512fe6274273f42f756e8205465",
+   "annotations": 6,
+   "annotations_by_class": {
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 3074
+  },
+  {
+   "file": "GH030169_MP4-0089_jpg.rf.f31dedb61cfd24f425066a2b621b913f.jpg",
+   "coco_image_id": 141,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31523,
+   "sha256": "60f5ae581c44c8f8cc40d62b5187db9553b829ee74bc28f1868fa77e234a66e0",
+   "annotations": 6,
+   "annotations_by_class": {
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 1359
+  },
+  {
+   "file": "GH030169_MP4-0103_jpg.rf.133781070615afc386d306d6b9e559f4.jpg",
+   "coco_image_id": 7,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 52254,
+   "sha256": "63128c054f8edec16cb5a18617c095dfeb7ff7d3bef08f32ca08c2ba297a01b8",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 3
+   },
+   "polygons": 8,
+   "gt_lane_px": 5270
+  },
+  {
+   "file": "GH030169_MP4-0103_jpg.rf.cb3ebdc64a7d71797e0c9afcee82a458.jpg",
+   "coco_image_id": 62,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 35113,
+   "sha256": "7cafe499f21a119044b2ee91b44b776a9634d0a0a46a64e0d5a86fd8d59590f9",
+   "annotations": 26,
+   "annotations_by_class": {
+    "LC": 2,
+    "LD": 16,
+    "MD": 6,
+    "RC": 2
+   },
+   "polygons": 26,
+   "gt_lane_px": 4218
+  },
+  {
+   "file": "GH030169_MP4-0109_jpg.rf.29678c87e3427dfbd75d6acee9f2c8c6.jpg",
+   "coco_image_id": 38,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 52413,
+   "sha256": "3c4fdebfec335d16b5236151c10333fe5cf961a319b229be6bb10383f8f4ed3d",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 3
+   },
+   "polygons": 8,
+   "gt_lane_px": 5542
+  },
+  {
+   "file": "GH030169_MP4-0112_jpg.rf.defec5b46860afa9e723bf0be773af0e.jpg",
+   "coco_image_id": 42,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 53168,
+   "sha256": "3f1ce557c014c206fa8a81edc846308bf2bcec23f41ca00f5570f521242941e0",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 3
+   },
+   "polygons": 7,
+   "gt_lane_px": 6204
+  },
+  {
+   "file": "GH030169_MP4-0127_jpg.rf.6199d0ef50d9d31b5094d7251a66d242.jpg",
+   "coco_image_id": 85,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40959,
+   "sha256": "24c6f7d410f887ef742cc91d73accdad35949b245ffa2b7a27c71a4441de4dcb",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 5766
+  },
+  {
+   "file": "GH030169_MP4-0131_jpg.rf.bbcb88e00acafb11f149f7ad3adc8180.jpg",
+   "coco_image_id": 84,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 58159,
+   "sha256": "23ef116bf04cbcd0f89ac03e1fbc7f01c935a23fbe201f165d362738564f15d8",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LD": 4,
+    "MD": 2,
+    "RD": 2
+   },
+   "polygons": 8,
+   "gt_lane_px": 3002
+  },
+  {
+   "file": "GH030169_MP4-0140_jpg.rf.c97fe796c57e6363a2556396ca898511.jpg",
+   "coco_image_id": 98,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 45487,
+   "sha256": "7efe8dd2f5436d0924a590253261f6a4f8239e851df013a9f42a44844fda05a2",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LD": 3,
+    "MD": 1,
+    "RC": 1,
+    "RD": 4
+   },
+   "polygons": 9,
+   "gt_lane_px": 2854
+  },
+  {
+   "file": "GH030169_MP4-0146_jpg.rf.b0f67dbd040ccc194c552c95a8aa1f53.jpg",
+   "coco_image_id": 112,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31307,
+   "sha256": "9e353e02ad795475507eb239f1430a0dc30b756fa6ff1cc285d881db1c915b90",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 3701
+  },
+  {
+   "file": "GH030169_MP4-0149_jpg.rf.51a78fdc0a661d2107e1665cc2e813a5.jpg",
+   "coco_image_id": 135,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32957,
+   "sha256": "0e9e38f9557c718411c010b0aa1a4d69765fe3e4c8ea7c1a011cc4694bd29479",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 6022
+  },
+  {
+   "file": "GH030169_MP4-0151_jpg.rf.f12bc492a46c2767cf548ecd8b21331c.jpg",
+   "coco_image_id": 125,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38761,
+   "sha256": "3a2ca5d07d3eddce8e7dcb04467520716a5e1c24205052dedad84789d51ca585",
+   "annotations": 12,
+   "annotations_by_class": {
+    "LD": 5,
+    "MD": 1,
+    "RC": 2,
+    "RD": 4
+   },
+   "polygons": 12,
+   "gt_lane_px": 4695
+  },
+  {
+   "file": "GH030169_MP4-0157_jpg.rf.b6e6106e1dd4a730228cfb5b1ce05cda.jpg",
+   "coco_image_id": 147,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32994,
+   "sha256": "e100e8d6ab604db54e72fa6d361d7726a7ea447978dc529019a65a58ad40e9b2",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 2
+   },
+   "polygons": 7,
+   "gt_lane_px": 5126
+  },
+  {
+   "file": "GH030169_MP4-0167_jpg.rf.70f1402d3aa122093025e1fb30a6323d.jpg",
+   "coco_image_id": 139,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 36001,
+   "sha256": "e201df1dbf763962f0f3e80e588503260e791e37614300a4c4e1cd56702aad1a",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 5187
+  },
+  {
+   "file": "GH030169_MP4-0182_jpg.rf.14a118bfc5ec6b556b4a88eff0c93dac.jpg",
+   "coco_image_id": 140,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31010,
+   "sha256": "f6ee3519a5f29392070bd8fdb8b14f676f341be82a97fb9f79815ae5b0dfaf2a",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 5934
+  },
+  {
+   "file": "GH030169_MP4-0187_jpg.rf.58b31466ecd54330e2bf6f0e26711363.jpg",
+   "coco_image_id": 138,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37126,
+   "sha256": "fa10c306dd931022ccf62644958598b31e05374f3e2c32dc3527bf35e5a7351b",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 5593
+  },
+  {
+   "file": "GH030169_MP4-0190_jpg.rf.14078448c2cebc1acc23678c118e4f30.jpg",
+   "coco_image_id": 153,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 36762,
+   "sha256": "a7b66b4f658e6428a1dbace4276e41012a0aeefb0108fcca3bfe8485eaae1730",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 5483
+  },
+  {
+   "file": "GH030169_MP4-0195_jpg.rf.1bfce92c1169648e13095fb52ddf0b2c.jpg",
+   "coco_image_id": 158,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29639,
+   "sha256": "c96dd968066902c1a135e44b9c72e2bbe0a403c362dd07f90fd43fda9d33149a",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 4176
+  },
+  {
+   "file": "GH030169_MP4-0197_jpg.rf.a2bd7f214e75ab9f5eb787f18d8c1640.jpg",
+   "coco_image_id": 168,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30467,
+   "sha256": "59d6fd2d825f6001bc91040b3a4f77ad7d71b64ec46755d9aef09aea0cf1c3fe",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 3939
+  },
+  {
+   "file": "GH030169_MP4-0201_jpg.rf.c0e6bbb2284553e6b744b5c9fadbc5d1.jpg",
+   "coco_image_id": 165,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 33353,
+   "sha256": "2d95b7694456530799916d56ac94ad6da8d88b16f3b63f4699d7a68b6bd1711a",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 5584
+  },
+  {
+   "file": "GH030169_MP4-0204_jpg.rf.5aab192c9de1196b9cc50791a8fa1d83.jpg",
+   "coco_image_id": 179,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31641,
+   "sha256": "5dab59e1faf35ed0e31ae3acf5dc41fe5d0de27def841f8c2b9c89b418d6b2c2",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 5586
+  },
+  {
+   "file": "GH030169_MP4-0205_jpg.rf.1edc7390b24f4f6222fc5a39ee36355d.jpg",
+   "coco_image_id": 156,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 34563,
+   "sha256": "6894b5cbc971e3786d24cedd664970b5f7cc0e648e0a1d8c814082ed485cfff9",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 6144
+  },
+  {
+   "file": "GH030169_MP4-0217_jpg.rf.78b599a0a95b88063321bf1f5b07f85e.jpg",
+   "coco_image_id": 167,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 33238,
+   "sha256": "06064100c6ececd444816e40dd5ed2a0980dc186816aa8d8fc6de837e6afe218",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 5539
+  },
+  {
+   "file": "GH030169_MP4-0219_jpg.rf.a11f48d36dfe549e18653fe257858a08.jpg",
+   "coco_image_id": 171,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37195,
+   "sha256": "44762e8d40ce988c9fb01600b38b547ea1ec520b45343bb4e4eac92beb68a640",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 4999
+  },
+  {
+   "file": "GH030169_MP4-0221_jpg.rf.b65fe3a235b16c3394eb745d8b385f4f.jpg",
+   "coco_image_id": 169,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32491,
+   "sha256": "e43eea83e4d5874a6b420d9d48e7fd5c309286c3dba37ec6a8546a8978d7e4cb",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 7300
+  },
+  {
+   "file": "GH030169_MP4-0223_jpg.rf.c5b2de915e767b32b14be8a9cda84936.jpg",
+   "coco_image_id": 162,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37629,
+   "sha256": "91923a760932b212e15ae4a5059896d1206d2ef1b32d28a07f11c96b145acad5",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 3603
+  },
+  {
+   "file": "GH030169_MP4-0224_jpg.rf.171421bf32236f420aef88f487750fbd.jpg",
+   "coco_image_id": 163,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37245,
+   "sha256": "3275cad3ceba30ba26f515d963fcb67289f6e229e7cfac09735b8b21a36b334d",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 2,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 4459
+  },
+  {
+   "file": "GH030169_MP4-0227_jpg.rf.8621e05e9d567891bdc46934971e2899.jpg",
+   "coco_image_id": 172,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31618,
+   "sha256": "ff66d04b7d81182a1db1219fa3da4fc7eb442f687da400c9ae460ea62eeaa11c",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 5899
+  },
+  {
+   "file": "GH030169_MP4-0228_jpg.rf.193b629a4f27689dd2343f79fe46b88b.jpg",
+   "coco_image_id": 177,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 35634,
+   "sha256": "34b0d56f99ab08291428597de533b9ce91ea187d92f4b7edda9501e323ffd1f9",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 6098
+  },
+  {
+   "file": "GH030169_MP4-0230_jpg.rf.90094594d3f28f966e402d52835e8d15.jpg",
+   "coco_image_id": 164,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32596,
+   "sha256": "6cf8746eada67f57c5b2b917c690f868fc11bfbd9354f83f02f4408337a33354",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 4,
+    "RC": 1
+   },
+   "polygons": 6,
+   "gt_lane_px": 5135
+  },
+  {
+   "file": "GX010104_MP4-0030_jpg.rf.60abff81db41e42cdec9f120ce6c7028.jpg",
+   "coco_image_id": 17,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26560,
+   "sha256": "fc6b085d601432feadc778f60936b8daf799838fab78c76e8bd27f3099399109",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 1,
+    "RC": 1,
+    "RD": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7267
+  },
+  {
+   "file": "GX010104_MP4-0031_jpg.rf.f8b31811e185b77a007f3179cc04c856.jpg",
+   "coco_image_id": 63,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26967,
+   "sha256": "5d01a772b5431e1c8de95b1a395de5c2d395d0f1b2bcba8d7bf9c944bc903389",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 1,
+    "RC": 1,
+    "RD": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 7414
+  },
+  {
+   "file": "GX010104_MP4-0035_jpg.rf.31d5fb5422890b9d34860830742ff9b3.jpg",
+   "coco_image_id": 31,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26705,
+   "sha256": "8db7c80e5b35ad1e87ce1785fbe9903e5ecd584cbf7b125e72434cdb02054466",
+   "annotations": 6,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 2,
+    "RC": 1,
+    "RD": 2
+   },
+   "polygons": 6,
+   "gt_lane_px": 9244
+  },
+  {
+   "file": "GX010104_MP4-0055_jpg.rf.2a57caef548a913ac1e4b138fe2e5994.jpg",
+   "coco_image_id": 79,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26764,
+   "sha256": "152e1c58aafdfbc60ddfb3119ff9b427efa9b8b97ffee5c0dd05bd727ad9364b",
+   "annotations": 12,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 4,
+    "RC": 1,
+    "RD": 6
+   },
+   "polygons": 12,
+   "gt_lane_px": 6155
+  },
+  {
+   "file": "GX010104_MP4-0057_jpg.rf.30a6f2cc4aa5c996bbcb27953099eb81.jpg",
+   "coco_image_id": 64,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25840,
+   "sha256": "95cda0b86439e1f7477fa84cb6c76eec7f61ae020fa19d29948ba8aab5545ad3",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 3,
+    "RC": 1,
+    "RD": 4
+   },
+   "polygons": 9,
+   "gt_lane_px": 7514
+  },
+  {
+   "file": "GX010104_MP4-0107_jpg.rf.fe6c412f7d663da55cf07e53d34d2e2d.jpg",
+   "coco_image_id": 57,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27073,
+   "sha256": "851949b936a506eb0f0a5fa06adb6abff58b43b2e2fa758fd9c44658894eab3d",
+   "annotations": 12,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 7,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 12,
+   "gt_lane_px": 5880
+  },
+  {
+   "file": "GX010104_MP4-0125_jpg.rf.a8cde9900fbb1577a7d433ad476af674.jpg",
+   "coco_image_id": 75,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26967,
+   "sha256": "226ef448841a0c14c6aa139dac05acf78fefa41d7a3289e18044b5fa4ec09724",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 2,
+    "RC": 1,
+    "RD": 4
+   },
+   "polygons": 8,
+   "gt_lane_px": 6621
+  },
+  {
+   "file": "GX010104_MP4-0133_jpg.rf.b1fc587a4c01dc6d01ffe8747b822f67.jpg",
+   "coco_image_id": 106,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27155,
+   "sha256": "658bb0dea0b734fed772c404d50fd0470a54c5ceaf40b13e7f1aafe34099ebd3",
+   "annotations": 13,
+   "annotations_by_class": {
+    "LC": 3,
+    "LD": 6,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 13,
+   "gt_lane_px": 5342
+  },
+  {
+   "file": "GX010104_MP4-0137_jpg.rf.24eca3a991fdf85552ca8dbf1db0eb08.jpg",
+   "coco_image_id": 102,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25659,
+   "sha256": "e818aab95ff5106a22d8a51d5bdfd52bb773f8dae608767dada88c73f56144bb",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 2,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 7,
+   "gt_lane_px": 7619
+  },
+  {
+   "file": "GX010104_MP4-0144_jpg.rf.119f4534fc0a335f900172b8e1357e07.jpg",
+   "coco_image_id": 107,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27265,
+   "sha256": "479a507a920df4bc01d80fc0484e85cddd92ef197d10654ee2bb07866dbc4f1a",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 3,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 8,
+   "gt_lane_px": 8375
+  },
+  {
+   "file": "GX010104_MP4-0145_jpg.rf.b59b8fbac12bba89893755079f2751d0.jpg",
+   "coco_image_id": 155,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25266,
+   "sha256": "89891149b673f0a0417b65300cf66edc90fc1961ffaca031f9b089e8352e42ee",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 3,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 8,
+   "gt_lane_px": 10977
+  },
+  {
+   "file": "GX010104_MP4-0146_jpg.rf.3af624431662c939f513be45de72c31c.jpg",
+   "coco_image_id": 137,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26441,
+   "sha256": "0b88445761fb396f20f6aef344649a0156e0ded32355383892b3338d876e64f4",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 4,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 9,
+   "gt_lane_px": 8882
+  },
+  {
+   "file": "GX010104_MP4-0156_jpg.rf.3a609124efcc60b557001d1181e5cd24.jpg",
+   "coco_image_id": 130,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26227,
+   "sha256": "649245bdc0dcde331b59deec16c6de5643ab5a085473859b09b2a90a2145194e",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 2,
+    "LD": 3,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 9,
+   "gt_lane_px": 5541
+  },
+  {
+   "file": "GX010104_MP4-0157_jpg.rf.58f2708a01f962667cae9c646aaa9d90.jpg",
+   "coco_image_id": 149,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29285,
+   "sha256": "1be85742ecff9c90d3bbeef2edd2dec1feff77df0b334b1974be35b6c105f615",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 4,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 9,
+   "gt_lane_px": 4823
+  },
+  {
+   "file": "GX010104_MP4-0158_jpg.rf.a58d4ec6b60f47a6f5f0043a1d32aa5e.jpg",
+   "coco_image_id": 126,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27912,
+   "sha256": "7fbb74a61c03b508a86a3f89677a98e0d06a220898980780d828010da39448c5",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 4,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 9,
+   "gt_lane_px": 5313
+  },
+  {
+   "file": "GX010104_MP4-0182_jpg.rf.44cb025b7bd89a18c9f6d90c332cfc4d.jpg",
+   "coco_image_id": 146,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28820,
+   "sha256": "b8fd32704740650ffb217ced2609961a93dd12ad4e5883aeb07299108b686401",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 5,
+    "RC": 1,
+    "RD": 2
+   },
+   "polygons": 9,
+   "gt_lane_px": 5884
+  },
+  {
+   "file": "GX010104_MP4-0196_jpg.rf.d7d508d858a87f207798f47048df32b6.jpg",
+   "coco_image_id": 151,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30984,
+   "sha256": "1f418ee948e1056aa411355c57db1f6ff18572872020411099f21a35bce775b8",
+   "annotations": 10,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 5,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 10,
+   "gt_lane_px": 7867
+  },
+  {
+   "file": "GX010104_MP4-0216_jpg.rf.642a06764dc2eda93cffcd9e022dce6c.jpg",
+   "coco_image_id": 161,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31020,
+   "sha256": "fd59eeda2c592d43470d8dd21f47cde16201b599d259d223bc503c7f74b33ec1",
+   "annotations": 11,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 6,
+    "RC": 1,
+    "RD": 3
+   },
+   "polygons": 11,
+   "gt_lane_px": 7131
+  },
+  {
+   "file": "GX010104_MP4-0373_jpg.rf.24386f0fb676fa2d2a452fbe8221d147.jpg",
+   "coco_image_id": 190,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31667,
+   "sha256": "e499fd010e37bd60ddafecb4648cad892c5b347f42cceeb53364c62d9fff1d5d",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "LD": 4,
+    "RC": 1,
+    "RD": 2
+   },
+   "polygons": 8,
+   "gt_lane_px": 9043
+  },
+  {
+   "file": "GX010104_MP4-0513_jpg.rf.5664eb29343c8aa59f8407f8be3a0e53.jpg",
+   "coco_image_id": 182,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31360,
+   "sha256": "4df8923896530732fbd535bd05ac4d27f20c4a4484ab99c224ab4aae84781e13",
+   "annotations": 2,
+   "annotations_by_class": {
+    "LC": 1,
+    "RC": 1
+   },
+   "polygons": 2,
+   "gt_lane_px": 1671
+  },
+  {
+   "file": "My-Project_mp4-0022_jpg.rf.f0a9db408a92cd916232ed0bf5d92ab7.jpg",
+   "coco_image_id": 12,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 60576,
+   "sha256": "75f4d5d7fdfa75c36ec720061b78eb3911b3bd9e2c891522b332baf159dfb8e5",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 618
+  },
+  {
+   "file": "My-Project_mp4-0032_jpg.rf.3a4ee25e49b8efb94bfee5ee9059d21a.jpg",
+   "coco_image_id": 14,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 77131,
+   "sha256": "79b8a89b990228702788a434892e46e6813becffe9138ea8f00dcebd40e68fe0",
+   "annotations": 1,
+   "annotations_by_class": {
+    "MD": 1
+   },
+   "polygons": 1,
+   "gt_lane_px": 806
+  },
+  {
+   "file": "My-Project_mp4-0041_jpg.rf.27715bb24cc90b94764871ce8388efad.jpg",
+   "coco_image_id": 32,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 56451,
+   "sha256": "803a4debecdc266980f3dfa88990d4b2c5b1d74a3c689d816873575be12247f6",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 378
+  },
+  {
+   "file": "My-Project_mp4-0053_jpg.rf.2386943f55abfba4a180ac8b4522339f.jpg",
+   "coco_image_id": 52,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 59367,
+   "sha256": "e4d108cd88ebb645fb1594445331a617e7d4831358d65b0aba121d809a6ecf74",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 1254
+  },
+  {
+   "file": "My-Project_mp4-0056_jpg.rf.6dac475619ab9c797a4731f04c565079.jpg",
+   "coco_image_id": 49,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 66673,
+   "sha256": "d5645210a0df97d0bfbc103ad259882d711895d17bd246438ef318eb07078be7",
+   "annotations": 1,
+   "annotations_by_class": {
+    "MD": 1
+   },
+   "polygons": 1,
+   "gt_lane_px": 462
+  },
+  {
+   "file": "My-Project_mp4-0061_jpg.rf.a312f8245accfa72a096b9b7898f4376.jpg",
+   "coco_image_id": 66,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 70413,
+   "sha256": "df35a1a905a69f4f689553ca7173580551f86abb91fa5a054c9c71549fc0d75c",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 1092
+  },
+  {
+   "file": "My-Project_mp4-0065_jpg.rf.9d0e61d749a2d7ca66eac2e1713f036a.jpg",
+   "coco_image_id": 71,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 57678,
+   "sha256": "c6661567ea852db5ca537867a0ffe9a127a6032fb515fc826220ec79bbec6df7",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 410
+  },
+  {
+   "file": "My-Project_mp4-0072_jpg.rf.374dc2663c8095c0b33b1df453ebeb16.jpg",
+   "coco_image_id": 83,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 48388,
+   "sha256": "0a570dfd4afb75f3f7f5532836373752ff2177dabaf1586c5ae9002511dc3fa2",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 627
+  },
+  {
+   "file": "My-Project_mp4-0079_jpg.rf.04896c4452272898b3a63a59dd0cb839.jpg",
+   "coco_image_id": 86,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 60412,
+   "sha256": "c2fd3a1a563a977fccf746dab9688a951dfd2c5aecc850ef95b4a85af34d417c",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 2
+   },
+   "polygons": 2,
+   "gt_lane_px": 312
+  },
+  {
+   "file": "My-Project_mp4-0096_jpg.rf.d8711799d23e9a7e82d9db47c7cf3503.jpg",
+   "coco_image_id": 124,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 58492,
+   "sha256": "22b1d7698541c39b2a8770fadac15f0fbcf9182ac5f40dc11082e850df5dfa70",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 3
+   },
+   "polygons": 3,
+   "gt_lane_px": 378
+  },
+  {
+   "file": "My-Project_mp4-0112_jpg.rf.573fec2ad5b6911b83b0b221c3c68c76.jpg",
+   "coco_image_id": 39,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 57266,
+   "sha256": "a29dd73203d2047976792deb27dc253e905beb9934f791c0555edfec751372da",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 2
+   },
+   "polygons": 2,
+   "gt_lane_px": 186
+  },
+  {
+   "file": "My-Project_mp4-0126_jpg.rf.eaea07c326fc68ef8481b462422856b8.jpg",
+   "coco_image_id": 65,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 44684,
+   "sha256": "18c90756d35529dff2eef8323346f262f8ea7a00c234fe644c1e2e8a4a9f872f",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 2
+   },
+   "polygons": 2,
+   "gt_lane_px": 1324
+  },
+  {
+   "file": "My-Project_mp4-0132_jpg.rf.992d2aab7a92fc4d61b55b92f783f2e2.jpg",
+   "coco_image_id": 74,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 53435,
+   "sha256": "800c254fd936e2fdc31f1735ab7281dc1b835b0bf9822c349e161a0614352f42",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 2
+   },
+   "polygons": 2,
+   "gt_lane_px": 814
+  },
+  {
+   "file": "My-Project_mp4-0147_jpg.rf.36ee841c777243cf76f3495409b5375c.jpg",
+   "coco_image_id": 109,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 44830,
+   "sha256": "91517f203a980e62b15e1f51490e6c9df63d57d8a144ec04a8cf12fc30b4c5f7",
+   "annotations": 1,
+   "annotations_by_class": {
+    "MD": 1
+   },
+   "polygons": 1,
+   "gt_lane_px": 901
+  },
+  {
+   "file": "My-Project_mp4-0160_jpg.rf.36dd7550a7ae509a563805bc07afd72a.jpg",
+   "coco_image_id": 128,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 47836,
+   "sha256": "1fb9ba191445a0b1213581719e636c70310fd1e74d54d9b3e520e68efe09a306",
+   "annotations": 1,
+   "annotations_by_class": {
+    "MD": 1
+   },
+   "polygons": 1,
+   "gt_lane_px": 209
+  },
+  {
+   "file": "My-Project_mp4-0179_jpg.rf.f41b4996fb886a60496a4a882907801e.jpg",
+   "coco_image_id": 152,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 48037,
+   "sha256": "f67a4b93fd9a12db1fb89ecd5a4453fb002fb6629c9838fe9adb1d619df651c9",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 2
+   },
+   "polygons": 2,
+   "gt_lane_px": 479
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0004_jpg.rf.a5d5e851b9ff28abec133108faf796f3.jpg",
+   "coco_image_id": 0,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27664,
+   "sha256": "13e3327e0df0a054186ec1e5e268c37a667724324b5879438a34eed6ff4eb6f9",
+   "annotations": 34,
+   "annotations_by_class": {
+    "LC": 2,
+    "LD": 12,
+    "MD": 3,
+    "RD": 17
+   },
+   "polygons": 34,
+   "gt_lane_px": 2930
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0016_jpg.rf.0933cfde69df65a686c6d7facfbbb85a.jpg",
+   "coco_image_id": 15,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27544,
+   "sha256": "e65c142eb1994f5c1509f2237c6ba9fa3c5ee00c50e8cc1f3cde46484f0c5f52",
+   "annotations": 38,
+   "annotations_by_class": {
+    "LC": 2,
+    "LD": 12,
+    "MD": 3,
+    "RC": 1,
+    "RD": 20
+   },
+   "polygons": 38,
+   "gt_lane_px": 3279
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0019_jpg.rf.f4633b10b9481489e1b00ea06c948e8c.jpg",
+   "coco_image_id": 1,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27619,
+   "sha256": "a00a74ae1e2d8e03123660958c932239f600a7df6226283bf3bc488044dcfb56",
+   "annotations": 37,
+   "annotations_by_class": {
+    "LC": 2,
+    "LD": 12,
+    "MD": 3,
+    "RC": 1,
+    "RD": 19
+   },
+   "polygons": 37,
+   "gt_lane_px": 3480
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0137_jpg.rf.765d50875e72a0abde12843afe0ccead.jpg",
+   "coco_image_id": 27,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28134,
+   "sha256": "364a917eeb329567305abeb80213be385d8917fb6d48f5c9986dffdd611e9843",
+   "annotations": 7,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 5,
+    "RC": 1
+   },
+   "polygons": 7,
+   "gt_lane_px": 2730
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0145_jpg.rf.0be1c8c713038ae33fd96dc9fded2430.jpg",
+   "coco_image_id": 20,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28391,
+   "sha256": "73490fafe36addea54bbb31bcaa8d78f1d447fe441c569808ab2bbbdddcb6ec8",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 1
+   },
+   "polygons": 8,
+   "gt_lane_px": 2945
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0181_jpg.rf.ac338c17bc4e286c9170032e41e00a0e.jpg",
+   "coco_image_id": 91,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28682,
+   "sha256": "ce03c3c0322ab90f77071e4468352f67642e3e4eeac5778ad6f5bae0864c370e",
+   "annotations": 8,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 6,
+    "RC": 1
+   },
+   "polygons": 8,
+   "gt_lane_px": 2900
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0218_jpg.rf.884b0efaf9a1e6c4925b02c7ad2267dd.jpg",
+   "coco_image_id": 119,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27512,
+   "sha256": "2dc1fda9ba53450b6b23ae0dfed9924dc6289b861df3440ff88a7e980f2ab2b3",
+   "annotations": 10,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 8,
+    "RC": 1
+   },
+   "polygons": 10,
+   "gt_lane_px": 2794
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0222_jpg.rf.858ffb27352f3b4f37681519b1bc56e0.jpg",
+   "coco_image_id": 114,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27615,
+   "sha256": "037210701e7af2acf173b6d4d414f5d1cc0c3a58fac8111ba9824d238c06f35c",
+   "annotations": 9,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 7,
+    "RC": 1
+   },
+   "polygons": 9,
+   "gt_lane_px": 2802
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0258_jpg.rf.aca73108740474b4e56ec6b025e867fe.jpg",
+   "coco_image_id": 117,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26846,
+   "sha256": "3767332c0b6c5859e6076cb0dae398b72837d125e70dbd305485c655dbee71f8",
+   "annotations": 11,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 9,
+    "RC": 1
+   },
+   "polygons": 11,
+   "gt_lane_px": 2844
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0269_jpg.rf.7960c927198ec21fdbc62dbc8ca45d48.jpg",
+   "coco_image_id": 8,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27331,
+   "sha256": "05d7825fe3346dc57d0d213f3f0cbdab7ade0506595ba5d708622687294b1a9f",
+   "annotations": 11,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 9,
+    "RC": 1
+   },
+   "polygons": 11,
+   "gt_lane_px": 2768
+  },
+  {
+   "file": "Untitled-video-Made-with-Clipchamp_mp4-0284_jpg.rf.cd0ad47f09ef52d1272a76177bd74f57.jpg",
+   "coco_image_id": 48,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26347,
+   "sha256": "554cd47aa4b133d0d7aa694bc9602f7068f2e3352973556b1c7157375fe253dd",
+   "annotations": 10,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 8,
+    "RC": 1
+   },
+   "polygons": 10,
+   "gt_lane_px": 2731
+  },
+  {
+   "file": "Video_mp4-0019_jpg.rf.397324c61834d0c8e08408135e294120.jpg",
+   "coco_image_id": 23,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 35443,
+   "sha256": "6c1bb2d1ac90c5b48b0b6595a738c184065a975aca38b1f60d0ae22df3fafd6a",
+   "annotations": 4,
+   "annotations_by_class": {
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6397
+  },
+  {
+   "file": "Video_mp4-0027_jpg.rf.f3b9c5a0cf6b02d6772a44146f43e378.jpg",
+   "coco_image_id": 36,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 36407,
+   "sha256": "e77aaebbdf9f34c2d55cc80f9acd52f9e83cfaaad0725a1da7018874deb63b67",
+   "annotations": 4,
+   "annotations_by_class": {
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 4565
+  },
+  {
+   "file": "Video_mp4-0036_jpg.rf.018d3f5fdb2666be6e6c80118f9c8373.jpg",
+   "coco_image_id": 59,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38933,
+   "sha256": "a94017198bf7730f8ccc9a962b178d71ce2963e5d0191af7f9b23663f7b11e6a",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 4938
+  },
+  {
+   "file": "Video_mp4-0045_jpg.rf.c8e55f04a250db04fe932abd8eaee060.jpg",
+   "coco_image_id": 16,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40900,
+   "sha256": "34884b13ad2cf331c4db794af71d29acfc16b7f980094a651410b49203929aee",
+   "annotations": 1,
+   "annotations_by_class": {
+    "RC": 1
+   },
+   "polygons": 1,
+   "gt_lane_px": 4592
+  },
+  {
+   "file": "Video_mp4-0052_jpg.rf.95aa4892a681abcaf2b63ae0604b59f6.jpg",
+   "coco_image_id": 6,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40636,
+   "sha256": "0cb60e4addf4dc345b01bd80ef99cbe8ecc22adc1b055a67b8592af238491b11",
+   "annotations": 4,
+   "annotations_by_class": {
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6003
+  },
+  {
+   "file": "Video_mp4-0061_jpg.rf.6c11ca5ea94b24123a6acb8655148dae.jpg",
+   "coco_image_id": 25,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38658,
+   "sha256": "fab2db76ee9b94d98c575a5ea802182bbbe9ead53ddfb6cf78135ec5640805ec",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 4529
+  },
+  {
+   "file": "Video_mp4-0083_jpg.rf.230dfe26ab7af07b369f4a5b46dc5a65.jpg",
+   "coco_image_id": 47,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 39896,
+   "sha256": "be7ecca8a2832214ddd677be4d97e5e6f8009699b8e9309e901061176edf77e9",
+   "annotations": 4,
+   "annotations_by_class": {
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 6436
+  },
+  {
+   "file": "Video_mp4-0108_jpg.rf.4f22d8c59921e5fb827d08ef204307d7.jpg",
+   "coco_image_id": 77,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38658,
+   "sha256": "6502cf8db7d3c92e95ba03091af0064e84ed3828f16ff77cd2c4a0c6f386e456",
+   "annotations": 3,
+   "annotations_by_class": {
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 4386
+  },
+  {
+   "file": "Video_mp4-0132_jpg.rf.88d4594291b91eb7cf24d9166a4becf2.jpg",
+   "coco_image_id": 108,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38766,
+   "sha256": "736d9f89484d763b47bb806a72e4e4ba3a401dc6ff8d550b9b0f00017fd81a9c",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 2,
+   "gt_lane_px": 4441
+  },
+  {
+   "file": "Video_mp4-0135_jpg.rf.e5a6ee8be52d0979efaac80cf3025fc1.jpg",
+   "coco_image_id": 110,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 39925,
+   "sha256": "d9af12268fbae0c23b89ed181e0c597eeab3b9fdf099c85ef6aa150fb0ae86f3",
+   "annotations": 2,
+   "annotations_by_class": {
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 2,
+   "gt_lane_px": 4466
+  },
+  {
+   "file": "Video_mp4-0196_jpg.rf.8e5ed31581d2b0eeb4fb6c3ee0040b77.jpg",
+   "coco_image_id": 127,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 40781,
+   "sha256": "4806b73d5676cac19f7bd90ccf71bb7830428121140ebfc7557f92944e493d1a",
+   "annotations": 2,
+   "annotations_by_class": {
+    "LC": 1,
+    "RC": 1
+   },
+   "polygons": 2,
+   "gt_lane_px": 4196
+  },
+  {
+   "file": "Video_mp4-0214_jpg.rf.6ccb1ded6b96987e0c4b794ffa5611b6.jpg",
+   "coco_image_id": 131,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 39216,
+   "sha256": "48d42c110a9981ebbfb0eae43163f82fbc6cf38fa7ef3148f52972859fdaf2b7",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 5247
+  },
+  {
+   "file": "Video_mp4-0245_jpg.rf.c76e7594b8d8ce3c823f212b6a08a27e.jpg",
+   "coco_image_id": 18,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38665,
+   "sha256": "38397c8897f56713902f605dcb313cb45f8038d059a42cb388fdbc9ee51c27f1",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 4882
+  },
+  {
+   "file": "Video_mp4-0270_jpg.rf.0e57449c32ae64898b6633123c10f5e1.jpg",
+   "coco_image_id": 21,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 37635,
+   "sha256": "7bd3f3e3d731e549b44075b4c7ebb5a041c6d5d17e55f887a7c9a60955a61a0c",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 5231
+  },
+  {
+   "file": "Video_mp4-0281_jpg.rf.c62524d2d19419c8356abf3b1939d550.jpg",
+   "coco_image_id": 9,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 38434,
+   "sha256": "8d60839c87ea8296acd87e9679501bf04df4e45d4733ad533e93d7feaba3e867",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 5138
+  },
+  {
+   "file": "Video_mp4-0304_jpg.rf.28218da23b9b1adb4a52a1c6db512864.jpg",
+   "coco_image_id": 43,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 36573,
+   "sha256": "8be5da875ee3ec0a707fc9b9b3a954d16efb5ad45d6eb96c323340adc266a086",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 3,
+   "gt_lane_px": 6234
+  },
+  {
+   "file": "Video_mp4-0371_jpg.rf.81370eb6f02be741163c6422e7829316.jpg",
+   "coco_image_id": 56,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 34668,
+   "sha256": "6f90eadd326dc690ff7ebe1b507b4105c32949208ffa6132eb799378200b18d1",
+   "annotations": 10,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RC": 1,
+    "RD": 7
+   },
+   "polygons": 10,
+   "gt_lane_px": 5593
+  },
+  {
+   "file": "Video_mp4-0391_jpg.rf.a5a80ef458dc3be68abc8732ab8af221.jpg",
+   "coco_image_id": 70,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 34669,
+   "sha256": "0148851c2167cbb4303275d8f43d32958e884ee253d7a01d50daa72a366944bd",
+   "annotations": 11,
+   "annotations_by_class": {
+    "MD": 1,
+    "RD": 10
+   },
+   "polygons": 11,
+   "gt_lane_px": 2838
+  },
+  {
+   "file": "Video_mp4-0392_jpg.rf.735d8e2fae66a8af1bef98000a6da25c.jpg",
+   "coco_image_id": 88,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 34467,
+   "sha256": "cbb7b831885ac0ec6cea830148c34de52f3e7947d374127f078504b7adaee7e0",
+   "annotations": 11,
+   "annotations_by_class": {
+    "MD": 1,
+    "RD": 10
+   },
+   "polygons": 11,
+   "gt_lane_px": 3321
+  },
+  {
+   "file": "Video_mp4-0463_jpg.rf.851eb3c755447c15f17acceece1531b7.jpg",
+   "coco_image_id": 105,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 35976,
+   "sha256": "3300419120ed73b42d96e81c1c544fe6452ea96a69687719ba297a4c4521910c",
+   "annotations": 16,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 1,
+    "RD": 14
+   },
+   "polygons": 16,
+   "gt_lane_px": 3240
+  },
+  {
+   "file": "Video_mp4-0522_jpg.rf.b40095a6b130af93d892a2e0fcb4d7d2.jpg",
+   "coco_image_id": 116,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 32937,
+   "sha256": "023ad45858b9ae29cb92e4353e8cd29ea93353ca25770dc832deeef07d301388",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 2,
+    "MD": 1,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 5498
+  },
+  {
+   "file": "nextsync_MP4-0005_jpg.rf.ec40b59caca1b037f5da47ee42743aea.jpg",
+   "coco_image_id": 26,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31079,
+   "sha256": "4adde0d9defa2c54b4a954cf830084e61230001e6c82ddf92fc00f37118afe6c",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2214
+  },
+  {
+   "file": "nextsync_MP4-0144_jpg.rf.88fa8bf4f17698bc76a950d02bc838b5.jpg",
+   "coco_image_id": 28,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25237,
+   "sha256": "8afd644172a48a21a9f310743a3f7be6860dab41ffc2c1c34c42344e6dc97500",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 1926
+  },
+  {
+   "file": "nextsync_MP4-0147_jpg.rf.ecb1528e89df4e116b4bbb173b298620.jpg",
+   "coco_image_id": 35,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 22981,
+   "sha256": "8ec67bd70ec5f9af423b2b76c5fe8a2e5d02e1af7e2c376cfc681bbb68fc33d5",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2
+   },
+   "polygons": 3,
+   "gt_lane_px": 1412
+  },
+  {
+   "file": "nextsync_MP4-0198_jpg.rf.72662903011cba1fe5af740a6aa46046.jpg",
+   "coco_image_id": 51,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 23116,
+   "sha256": "45ce5ddbe1ba9dd5f9502c0f7eb559e3ddc74fd282e757c494fab11d21f3bc64",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2416
+  },
+  {
+   "file": "nextsync_MP4-0219_jpg.rf.45e23eaf979f0e78d91c7eda3fe11a32.jpg",
+   "coco_image_id": 99,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26079,
+   "sha256": "6d806765dd39055beb259eb490cc42acb9fe5449eb5fbfd6090baa369c57f9df",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2082
+  },
+  {
+   "file": "nextsync_MP4-0256_jpg.rf.e3aa3ec5cc1e1e7a6e7fc5d4a10f2ceb.jpg",
+   "coco_image_id": 95,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 24921,
+   "sha256": "960f543f1e510d7bafd4b06523ab9933d758602403c36043661916b43a7e0b5c",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 1967
+  },
+  {
+   "file": "nextsync_MP4-0259_jpg.rf.cdfe136badd3a514bef24c2d43ca5e95.jpg",
+   "coco_image_id": 121,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25342,
+   "sha256": "bdb5dff6a4918b45bed3fd85956aed43ad433d591e82eb2260a81319078e8011",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 2
+   },
+   "polygons": 5,
+   "gt_lane_px": 2162
+  },
+  {
+   "file": "nextsync_MP4-0326_jpg.rf.99e2be6fa41a454a60f92bdcf05d0c6e.jpg",
+   "coco_image_id": 10,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25840,
+   "sha256": "5a35d05d25572590ee2b2fd644cbf7d7b671f91917cc9a5466e852d7c82a579d",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 1793
+  },
+  {
+   "file": "nextsync_MP4-0395_jpg.rf.1eea4a87964146b7611ee679ad5e4f14.jpg",
+   "coco_image_id": 4,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27251,
+   "sha256": "6d59401c786c6c96aa052a57e1606ee31743a8382cb418ef2deefe1dcd13ecb9",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2389
+  },
+  {
+   "file": "nextsync_MP4-0398_jpg.rf.8e85637d4f5f26a9e5fa02258d6f8c4b.jpg",
+   "coco_image_id": 5,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 27715,
+   "sha256": "6984669465a0c1556b70909cd7e408eac5fd3f1972c6669e3c9b5450fafcca60",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2427
+  },
+  {
+   "file": "nextsync_MP4-0410_jpg.rf.66fad6601c500c7d281723e3fb3a7f92.jpg",
+   "coco_image_id": 41,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 28881,
+   "sha256": "45ee27f5cb9c8355bf3b96a0542b912ae4cf5052980786ff0e927fb48876e9a5",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2174
+  },
+  {
+   "file": "nextsync_MP4-0418_jpg.rf.d4a12bca6be512041d78bda50aaf505b.jpg",
+   "coco_image_id": 54,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30149,
+   "sha256": "a4260fe579450a992024a9d36dc68fbf206c5a26bf629c6049ecfbe48fe09544",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2181
+  },
+  {
+   "file": "nextsync_MP4-0424_jpg.rf.89595edc5933fac033d896120d1a2d3f.jpg",
+   "coco_image_id": 46,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31877,
+   "sha256": "c28ad6868f319dbea2be75c20098c42a710019d0f08188d0b5f951f19635ff06",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 1990
+  },
+  {
+   "file": "nextsync_MP4-0531_jpg.rf.f4ad76115ce561b5f9e7dda7fefd895f.jpg",
+   "coco_image_id": 81,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 26284,
+   "sha256": "1865cd260bd106f7648ecdc249f9d14ba077652ea7b48f4239c3094620e4e38f",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 1593
+  },
+  {
+   "file": "nextsync_MP4-0622_jpg.rf.633d406da2a8588a2c5146c5621c494a.jpg",
+   "coco_image_id": 113,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 31302,
+   "sha256": "617c9ccd03ff7a44d6b9bbc11a758083facea293b2af5986dd62e3412721b868",
+   "annotations": 3,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2
+   },
+   "polygons": 3,
+   "gt_lane_px": 800
+  },
+  {
+   "file": "nextsync_MP4-0723_jpg.rf.9e3cc9962ede28f658565a89c2c7ba80.jpg",
+   "coco_image_id": 134,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 29433,
+   "sha256": "6de450d88c1b54458f1383d637e9bc4431e380df78b31f6f0aa56a57f856f326",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 2,
+    "MD": 2
+   },
+   "polygons": 4,
+   "gt_lane_px": 241
+  },
+  {
+   "file": "nextsync_MP4-0953_jpg.rf.a180f281e04212a9d6df7f3938dc5d2e.jpg",
+   "coco_image_id": 143,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 30463,
+   "sha256": "f5f8afacf30e4ffe3de3bf6320d8f4ca05ba5163cc838584f453e053135f93ff",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 1604
+  },
+  {
+   "file": "nextsync_MP4-1081_jpg.rf.efb62f0c513d4d1f2e40ceeea6ed5dce.jpg",
+   "coco_image_id": 154,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 21925,
+   "sha256": "20738a6b80542610ef6ebb19c0850ea7992a40bc8456bc2a93f2dea37c836f30",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 3078
+  },
+  {
+   "file": "nextsync_MP4-1131_jpg.rf.3407d52b187b727e6c2a1d1e077e6762.jpg",
+   "coco_image_id": 145,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 23035,
+   "sha256": "cea5a2aefa57f5ac48f96d8cdc13afbb1dad7f20a5111fe0af9df2eace3f078a",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2281
+  },
+  {
+   "file": "nextsync_MP4-1159_jpg.rf.9ab38db9b6985b3f602df57057d84163.jpg",
+   "coco_image_id": 160,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 23846,
+   "sha256": "06b631792d3a310b8013bb36a91c4675d5bf27e55988367fab51dd393cb5993c",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2119
+  },
+  {
+   "file": "nextsync_MP4-1418_jpg.rf.1a7114ea8fd363defb9a12267721fe28.jpg",
+   "coco_image_id": 175,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 22320,
+   "sha256": "34d721b96353f470df3a51d4b9e610793231e66d20d379c65be31af85d03e170",
+   "annotations": 5,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 3,
+    "RC": 1
+   },
+   "polygons": 5,
+   "gt_lane_px": 2175
+  },
+  {
+   "file": "nextsync_MP4-1681_jpg.rf.d15fe29ae4fce8086fa57e6539bb48cc.jpg",
+   "coco_image_id": 189,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 21607,
+   "sha256": "a6d8e5b2827565cb2755dc706e5527b9772fde5a0438e2310ebbe1247c2bc4e0",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2183
+  },
+  {
+   "file": "nextsync_MP4-1830_jpg.rf.8a488eb3a5bf45e1c886f3416a677568.jpg",
+   "coco_image_id": 192,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 23171,
+   "sha256": "36c3618c9cd59009048b012e891e2bcdef82594edfd8ffe96dac8e31da749f06",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2696
+  },
+  {
+   "file": "nextsync_MP4-1885_jpg.rf.71c010660c5d2673fcb74e2c2b854785.jpg",
+   "coco_image_id": 184,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 24271,
+   "sha256": "09478addbc7d91090a280beb59cfd5fe89da34234efe2c7a17c2af2fdeaa8dd9",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2563
+  },
+  {
+   "file": "nextsync_MP4-1886_jpg.rf.98725009735ba0b60deab61a18aaaaf4.jpg",
+   "coco_image_id": 185,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 24382,
+   "sha256": "d784e7e34b60a8813c63be2e03fa5a461e424cf166bc421646331eb054a72d20",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 2503
+  },
+  {
+   "file": "nextsync_MP4-1890_jpg.rf.4c2512a28e86720bb2cf3ff56f38701e.jpg",
+   "coco_image_id": 170,
+   "width": 640,
+   "height": 640,
+   "size_bytes": 25079,
+   "sha256": "84439b798cdf106e0d9ab70aa092eac04371ecd48f889d11cbd0d7fd3243c548",
+   "annotations": 4,
+   "annotations_by_class": {
+    "LC": 1,
+    "MD": 2,
+    "RC": 1
+   },
+   "polygons": 4,
+   "gt_lane_px": 3373
+  }
+ ]
+}
