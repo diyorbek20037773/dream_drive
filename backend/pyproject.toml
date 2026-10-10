@@ -1,0 +1,52 @@
+[project]
+name = "dreamdrive-backend"
+version = "0.1.0"
+description = "DreamDrive API, worker, LiteRoad simulator and control stack"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "pydantic-settings",
+  "redis",
+  "rq",
+  "httpx",
+  "numpy",
+  "opencv-python-headless",
+  "scipy",
+  "av",
+  "jsonschema[format-nongpl]",
+  "itsdangerous",
+  "prometheus-client",
+  "python-multipart",
+  "sse-starlette",
+  "pyyaml",
+]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "pytest-timeout",
+  "ruff",
+  "mypy",
+  "types-PyYAML",
+  "fakeredis",
+  "pip-audit",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+ignore = ["S101", "S603", "S607", "B008"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = false

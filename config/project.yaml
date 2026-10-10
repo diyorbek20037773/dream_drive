@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "project": "DreamDrive AI",
+  "repository": "https://github.com/diyorbek20037773/dream_drive",
+  "dockerhub_namespace": "diyorbek7377",
+  "owner_confirmed": {
+    "gpu": "NVIDIA RTX 4050",
+    "vram_gib": 6,
+    "server_provisioned": false
+  },
+  "portable_platforms": [
+    "linux/amd64"
+  ],
+  "default_locale": "uz",
+  "default_simulator": "lite",
+  "default_sim_perception": "synthetic_rgb_cv",
+  "default_device": "cpu",
+  "external_deploy": {
+    "host": null,
+    "domain": null,
+    "ssh_user": null,
+    "ssh_key_path": null
+  },
+  "source_deadline": {
+    "timestamp": "2026-10-11T13:00:00+05:00",
+    "verification": "owner_supplied_brief"
+  }
+}

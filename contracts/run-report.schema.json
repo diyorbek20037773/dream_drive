@@ -1,0 +1,167 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "video_analysis",
+        "simulation",
+        "evaluation"
+      ]
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled",
+        "interrupted",
+        "stopped",
+        "arrived"
+      ]
+    },
+    "perception_source": {
+      "enum": [
+        "learned_model",
+        "synthetic_rgb_cv",
+        "classical_lane_fallback",
+        "unavailable"
+      ]
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40,64}$"
+    },
+    "model_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "input_manifest_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "generated_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sample_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "enum": [
+              "measured",
+              "not_evaluated",
+              "unsupported"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "unit",
+          "sample_count",
+          "status",
+          "note"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "measured"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "value": {
+                  "type": "number"
+                },
+                "sample_count": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "value": {
+                  "type": "null"
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evaluation_truth_used": {
+      "type": "boolean"
+    },
+    "runtime_used_dynamic_ground_truth": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "kind",
+    "status",
+    "perception_source",
+    "code_commit",
+    "model_sha256",
+    "input_manifest_sha256",
+    "generated_utc",
+    "metrics",
+    "limitations",
+    "evaluation_truth_used",
+    "runtime_used_dynamic_ground_truth"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreamdrive.local/contracts/run-report.schema.json",
+  "title": "Measured run report with explicit missing metrics"
+}

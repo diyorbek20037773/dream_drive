@@ -1,0 +1,411 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "video_analysis",
+        "simulation"
+      ]
+    },
+    "frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestamp_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "clock": {
+          "enum": [
+            "video_pts",
+            "simulation_time"
+          ]
+        },
+        "acquired_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quality_status": {
+          "enum": [
+            "valid",
+            "degraded",
+            "missing",
+            "invalid",
+            "stale"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "timestamp_seconds",
+        "clock",
+        "acquired_utc",
+        "width",
+        "height",
+        "quality_status"
+      ]
+    },
+    "perception": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "enum": [
+            "learned_model",
+            "synthetic_rgb_cv",
+            "classical_lane_fallback",
+            "unavailable"
+          ]
+        },
+        "model_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "detections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "track_id": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "class_id": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "class_name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "xyxy_pixels": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "minItems": 4,
+                "maxItems": 4
+              }
+            },
+            "required": [
+              "track_id",
+              "class_id",
+              "class_name",
+              "score",
+              "xyxy_pixels"
+            ]
+          }
+        },
+        "lane_mask_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "drivable_mask_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lane_status": {
+          "enum": [
+            "valid",
+            "uncertain",
+            "unsupported",
+            "unavailable"
+          ]
+        },
+        "image_lane_offset_normalized": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -1,
+          "maximum": 1
+        },
+        "image_obstacle_cue": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ttc_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "uncertainty_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "source",
+        "model_id",
+        "model_sha256",
+        "detections",
+        "lane_mask_ref",
+        "drivable_mask_ref",
+        "lane_status",
+        "image_lane_offset_normalized",
+        "image_obstacle_cue",
+        "ttc_seconds",
+        "uncertainty_reasons"
+      ]
+    },
+    "ego": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source": {
+              "const": "ego_telemetry"
+            },
+            "x_m": {
+              "type": "number"
+            },
+            "y_m": {
+              "type": "number"
+            },
+            "yaw_rad": {
+              "type": "number"
+            },
+            "speed_mps": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "source",
+            "x_m",
+            "y_m",
+            "yaw_rad",
+            "speed_mps"
+          ]
+        }
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "observe",
+            "follow_route",
+            "slow",
+            "controlled_stop",
+            "safety_stop",
+            "paused",
+            "arrived",
+            "failed"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "action_kind": {
+          "enum": [
+            "analytical_only",
+            "simulator_control"
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "reason_codes",
+        "action_kind"
+      ]
+    },
+    "command": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "steer": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "throttle": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "brake": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "input_frame_id": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "source": {
+              "const": "dreamdrive_controller"
+            },
+            "safety_override": {
+              "type": "boolean"
+            },
+            "reason_codes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "steer",
+            "throttle",
+            "brake",
+            "input_frame_id",
+            "source",
+            "safety_override",
+            "reason_codes"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "mode",
+    "frame",
+    "perception",
+    "ego",
+    "decision",
+    "command"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreamdrive.local/contracts/world-state.schema.json",
+  "title": "World state without dynamic simulator ground truth",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "video_analysis"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "ego": {
+            "type": "null"
+          },
+          "command": {
+            "type": "null"
+          },
+          "decision": {
+            "properties": {
+              "action_kind": {
+                "const": "analytical_only"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "perception": {
+            "properties": {
+              "source": {
+                "const": "learned_model"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          }
+        },
+        "required": [
+          "perception"
+        ]
+      },
+      "then": {
+        "properties": {
+          "perception": {
+            "properties": {
+              "model_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "model_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

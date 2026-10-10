@@ -1,0 +1,46 @@
+# Secrets and local config (merged from handoff kit)
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+.claude/settings.local.json
+config/local.yaml
+
+# Model weights, data, generated results (never in git)
+*.pt
+*.pth
+*.onnx
+*.engine
+/models/
+/model/
+/uploads/
+/datasets/raw/
+/artifacts/
+/runs/
+/mlruns/
+/backups/
+/data/
+*.db
+*.db-shm
+*.db-wal
+tests/fixtures/cache/
+
+# Tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+frontend/dist/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Handoff kit copies kept locally only
+/DreamDrive_Claude_Kit/
+/*(1).md

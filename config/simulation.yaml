@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "simulator": "lite",
+  "perception_source": "synthetic_rgb_cv",
+  "fixed_dt_seconds": 0.05,
+  "max_speed_mps": 5.0,
+  "seed": 42,
+  "max_ticks": 2400,
+  "inference_timeout_seconds": 5.0,
+  "control_bounds": {
+    "steer": [
+      -1,
+      1
+    ],
+    "throttle": [
+      0,
+      1
+    ],
+    "brake": [
+      0,
+      1
+    ]
+  },
+  "operating_domain": [
+    "synthetic_daylight",
+    "marked_lanes",
+    "visually_distinct_obstacles"
+  ],
+  "learned_sim_mode_enabled": false,
+  "note": "Engineering defaults; calibrate renderer/dynamics and collect actual evidence. No real-road safety guarantee."
+}

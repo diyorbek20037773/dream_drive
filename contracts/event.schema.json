@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resource_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "enum": [
+        "job_state",
+        "job_progress",
+        "run_state",
+        "frame_ready",
+        "decision",
+        "capability_changed",
+        "error"
+      ]
+    },
+    "payload": {
+      "type": "object",
+      "description": "Implement discriminated Pydantic payloads for each event type; this handoff schema bounds the envelope."
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "timestamp_utc",
+    "resource_id",
+    "type",
+    "payload"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreamdrive.local/contracts/event.schema.json",
+  "title": "SSE event envelope"
+}

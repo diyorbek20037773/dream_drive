@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "state": "unresolved_candidate_manifest",
+  "warning": "NOT a verified runtime manifest; Claude must resolve all null identity fields from actual bytes/source",
+  "models": [
+    {
+      "id": "yolopv2",
+      "role": "video_panoptic_baseline",
+      "required_for_video": true,
+      "repository": "https://github.com/CAIC-AD/YOLOPv2",
+      "repository_revision": "9388c6aa55f3bf5a878679a1338bb090cff6a256",
+      "checkpoint_url": "https://github.com/CAIC-AD/YOLOPv2/releases/download/V0.0.1/yolopv2.pt",
+      "checkpoint_sha256": null,
+      "checkpoint_size_bytes": null,
+      "format": "torchscript_candidate",
+      "code_license": "MIT (repository)",
+      "weight_license_evidence": null,
+      "supported_class_map": null,
+      "input_shape_policy": null,
+      "torch_version": null,
+      "cpu_smoke_passed": false,
+      "gpu_smoke_passed": false
+    },
+    {
+      "id": "rfdetr_nano",
+      "role": "optional_extra_object_classes",
+      "required_for_video": false,
+      "repository": "https://github.com/roboflow/rf-detr",
+      "repository_revision": null,
+      "checkpoint_sha256": null,
+      "license": "verify Apache-designated Nano checkpoint",
+      "enabled": false
+    }
+  ]
+}

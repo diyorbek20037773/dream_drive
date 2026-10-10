@@ -1,0 +1,33 @@
+[project]
+name = "dreamdrive-inference"
+version = "0.1.0"
+description = "DreamDrive internal YOLOPv2 inference service"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "torch",
+  "torchvision",
+  "numpy",
+  "opencv-python-headless",
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "pydantic-settings",
+  "prometheus-client",
+  "python-multipart",
+  "pyyaml",
+]
+
+[dependency-groups]
+dev = ["pytest", "httpx", "ruff", "mypy"]
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
