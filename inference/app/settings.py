@@ -40,7 +40,9 @@ class Settings(BaseSettings):
 
     model_init_connect_timeout_s: float = Field(default=15.0, gt=0, le=300)
     model_init_read_timeout_s: float = Field(default=60.0, gt=0, le=600)
-    model_init_total_timeout_s: float = Field(default=1800.0, gt=0, le=7200)
+    model_init_total_timeout_s: float = Field(default=3600.0, gt=0, le=14400)
+    model_init_attempts: int = Field(default=5, ge=1, le=20)
+    model_init_retry_backoff_s: float = Field(default=2.0, ge=0, le=60)
 
     log_level: str = "INFO"
     git_commit: str = "unknown"
