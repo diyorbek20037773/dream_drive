@@ -1,0 +1,40 @@
+{
+  "schema": "dreamdrive-release/1",
+  "git_commit": "267f3030f6edbc6213601bafa3259cbe96afaa90",
+  "resolved_utc": "2026-10-10T19:43:05Z",
+  "platforms": ["linux/amd64"],
+  "images": {
+    "web": "diyorbek7377/dreamdrive-web@sha256:14ab20c490816f8532f792816d3ae17e9deef6a9334daf60cfbd01baba68decf",
+    "backend": "diyorbek7377/dreamdrive-backend@sha256:94fc08a7180a0204bb14f778d1f65f5f985ad79b4676ecc11e1179e4827bd347",
+    "inference": "diyorbek7377/dreamdrive-inference@sha256:c1bcdef0a82b2f8fef6b638786fa549d9e323b088885a8e692086595e1e43fc4",
+    "inference_gpu": null
+  },
+  "tags": {
+    "web": "diyorbek7377/dreamdrive-web:sha-267f3030f6edbc6213601bafa3259cbe96afaa90",
+    "backend": "diyorbek7377/dreamdrive-backend:sha-267f3030f6edbc6213601bafa3259cbe96afaa90",
+    "inference": "diyorbek7377/dreamdrive-inference:sha-267f3030f6edbc6213601bafa3259cbe96afaa90"
+  },
+  "third_party": {
+    "gateway": "caddy:2.10-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d",
+    "redis": "redis:7.4-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499"
+  },
+  "model": {
+    "models": [
+      {
+        "id": "yolopv2",
+        "checkpoint_sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+        "checkpoint_url": "https://github.com/CAIC-AD/YOLOPv2/releases/download/V0.0.1/yolopv2.pt",
+        "repository_revision": "9388c6aa55f3bf5a878679a1338bb090cff6a256"
+      },
+      {
+        "id": "rfdetr_nano",
+        "checkpoint_sha256": "d8d6b9ee57d4d0ed2b1f305163624712a0532cb7bce0c747317984fc5457440d",
+        "checkpoint_url": "https://storage.googleapis.com/rfdetr/nano_coco/checkpoint_best_regular.pth",
+        "repository_revision": "7433d5919d0f7e72cc6cb78663e0a731afd499e0"
+      }
+    ],
+    "ensemble_id": "yolopv2+rfdetr_nano",
+    "ensemble_sha256": "e514a67df0620326cb5a57c6a3a3db79d789dae42f43a96b71e7268867d34777",
+    "source": "config/models.resolved.yaml (weights are downloaded by model-init, not shipped in images)"
+  }
+}

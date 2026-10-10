@@ -46,8 +46,30 @@ if ((with_gpu)); then
   gpu_line="INFERENCE_GPU_IMAGE_DIGEST=$gpu"
   gpu_json="\"$namespace/dreamdrive-inference-gpu@$gpu\""
 fi
-model_sha=$(sed -n 's/^ *"checkpoint_sha256": "\([0-9a-f]\{64\}\)".*/\1/p' "$DD_REPO_ROOT/config/models.resolved.yaml" | head -n 1)
-is_sha256_digest "sha256:$model_sha" || die "could not read checkpoint_sha256 from config/models.resolved.yaml"
+# Model identity of the released commit (every required model plus the ensemble), read from that commit's manifest.
+# The manifest is piped (no path arguments): a Windows python under MSYS_NO_PATHCONV cannot open /d/... or /tmp/... paths.
+py=$(host_python) || die "python3 is required to read config/models.resolved.yaml"
+cfg_json=$(cd "$DD_REPO_ROOT" && git show "$commit:config/models.resolved.yaml") \
+  || die "config/models.resolved.yaml not in $commit"
+read -r -d '' model_py <<'PY' || true
+import json, re, sys
+
+doc = json.load(sys.stdin)
+models = [
+    {"id": m["id"], "checkpoint_sha256": m["checkpoint_sha256"], "checkpoint_url": m.get("checkpoint_url"),
+     "repository_revision": m.get("repository_revision")}
+    for m in doc.get("models", []) if m.get("required_for_video")
+]
+if not models or not all(re.fullmatch(r"[0-9a-f]{64}", m["checkpoint_sha256"] or "") for m in models):
+    sys.exit("missing or malformed checkpoint_sha256")
+ensemble = doc.get("ensemble") or {}
+print(json.dumps({"models": models, "ensemble_id": ensemble.get("ensemble_id"),
+                  "ensemble_sha256": ensemble.get("ensemble_sha256"),
+                  "source": "config/models.resolved.yaml (weights are downloaded by model-init, not shipped in images)"},
+                 indent=2).replace("\n", "\n  "))
+PY
+models_json=$(printf '%s' "$cfg_json" | "$py" -c "$model_py") \
+  || die "could not read model identity from config/models.resolved.yaml"
 
 {
   printf '# DreamDrive release %s (resolved from the registry at %s)\n' "$commit" "$(utc_now)"
@@ -82,11 +104,7 @@ cat >"$out/release-manifest.json" <<JSON
     "gateway": "$gateway_tag@$gateway",
     "redis": "$redis_tag@$redis"
   },
-  "model": {
-    "id": "yolopv2",
-    "checkpoint_sha256": "$model_sha",
-    "source": "config/models.resolved.yaml (weights are downloaded by model-init, not shipped in images)"
-  }
+  "model": $models_json
 }
 JSON
 log "wrote $out/release.env and $out/release-manifest.json"

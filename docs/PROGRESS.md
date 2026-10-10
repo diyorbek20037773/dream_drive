@@ -1,35 +1,42 @@
 # Implementation status
 
 Living record of implemented, verified, blocked and remaining work. Times are UTC. Source-brief claims are not evidence;
-only the "Evidence" column counts. Local evidence files live under `artifacts/` (gitignored) unless stated otherwise.
+only the "Evidence" column counts. Local evidence lives under `artifacts/` (gitignored); CI evidence is attached to the
+GitHub Actions runs.
 
 | Phase | Status | Evidence | Next action |
 |---|---|---|---|
-| 1. Environment audit | Done 2026-10-10 11:06 | docs/ENVIRONMENT.md. GPU is RTX 3050 6 GB (owner said 4050). Empty public GitHub repo; gh authed; Docker Hub login diyorbek7377 | – |
+| 1. Environment audit | Done 2026-10-10 11:06 | docs/ENVIRONMENT.md. GPU is RTX 3050 6 GB (owner said 4050) | – |
 | 1. Checkpoint spike | Done 11:20 | YOLOPv2 SHA256 f2a8c837…1f8c; torch 2.14.1 CPU; class map {3: vehicle} | – |
-| 2. Video vertical slice | Done | Real-weight run on a CC0 dash-cam clip (50 analysed frames, H.264 output re-opened, 0 contract errors); two-model run on a CC BY 3.0 Memphis street clip (people, traffic lights, stop signs; 6 controlled_stop recommendations on red-light heuristic) | Re-measure latency on an unloaded host |
-| 2b. Second detector (owner request) | Done | RF-DETR-N (Apache 2.0) SHA256 d8d6b9ee…440d, publisher MD5 matched; offline start verified with `--network none`; model smoke 9/9 CPU; GPU fp16 smoke; docs/DECISIONS.md record | – |
-| 3. Durable API/worker | Done | 553 backend unit/security/scenario tests pass on host; 400 in the Linux test image; live integration 7/7 (earlier stack) | Re-run in final QA |
-| 4. UI | Done, live-verified for shell + simulation | Playwright vs live stack: 7/7 (shell, language, navigation, system, learned-mode reason, start→pause→resume→stop, obstacle stop); screenshots inspected | Video flows once the inference service is up |
-| 5. LiteRoad pixel loop | Done | 107+ tests incl. pixel ablation and hidden-truth isolation; scenario suite 15/15 expected outcomes, 0 collisions; maneuver + decision-basis panel (owner request) | – |
-| 6. Evaluation | Done (measured) | COCO val2017 street subset 300 images: mAP50 0.684, mAP50:95 0.462; KITTI Road 289 images: drivable IoU 0.847, F1 0.917; Roboflow rtqi/lane-marking v2 (CC BY 4.0) 150 images: lane F1 0.455 exact / 0.615 at 4 px tolerance. Records in evaluations/baseline/, method in docs/EVALUATION*.md | – |
-| 6. Monitoring | Prepared | promtool rule tests pass (inactive→pending→firing); Grafana provisioning checked | Live scrape in final QA (OPS=1) |
-| 7. Containers + full QA | In progress | `make up` stack healthy except inference (see log) | `make qa` on the final commit |
-| 8. GitHub + registry | Not started | – | Push after local QA; CI; publish images |
-| 9. Server deployment | Blocked: no server/domain/SSH supplied | deploy/ scripts, compose.prod.yaml, Caddyfile.prod validated locally | Owner supplies host/domain/SSH user |
-| 10. Handoff | Not started | – | README, release manifest |
+| 2. Video vertical slice | Done | Real-weight runs on a CC0 dash-cam clip and a CC BY 3.0 street clip; annotated H.264 re-opened; 0 contract errors | – |
+| 2b. Second detector (owner request) | Done | RF-DETR-N SHA256 d8d6b9ee…440d (publisher MD5 matched); offline start with `--network none`; docs/DECISIONS.md | – |
+| 3. Durable API/worker | Done | make qa unit/security/integration gates; restart reconciliation and backup/restore tested | – |
+| 4. UI | Done | Playwright 36 tests on 3 viewports against the live stack (make qa e2e gate); screenshots inspected | – |
+| 4b. Maneuver + decision basis (owner request) | Done | Live screenshots: "Tezlashish", "To‘xtash" with "To‘siq belgisi 0.78 ≥ 0.70 → To‘xtash" | – |
+| 5. LiteRoad pixel loop | Done | pixel ablation + hidden-truth isolation tests; scenario suite 15/15 expected outcomes, 0 collisions | – |
+| 6. Evaluation | Done (measured) | COCO street subset 300 img: mAP50 0.684, mAP50:95 0.462; KITTI Road 289 img: drivable IoU 0.847, F1 0.917; Roboflow lane-marking v2 150 img: F1 0.455 exact / 0.615 at 4 px. evaluations/baseline/, docs/EVALUATION*.md | – |
+| 6. Monitoring | Prepared + rule-tested | promtool firing-transition tests; Grafana provisioning | Live OPS stack is optional |
+| 7. Containers + full QA | Done | make qa 21/21 on 267f303 (local) and in CI | – |
+| 8. GitHub + registry | Done | main = 267f303 pushed; CI run 38077565137 success; images published and pull-only smoke 14/14 (docs/RELEASE.md) | Optional GPU image |
+| 9. Server deployment | Blocked: no server/domain/SSH supplied | deploy/ scripts, compose.prod.yaml, Caddyfile.prod; the exact deploy.sh path ran locally with HTTPS (internal CA) | Owner supplies host, domain, SSH user |
+| 10. Handoff | Done | README.md, docs/RELEASE.md, MODEL_CARD, DATA_SOURCES, LICENSES, EVALUATION*, RUNBOOK, DEPLOY | – |
 
 ## Findings that changed the build
-- 2026-10-10 16:38 model-init hit its 30 min total timeout at 95 % of the 366 MB RF-DETR checkpoint on a slow link and
-  deleted the partial file. Fixed in b4efe0c: resumable downloads (HTTP Range), bounded retries, 1 h total timeout,
-  4 new unit tests. The local stack volume was seeded with the locally verified checkpoint; model-init re-verifies it.
-- The Docker Desktop engine was found stopped after a session restart (20:50 Tashkent) and was restarted.
-- Learned (YOLOPv2) perception in LiteRoad failed its scenario validation (the orange obstacle is not a YOLOPv2 class),
-  so `LEARNED_SIM_MODE_ENABLED` stays false and the UI shows the reason.
+- model-init hit its 30 min total timeout at 95 % of the 366 MB RF-DETR checkpoint on a slow link; downloads now resume
+  with HTTP Range and bounded retries (b4efe0c).
+- Video decisions accepted tracked boxes with scores down to 0.1; decisions, burned-in boxes and report counts now need
+  ≥ 0.5 (untracked) or ≥ 0.4 (confirmed track); low-score detections are listed separately (2ccdbdd).
+- make qa found Windows path handling bugs, a non-hermetic test, missing manifests in the test image, an MLflow
+  identity bug and a COOP console notice on the HTTP e2e runner (02f56eb).
+- CI on a clean Linux runner found root-owned bind-mount directories, a gate-order dependency, npm ci deleting a
+  scratch dir (26b686f) and CPU-dependent bytes when re-encoding a fixture clip; derived clips are now verified by
+  decoded properties while the source SHA256 stays mandatory (267f303).
+- Learned (YOLOPv2) perception in LiteRoad failed its scenario validation, so `LEARNED_SIM_MODE_ENABLED` stays false.
+- Docker Desktop's engine was found stopped after a session restart and was restarted.
 
-## Log
-- 11:06 audit; 11:10 checkpoint downloaded; 11:20 real CPU spike; 11:27 parallel build started.
-- 13:00 first build phase complete (7 components); 13:14 two-model inference ready; 13:34 maneuver panel.
-- 13:44 COCO and KITTI evaluations measured; 15:58 commit fa64cd0; 16:10 lane evaluation measured.
-- 16:18 live stack: simulation integration 4/4, Playwright 7/7; 16:22 baseline evaluations wired (bfc8ae9).
-- 16:45 model-init resume fix (b4efe0c); stack rebuild in progress.
+## Remaining / blocked
+- Public deployment: needs a server (host/IP, OS), a domain with DNS, an SSH user and key path on the owner's machine.
+- CI-based publishing: needs `DOCKERHUB_TOKEN` (and `DOCKERHUB_USERNAME=diyorbek7377`) set as GitHub secrets by the owner.
+- Project code licence: not chosen by the owner yet.
+- Not evaluated: night/rain, traffic signs other than stop signs, traffic-light colour accuracy (heuristic), metric
+  distance/TTC, ARM images.
