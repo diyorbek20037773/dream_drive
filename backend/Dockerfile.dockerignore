@@ -6,6 +6,7 @@
 !backend/app/**
 !config/**
 !contracts/**
+!evaluations/baseline/*.json
 !docs/API.md
 !frontend/src/api/openapi.json
 !frontend/src/api/schema.d.ts

@@ -1,0 +1,424 @@
+{
+  "id": "c023994ee6c34479ac0b4000257697b4",
+  "kind": "video_ml_accuracy",
+  "state": "succeeded",
+  "created_utc": "2026-10-10T13:25:14.064424+00:00",
+  "finished_utc": "2026-10-10T13:44:24.060981+00:00",
+  "source": "learned_model",
+  "sample_count": 289,
+  "metrics": {
+    "drivable_iou_overall": {
+      "value": 0.8467,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "pixel IoU = sum TP / sum (TP+FP+FN), dataset-level over all categories; 289 images, 132,263,554 valid GT pixels (23,734,702 road, 108,528,852 non-road), 23,055,798 predicted drivable; sample_count = images"
+    },
+    "drivable_precision_overall": {
+      "value": 0.9305,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "pixel precision = sum TP / sum (TP+FP), dataset-level over all categories; 289 images, 132,263,554 valid GT pixels (23,734,702 road, 108,528,852 non-road), 23,055,798 predicted drivable; sample_count = images"
+    },
+    "drivable_recall_overall": {
+      "value": 0.9039,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "pixel recall = sum TP / sum (TP+FN), dataset-level over all categories; 289 images, 132,263,554 valid GT pixels (23,734,702 road, 108,528,852 non-road), 23,055,798 predicted drivable; sample_count = images"
+    },
+    "drivable_f1_overall": {
+      "value": 0.917,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "pixel F1 = 2TP / (2TP+FP+FN), KITTI's F-measure at the fixed binary operating point but in perspective space (not the official BEV MaxF), dataset-level over all categories; 289 images, 132,263,554 valid GT pixels (23,734,702 road, 108,528,852 non-road), 23,055,798 predicted drivable; sample_count = images"
+    },
+    "drivable_iou_um": {
+      "value": 0.8538,
+      "unit": "ratio",
+      "sample_count": 95,
+      "status": "measured",
+      "note": "pixel IoU = sum TP / sum (TP+FP+FN), dataset-level over category um (urban marked); 95 images, 43,419,846 valid GT pixels (7,151,370 road, 36,268,476 non-road), 7,104,585 predicted drivable; sample_count = images"
+    },
+    "drivable_precision_um": {
+      "value": 0.9242,
+      "unit": "ratio",
+      "sample_count": 95,
+      "status": "measured",
+      "note": "pixel precision = sum TP / sum (TP+FP), dataset-level over category um (urban marked); 95 images, 43,419,846 valid GT pixels (7,151,370 road, 36,268,476 non-road), 7,104,585 predicted drivable; sample_count = images"
+    },
+    "drivable_recall_um": {
+      "value": 0.9181,
+      "unit": "ratio",
+      "sample_count": 95,
+      "status": "measured",
+      "note": "pixel recall = sum TP / sum (TP+FN), dataset-level over category um (urban marked); 95 images, 43,419,846 valid GT pixels (7,151,370 road, 36,268,476 non-road), 7,104,585 predicted drivable; sample_count = images"
+    },
+    "drivable_f1_um": {
+      "value": 0.9211,
+      "unit": "ratio",
+      "sample_count": 95,
+      "status": "measured",
+      "note": "pixel F1 = 2TP / (2TP+FP+FN), KITTI's F-measure at the fixed binary operating point but in perspective space (not the official BEV MaxF), dataset-level over category um (urban marked); 95 images, 43,419,846 valid GT pixels (7,151,370 road, 36,268,476 non-road), 7,104,585 predicted drivable; sample_count = images"
+    },
+    "drivable_iou_umm": {
+      "value": 0.8373,
+      "unit": "ratio",
+      "sample_count": 96,
+      "status": "measured",
+      "note": "pixel IoU = sum TP / sum (TP+FP+FN), dataset-level over category umm (urban multiple marked lanes); 96 images, 43,754,105 valid GT pixels (10,433,021 road, 33,321,084 non-road), 9,634,573 predicted drivable; sample_count = images"
+    },
+    "drivable_precision_umm": {
+      "value": 0.9492,
+      "unit": "ratio",
+      "sample_count": 96,
+      "status": "measured",
+      "note": "pixel precision = sum TP / sum (TP+FP), dataset-level over category umm (urban multiple marked lanes); 96 images, 43,754,105 valid GT pixels (10,433,021 road, 33,321,084 non-road), 9,634,573 predicted drivable; sample_count = images"
+    },
+    "drivable_recall_umm": {
+      "value": 0.8766,
+      "unit": "ratio",
+      "sample_count": 96,
+      "status": "measured",
+      "note": "pixel recall = sum TP / sum (TP+FN), dataset-level over category umm (urban multiple marked lanes); 96 images, 43,754,105 valid GT pixels (10,433,021 road, 33,321,084 non-road), 9,634,573 predicted drivable; sample_count = images"
+    },
+    "drivable_f1_umm": {
+      "value": 0.9114,
+      "unit": "ratio",
+      "sample_count": 96,
+      "status": "measured",
+      "note": "pixel F1 = 2TP / (2TP+FP+FN), KITTI's F-measure at the fixed binary operating point but in perspective space (not the official BEV MaxF), dataset-level over category umm (urban multiple marked lanes); 96 images, 43,754,105 valid GT pixels (10,433,021 road, 33,321,084 non-road), 9,634,573 predicted drivable; sample_count = images"
+    },
+    "drivable_iou_uu": {
+      "value": 0.854,
+      "unit": "ratio",
+      "sample_count": 98,
+      "status": "measured",
+      "note": "pixel IoU = sum TP / sum (TP+FP+FN), dataset-level over category uu (urban unmarked); 98 images, 45,089,603 valid GT pixels (6,150,311 road, 38,939,292 non-road), 6,316,640 predicted drivable; sample_count = images"
+    },
+    "drivable_precision_uu": {
+      "value": 0.9091,
+      "unit": "ratio",
+      "sample_count": 98,
+      "status": "measured",
+      "note": "pixel precision = sum TP / sum (TP+FP), dataset-level over category uu (urban unmarked); 98 images, 45,089,603 valid GT pixels (6,150,311 road, 38,939,292 non-road), 6,316,640 predicted drivable; sample_count = images"
+    },
+    "drivable_recall_uu": {
+      "value": 0.9337,
+      "unit": "ratio",
+      "sample_count": 98,
+      "status": "measured",
+      "note": "pixel recall = sum TP / sum (TP+FN), dataset-level over category uu (urban unmarked); 98 images, 45,089,603 valid GT pixels (6,150,311 road, 38,939,292 non-road), 6,316,640 predicted drivable; sample_count = images"
+    },
+    "drivable_f1_uu": {
+      "value": 0.9213,
+      "unit": "ratio",
+      "sample_count": 98,
+      "status": "measured",
+      "note": "pixel F1 = 2TP / (2TP+FP+FN), KITTI's F-measure at the fixed binary operating point but in perspective space (not the official BEV MaxF), dataset-level over category uu (urban unmarked); 98 images, 45,089,603 valid GT pixels (6,150,311 road, 38,939,292 non-road), 6,316,640 predicted drivable; sample_count = images"
+    },
+    "drivable_iou_per_image_mean": {
+      "value": 0.8544,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "mean of per-image pixel IoU over 289 images with a non-empty union (TP+FP+FN > 0); 0 images had an empty union and are excluded; sample_count = images"
+    },
+    "drivable_iou_per_image_p10": {
+      "value": 0.6898,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "10th percentile of per-image pixel IoU over 289 images with a non-empty union (TP+FP+FN > 0); 0 images had an empty union and are excluded; sample_count = images"
+    },
+    "drivable_iou_per_image_p50": {
+      "value": 0.8974,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "50th percentile of per-image pixel IoU over 289 images with a non-empty union (TP+FP+FN > 0); 0 images had an empty union and are excluded; sample_count = images"
+    },
+    "drivable_iou_per_image_p90": {
+      "value": 0.9449,
+      "unit": "ratio",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "90th percentile of per-image pixel IoU over 289 images with a non-empty union (TP+FP+FN > 0); 0 images had an empty union and are excluded; sample_count = images"
+    },
+    "images_evaluated": {
+      "value": 289.0,
+      "unit": "count",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "KITTI Road training images evaluated (um/umm/uu)"
+    },
+    "inference_latency_p50_ms": {
+      "value": 2197.9,
+      "unit": "ms",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "service timing_ms.total per image (cpu; every model the service runs)"
+    },
+    "inference_latency_p95_ms": {
+      "value": 11053.0,
+      "unit": "ms",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "service timing_ms.total per image (cpu; every model the service runs)"
+    },
+    "yolopv2_forward_p50_ms": {
+      "value": 1287.2,
+      "unit": "ms",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "service timing_ms.inference_by_model.yolopv2 per image (cpu)"
+    },
+    "yolopv2_forward_p95_ms": {
+      "value": 6377.1,
+      "unit": "ms",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "service timing_ms.inference_by_model.yolopv2 per image (cpu)"
+    },
+    "request_roundtrip_p50_ms": {
+      "value": 2220.1,
+      "unit": "ms",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "client HTTP round trip incl. JPEG upload, masks and JSON"
+    },
+    "request_roundtrip_p95_ms": {
+      "value": 11166.5,
+      "unit": "ms",
+      "sample_count": 289,
+      "status": "measured",
+      "note": "client HTTP round trip incl. JPEG upload, masks and JSON"
+    },
+    "kitti_bev_maxf": {
+      "value": null,
+      "unit": "ratio",
+      "sample_count": 0,
+      "status": "not_evaluated",
+      "note": "not evaluated: the official KITTI Road metric is MaxF over a confidence sweep in bird's-eye view; the service returns a binary perspective mask, so only the perspective-space fixed-threshold metrics above exist"
+    },
+    "lane_marking_accuracy": {
+      "value": null,
+      "unit": "ratio",
+      "sample_count": 0,
+      "status": "not_evaluated",
+      "note": "not evaluated: KITTI um_lane ground truth is the ego-lane area, not lane markings; no openly licensed lane-marking labels are used here"
+    },
+    "ego_lane_iou": {
+      "value": null,
+      "unit": "ratio",
+      "sample_count": 0,
+      "status": "unsupported",
+      "note": "unsupported: YOLOPv2 outputs drivable area and lane lines, not an ego-lane area"
+    }
+  },
+  "limitations": [
+    "Cross-dataset evaluation: YOLOPv2 was trained on BDD100K, whose 'drivable area' label covers the directly drivable lane plus alternative (adjacent, same-direction or opposite) lanes, while KITTI 'road' is the whole road surface (composition of all lanes). The labelling conventions differ (e.g. parking strips, road edges, sidewalk-level surfaces), so part of the measured error is convention mismatch, not model error.",
+    "KITTI images are about 1242x375 (aspect 3.3:1). The production letterbox policy (longest side 640, stride-32 minimal padding) turns them into a 640x224 canvas of 640x193 content; BDD100K training frames are 16:9, so the model sees an unusually wide, low-resolution canvas it was not trained on.",
+    "Metrics are computed in the perspective image space at the service's fixed binary operating point. They are NOT the official KITTI Road benchmark result, which is MaxF (F-measure maximised over a confidence sweep) evaluated in a 800x400 bird's-eye-view grid ([-10 m, 10 m] lateral, [6 m, 46 m] longitudinal, 0.05 m cells). Perspective space weights near-field pixels far more heavily than BEV does. Do not compare these numbers with the KITTI leaderboard.",
+    "Training split only (the only KITTI split with public labels; 289 images, three urban categories um/umm/uu, Karlsruhe, Germany, daylight). YOLOPv2 never trained on KITTI and nothing was tuned on these images, but the split is small and geographically narrow; it says nothing about night, rain, highways or other countries.",
+    "Licence: KITTI is CC BY-NC-SA 3.0 (non-commercial). The images and labels are used for this local measurement only and are not redistributed; only file names and SHA256 hashes are committed.",
+    "Lane-marking accuracy is NOT evaluated: KITTI um_lane ground truth is the ego-lane AREA, not lane markings, and YOLOPv2 has no ego-lane output. YOLOPv2 vehicle detection is not evaluated here either (KITTI Road has no boxes).",
+    "KITTI training images are lossless PNG; they are encoded once as JPEG q95 before inference (same as the video pipeline), so results include one lossy compression step.",
+    "GT 'don't care' pixels (R plane == 0) are excluded from all counts, following the devkit. Predictions inside those regions are neither true nor false positives.",
+    "The service ran the YOLOPv2 + RF-DETR-N ensemble; the drivable mask is produced by YOLOPv2 alone, so model_sha256 is the YOLOPv2 checkpoint and the ensemble identity is recorded in details. Service latency includes both models."
+  ],
+  "code_commit": "f85c397d5e8435aed29cafd1f4b5e54658d62202",
+  "model_sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+  "seeds": null,
+  "error_code": null,
+  "details": {
+    "task": "drivable_area_segmentation",
+    "run_label": null,
+    "dataset": {
+      "name": "KITTI Road benchmark, training split",
+      "manifest_id": "kitti_road_training_v1",
+      "manifest_file": "kitti_road_training_v1.json",
+      "manifest_sha256": "bfb832b25a4f17f1bcb0e7ac0a2c6ff7f65eacb38f2f794042e1c61256e6eb3a",
+      "archive_name": "data_road.zip",
+      "archive_url": "https://s3.eu-central-1.amazonaws.com/avg-kitti/data_road.zip",
+      "archive_sha256": "45508c51ba09020235eb714e71c7d3ef15b4551be06d996772ecc8a20fc34a34",
+      "licence": "All datasets and benchmarks on this page are copyright by us and published under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License",
+      "licence_id": "CC-BY-NC-SA-3.0",
+      "attribution": "Jannik Fritsch, Tobias Kuehnl, Andreas Geiger: 'A New Performance Measure and Evaluation Benchmark for Road Detection Algorithms', International Conference on Intelligent Transportation Systems (ITSC), 2013. KITTI Vision Benchmark Suite, Karlsruhe Institute of Technology and Toyota Technological Institute at Chicago.",
+      "images_in_manifest": 289,
+      "images_requested": 289,
+      "images_evaluated": 289,
+      "images_failed": [],
+      "gt_encoding": {
+        "source": "KITTI road devkit readme.txt (update February 2015) and python/helper.py getGroundTruth()",
+        "valid_area": "R plane > 0 (first plane in RGB order); R == 0 is 'don't care' and excluded from all counts",
+        "road": "B plane > 0 (third plane in RGB order); road pixels count only inside the valid area",
+        "colours_expected_rgb": {
+          "#ff00ff": "road (valid)",
+          "#ff0000": "non-road (valid)",
+          "#000000": "don't care"
+        }
+      }
+    },
+    "protocol": {
+      "input": "KITTI image_2 PNG -> RGB -> JPEG q95 (app.video.encode.encode_jpeg_bytes, as the video pipeline) -> POST /v1/infer via app.perception.client.InferenceClient",
+      "prediction": "drivable_mask_png (YOLOPv2 seg head argmax == 1, unletterboxed to the original frame by the service) > 127",
+      "ground_truth": "gt_image_2/<cat>_road_<idx>.png; road = B > 0, valid = R > 0 (devkit)",
+      "space": "original perspective image space (no bird's-eye-view transform)",
+      "dataset_level": "sum of per-image TP/FP/FN over images, then ratios",
+      "per_image": "ratios per image; images with TP+FP+FN == 0 have undefined IoU and are excluded from the per-image distribution",
+      "jpeg_quality": 95,
+      "conf_threshold": 0.1,
+      "letterbox_geometries": {
+        "1242x375->canvas 640x224 scale 0.515298 pad l0 t15 r0 b16": 202,
+        "1226x370->canvas 640x224 scale 0.522023 pad l0 t15 r0 b16": 49,
+        "1241x376->canvas 640x224 scale 0.515713 pad l0 t15 r0 b15": 35,
+        "1238x374->canvas 640x224 scale 0.516963 pad l0 t15 r0 b16": 3
+      },
+      "pred_non_binary_pixels_total": 0
+    },
+    "totals": {
+      "overall": {
+        "images": 289,
+        "tp": 21453790,
+        "fp": 1602008,
+        "fn": 2280912,
+        "tn": 106926844,
+        "valid_px": 132263554,
+        "gt_road_px": 23734702,
+        "pred_road_px": 23055798,
+        "iou": 0.846747,
+        "precision": 0.930516,
+        "recall": 0.9039,
+        "f1": 0.917015
+      },
+      "um": {
+        "images": 95,
+        "tp": 6565760,
+        "fp": 538825,
+        "fn": 585610,
+        "tn": 35729651,
+        "valid_px": 43419846,
+        "gt_road_px": 7151370,
+        "pred_road_px": 7104585,
+        "iou": 0.853783,
+        "precision": 0.924158,
+        "recall": 0.918112,
+        "f1": 0.921125
+      },
+      "umm": {
+        "images": 96,
+        "tp": 9145273,
+        "fp": 489300,
+        "fn": 1287748,
+        "tn": 32831784,
+        "valid_px": 43754105,
+        "gt_road_px": 10433021,
+        "pred_road_px": 9634573,
+        "iou": 0.837301,
+        "precision": 0.949214,
+        "recall": 0.87657,
+        "f1": 0.911447
+      },
+      "uu": {
+        "images": 98,
+        "tp": 5742757,
+        "fp": 573883,
+        "fn": 407554,
+        "tn": 38365409,
+        "valid_px": 45089603,
+        "gt_road_px": 6150311,
+        "pred_road_px": 6316640,
+        "iou": 0.854044,
+        "precision": 0.909147,
+        "recall": 0.933734,
+        "f1": 0.921277
+      }
+    },
+    "models": [
+      {
+        "model_id": "yolopv2",
+        "sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+        "device": "cpu",
+        "precision": "fp32"
+      },
+      {
+        "model_id": "rfdetr_nano",
+        "sha256": "d8d6b9ee57d4d0ed2b1f305163624712a0532cb7bce0c747317984fc5457440d",
+        "device": "cpu",
+        "precision": "fp32"
+      }
+    ],
+    "yolopv2_sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+    "ensemble_sha256_reported": "e514a67df0620326cb5a57c6a3a3db79d789dae42f43a96b71e7268867d34777",
+    "service_model_info": {
+      "model_id": "yolopv2",
+      "ready": true,
+      "sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+      "device": "cpu",
+      "precision": "fp32",
+      "torch_version": "2.14.1+cpu",
+      "input_policy": "letterbox640_stride32",
+      "ensemble_id": "yolopv2+rfdetr_nano",
+      "ensemble_sha256": "e514a67df0620326cb5a57c6a3a3db79d789dae42f43a96b71e7268867d34777",
+      "models": [
+        {
+          "model_id": "yolopv2",
+          "sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+          "size_bytes": 156380200,
+          "repository_revision": "9388c6aa55f3bf5a878679a1338bb090cff6a256",
+          "input_policy": "letterbox640_stride32"
+        },
+        {
+          "model_id": "rfdetr_nano",
+          "sha256": "d8d6b9ee57d4d0ed2b1f305163624712a0532cb7bce0c747317984fc5457440d",
+          "size_bytes": 366287238,
+          "repository_revision": "7433d5919d0f7e72cc6cb78663e0a731afd499e0",
+          "input_policy": "rfdetr_resize384_imagenet_norm"
+        }
+      ]
+    },
+    "latency_ms": {
+      "service_total_p50": 2197.86,
+      "service_total_p95": 11053.04,
+      "yolopv2_forward_p50": 1287.15,
+      "yolopv2_forward_p95": 6377.11,
+      "roundtrip_p50": 2220.09,
+      "roundtrip_p95": 11166.53,
+      "samples": 289
+    },
+    "evidence": {
+      "per_image_csv": "c023994ee6c34479ac0b4000257697b4.per_image.csv",
+      "prediction_masks_dir": "c023994ee6c34479ac0b4000257697b4_pred_masks",
+      "visuals": {
+        "worst": {
+          "id": "umm_000088",
+          "iou": 0.426194,
+          "file": "c023994ee6c34479ac0b4000257697b4_visual_worst_umm_000088.png"
+        },
+        "median": {
+          "id": "umm_000041",
+          "iou": 0.89736,
+          "file": "c023994ee6c34479ac0b4000257697b4_visual_median_umm_000041.png"
+        },
+        "best": {
+          "id": "uu_000000",
+          "iou": 0.986875,
+          "file": "c023994ee6c34479ac0b4000257697b4_visual_best_uu_000000.png"
+        }
+      }
+    },
+    "code": {
+      "head": "f85c397d5e8435aed29cafd1f4b5e54658d62202",
+      "dirty": true
+    },
+    "host": {
+      "platform": "Windows-10-10.0.26300-SP0",
+      "machine": "AMD64",
+      "python": "3.11.9",
+      "cpu_count": 12
+    }
+  }
+}

@@ -1,0 +1,1224 @@
+{
+  "id": "26f38e26ca9348a0adebad38b14746ab",
+  "kind": "synthetic_scenario_suite",
+  "state": "succeeded",
+  "created_utc": "2026-10-10T12:12:34.281162+00:00",
+  "finished_utc": "2026-10-10T12:13:36.821177+00:00",
+  "source": "synthetic_rgb_cv",
+  "sample_count": 15,
+  "metrics": {
+    "normal_arrival_rate": {
+      "value": 1.0,
+      "unit": "ratio",
+      "sample_count": 3,
+      "status": "measured",
+      "note": "arrived within the tick budget with zero collisions"
+    },
+    "bend_arrival_rate": {
+      "value": 1.0,
+      "unit": "ratio",
+      "sample_count": 3,
+      "status": "measured",
+      "note": "arrived through the curved edges with zero collisions"
+    },
+    "obstacle_controlled_stop_rate": {
+      "value": 1.0,
+      "unit": "ratio",
+      "sample_count": 3,
+      "status": "measured",
+      "note": "stopped before the visible obstacle (stopped_before_obstacle) with zero collisions"
+    },
+    "camera_blackout_safety_stop_rate": {
+      "value": 1.0,
+      "unit": "ratio",
+      "sample_count": 3,
+      "status": "measured",
+      "note": "safety stop (stopped_camera_invalid) after the camera went black"
+    },
+    "stale_frame_safety_stop_rate": {
+      "value": 1.0,
+      "unit": "ratio",
+      "sample_count": 3,
+      "status": "measured",
+      "note": "safety stop (stopped_frame_stale) on frozen frames"
+    },
+    "expected_outcome_rate": {
+      "value": 1.0,
+      "unit": "ratio",
+      "sample_count": 15,
+      "status": "measured",
+      "note": "all suite runs"
+    },
+    "collisions_total": {
+      "value": 0.0,
+      "unit": "count",
+      "sample_count": 15,
+      "status": "measured",
+      "note": "evaluator truth (ego footprint 4.5 x 1.8 m vs obstacle boxes)"
+    },
+    "safety_overrides_total": {
+      "value": 680.0,
+      "unit": "count",
+      "sample_count": 15,
+      "status": "measured",
+      "note": ""
+    },
+    "ticks_mean": {
+      "value": 407.33,
+      "unit": "ticks",
+      "sample_count": 15,
+      "status": "measured",
+      "note": ""
+    },
+    "sim_time_total_s": {
+      "value": 305.2,
+      "unit": "s",
+      "sample_count": 15,
+      "status": "measured",
+      "note": ""
+    },
+    "wall_time_total_s": {
+      "value": 61.951,
+      "unit": "s",
+      "sample_count": 15,
+      "status": "measured",
+      "note": "headless, no real-time pacing"
+    },
+    "realtime_factor_headless": {
+      "value": 4.926,
+      "unit": "ratio",
+      "sample_count": 15,
+      "status": "measured",
+      "note": "sim time / wall time without pacing (live runs are paced to <= 1.0)"
+    },
+    "obstacle_false_arrival_count": {
+      "value": 0.0,
+      "unit": "count",
+      "sample_count": 3,
+      "status": "measured",
+      "note": ""
+    },
+    "lateral_deviation_mean_m": {
+      "value": 0.0334,
+      "unit": "m",
+      "sample_count": 4343,
+      "status": "measured",
+      "note": "normal + bend runs, rear axle vs truth lane centre"
+    },
+    "lateral_deviation_p95_m": {
+      "value": 0.1097,
+      "unit": "m",
+      "sample_count": 4343,
+      "status": "measured",
+      "note": ""
+    },
+    "lateral_deviation_max_m": {
+      "value": 0.2779,
+      "unit": "m",
+      "sample_count": 4343,
+      "status": "measured",
+      "note": ""
+    },
+    "obstacle_stop_gap_mean_m": {
+      "value": 8.146,
+      "unit": "m",
+      "sample_count": 3,
+      "status": "measured",
+      "note": "final ego-front-to-obstacle footprint gap"
+    },
+    "obstacle_stop_gap_min_m": {
+      "value": 8.098,
+      "unit": "m",
+      "sample_count": 3,
+      "status": "measured",
+      "note": ""
+    },
+    "camera_fault_first_override_sim_time_s_mean": {
+      "value": 3.975,
+      "unit": "s",
+      "sample_count": 6,
+      "status": "measured",
+      "note": "camera fault injected at t=4.0 s; frozen frames carry the last good timestamp (3.95 s)"
+    },
+    "tick_wall_ms_p50": {
+      "value": 10.362,
+      "unit": "ms",
+      "sample_count": 6110,
+      "status": "measured",
+      "note": "render + perception + control + JPEG-free headless tick"
+    },
+    "tick_wall_ms_p95": {
+      "value": 18.071,
+      "unit": "ms",
+      "sample_count": 6110,
+      "status": "measured",
+      "note": ""
+    },
+    "real_road_driving_accuracy": {
+      "value": null,
+      "unit": "ratio",
+      "sample_count": 0,
+      "status": "unsupported",
+      "note": "LiteRoad is synthetic; no claim about real roads or vehicles"
+    },
+    "learned_model_sim_performance": {
+      "value": null,
+      "unit": "ratio",
+      "sample_count": 0,
+      "status": "not_evaluated",
+      "note": "learned-model simulator mode is evaluated separately (test_learned_sim_validation)"
+    }
+  },
+  "limitations": [
+    "Bounded synthetic LiteRoad world (flat ground, clear daylight, painted lanes, orange/white obstacles); results are not evidence about real roads or real vehicles.",
+    "Perception source synthetic_rgb_cv is a classical colour/geometry pixel algorithm tuned to LiteRoad renders; it is not YOLOPv2 and inherits no learned-model accuracy claim.",
+    "Obstacle distances are flat-ground inverse-perspective estimates from the static synthetic calibration, not metric depth; ttc_seconds is not computed.",
+    "Ego localization is simulator telemetry (allowed runtime input); collisions, lateral deviation and route progress in this report are measured by the evaluator after each step and were never used for control.",
+    "No traffic rules, junction right-of-way, other moving traffic or pedestrians are modelled.",
+    "Simulator-only commands; nothing is sent to a physical vehicle.",
+    "Each scenario uses one fixed route; seeds vary the initial pose (+-0.3 m, +-0.04 rad) and obstacle placement (+-3 m along, +-0.3 m across). Wider operating domains are not evaluated.",
+    "Wall-clock timings depend on the host CPU and concurrent load; they are measurements, not guarantees."
+  ],
+  "code_commit": null,
+  "model_sha256": null,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "error_code": null,
+  "details": {
+    "runs": [
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-normal-1",
+        "scenario": "normal",
+        "seed": 1,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "arrived",
+        "outcome": "arrived",
+        "ticks": 746,
+        "physics_steps": 745,
+        "sim_time_s": 37.25,
+        "wall_time_s": 9.469,
+        "realtime_factor": 3.9339,
+        "decision_counts": {
+          "follow_route": 396,
+          "slow": 349,
+          "arrived": 1
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 396,
+          "LANE_UNCERTAIN_SLOW": 349,
+          "ARRIVED_AT_DESTINATION": 1
+        },
+        "perception_quality_counts": {
+          "valid": 746
+        },
+        "lane_status_counts": {
+          "valid": 539,
+          "uncertain": 121,
+          "unavailable": 86
+        },
+        "commands": {
+          "count": 746,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.02562,
+          "max_abs_steer": 0.3771,
+          "mean_throttle": 0.27198,
+          "mean_brake": 0.06163,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.99533,
+          "lateral_deviation_mean_m": 0.0342,
+          "lateral_deviation_max_m": 0.2311,
+          "lateral_deviation_samples": 745,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 13.045,
+          "tick_p95": 22.077,
+          "tick_max": 57.835,
+          "perception_p50": 6.492,
+          "perception_p95": 11.019
+        },
+        "expected_outcome": "arrived",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-bend-1",
+        "scenario": "bend",
+        "seed": 1,
+        "start_node": "D",
+        "destination_node": "I",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "arrived",
+        "outcome": "arrived",
+        "ticks": 724,
+        "physics_steps": 723,
+        "sim_time_s": 36.15,
+        "wall_time_s": 3.453,
+        "realtime_factor": 10.4692,
+        "decision_counts": {
+          "slow": 244,
+          "follow_route": 479,
+          "arrived": 1
+        },
+        "reason_counts": {
+          "LANE_UNCERTAIN_SLOW": 244,
+          "ROUTE_FOLLOWING": 479,
+          "CURVE_SPEED_LIMIT": 460,
+          "ARRIVED_AT_DESTINATION": 1
+        },
+        "perception_quality_counts": {
+          "valid": 724
+        },
+        "lane_status_counts": {
+          "uncertain": 49,
+          "valid": 614,
+          "unavailable": 61
+        },
+        "commands": {
+          "count": 724,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.1311,
+          "max_abs_steer": 0.28701,
+          "mean_throttle": 0.25833,
+          "mean_brake": 0.0559,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.99516,
+          "lateral_deviation_mean_m": 0.0355,
+          "lateral_deviation_max_m": 0.1958,
+          "lateral_deviation_samples": 723,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 4.748,
+          "tick_p95": 6.397,
+          "tick_max": 11.368,
+          "perception_p50": 3.411,
+          "perception_p95": 4.744
+        },
+        "expected_outcome": "arrived",
+        "expected_outcome_met": true,
+        "route_length_m": 129.986
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-obstacle_stop-1",
+        "scenario": "obstacle_stop",
+        "seed": 1,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_before_obstacle",
+        "ticks": 198,
+        "physics_steps": 198,
+        "sim_time_s": 9.9,
+        "wall_time_s": 2.89,
+        "realtime_factor": 3.4256,
+        "decision_counts": {
+          "follow_route": 35,
+          "slow": 39,
+          "controlled_stop": 124
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 35,
+          "OBSTACLE_AHEAD_SLOW": 39,
+          "OBSTACLE_AHEAD_STOP": 124
+        },
+        "perception_quality_counts": {
+          "valid": 198
+        },
+        "lane_status_counts": {
+          "valid": 198
+        },
+        "commands": {
+          "count": 198,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.00433,
+          "max_abs_steer": 0.01625,
+          "mean_throttle": 0.17698,
+          "mean_brake": 0.2485,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.07821,
+          "lateral_deviation_mean_m": 0.0227,
+          "lateral_deviation_max_m": 0.0264,
+          "lateral_deviation_samples": 198,
+          "min_obstacle_gap_m": 8.1518,
+          "final_obstacle_gap_m": 8.1518,
+          "scenario_obstacle_route_s_m": [
+            22.419
+          ],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 16.037,
+          "tick_p95": 19.213,
+          "tick_max": 64.957,
+          "perception_p50": 6.582,
+          "perception_p95": 8.391
+        },
+        "expected_outcome": "stopped_before_obstacle",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-camera_blackout-1",
+        "scenario": "camera_blackout",
+        "seed": 1,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_camera_invalid",
+        "ticks": 195,
+        "physics_steps": 195,
+        "sim_time_s": 9.75,
+        "wall_time_s": 1.234,
+        "realtime_factor": 7.9011,
+        "decision_counts": {
+          "follow_route": 80,
+          "safety_stop": 115
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 80,
+          "CAMERA_BLACK": 115
+        },
+        "perception_quality_counts": {
+          "valid": 80,
+          "missing": 115
+        },
+        "lane_status_counts": {
+          "valid": 80,
+          "unavailable": 115
+        },
+        "commands": {
+          "count": 195,
+          "safety_overrides": 115,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.03682,
+          "max_abs_steer": 0.30936,
+          "mean_throttle": 0.2525,
+          "mean_brake": 0.58974,
+          "first_safety_override": {
+            "frame_id": 80,
+            "sim_time_s": 4.0,
+            "reason_codes": [
+              "CAMERA_BLACK"
+            ]
+          }
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.12202,
+          "lateral_deviation_mean_m": 0.0504,
+          "lateral_deviation_max_m": 0.1926,
+          "lateral_deviation_samples": 195,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 0.907,
+          "tick_p95": 15.574,
+          "tick_max": 20.235,
+          "perception_p50": 0.27,
+          "perception_p95": 7.975
+        },
+        "expected_outcome": "stopped_camera_invalid",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-stale_frame-1",
+        "scenario": "stale_frame",
+        "seed": 1,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_frame_stale",
+        "ticks": 195,
+        "physics_steps": 195,
+        "sim_time_s": 9.75,
+        "wall_time_s": 1.203,
+        "realtime_factor": 8.1047,
+        "decision_counts": {
+          "follow_route": 70,
+          "slow": 10,
+          "safety_stop": 115
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 70,
+          "LANE_UNCERTAIN_SLOW": 10,
+          "FRAME_STALE": 115
+        },
+        "perception_quality_counts": {
+          "valid": 80,
+          "stale": 115
+        },
+        "lane_status_counts": {
+          "valid": 79,
+          "uncertain": 1,
+          "unavailable": 115
+        },
+        "commands": {
+          "count": 195,
+          "safety_overrides": 115,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.03374,
+          "max_abs_steer": 0.25309,
+          "mean_throttle": 0.27256,
+          "mean_brake": 0.59987,
+          "first_safety_override": {
+            "frame_id": 79,
+            "sim_time_s": 3.95,
+            "reason_codes": [
+              "FRAME_STALE"
+            ]
+          }
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.11183,
+          "lateral_deviation_mean_m": 0.0389,
+          "lateral_deviation_max_m": 0.1056,
+          "lateral_deviation_samples": 195,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 0.509,
+          "tick_p95": 15.892,
+          "tick_max": 18.326,
+          "perception_p50": 7.212,
+          "perception_p95": 8.609
+        },
+        "expected_outcome": "stopped_frame_stale",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-normal-2",
+        "scenario": "normal",
+        "seed": 2,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "arrived",
+        "outcome": "arrived",
+        "ticks": 725,
+        "physics_steps": 724,
+        "sim_time_s": 36.2,
+        "wall_time_s": 8.89,
+        "realtime_factor": 4.072,
+        "decision_counts": {
+          "follow_route": 410,
+          "slow": 314,
+          "arrived": 1
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 410,
+          "LANE_UNCERTAIN_SLOW": 314,
+          "ARRIVED_AT_DESTINATION": 1
+        },
+        "perception_quality_counts": {
+          "valid": 725
+        },
+        "lane_status_counts": {
+          "valid": 532,
+          "uncertain": 119,
+          "unavailable": 74
+        },
+        "commands": {
+          "count": 725,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.02464,
+          "max_abs_steer": 0.37605,
+          "mean_throttle": 0.27317,
+          "mean_brake": 0.06191,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.99527,
+          "lateral_deviation_mean_m": 0.027,
+          "lateral_deviation_max_m": 0.107,
+          "lateral_deviation_samples": 724,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 12.742,
+          "tick_p95": 17.34,
+          "tick_max": 28.632,
+          "perception_p50": 6.517,
+          "perception_p95": 9.192
+        },
+        "expected_outcome": "arrived",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-bend-2",
+        "scenario": "bend",
+        "seed": 2,
+        "start_node": "D",
+        "destination_node": "I",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "arrived",
+        "outcome": "arrived",
+        "ticks": 725,
+        "physics_steps": 724,
+        "sim_time_s": 36.2,
+        "wall_time_s": 6.718,
+        "realtime_factor": 5.3885,
+        "decision_counts": {
+          "follow_route": 486,
+          "slow": 238,
+          "arrived": 1
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 486,
+          "CURVE_SPEED_LIMIT": 458,
+          "LANE_UNCERTAIN_SLOW": 238,
+          "ARRIVED_AT_DESTINATION": 1
+        },
+        "perception_quality_counts": {
+          "valid": 725
+        },
+        "lane_status_counts": {
+          "valid": 624,
+          "uncertain": 40,
+          "unavailable": 61
+        },
+        "commands": {
+          "count": 725,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.13439,
+          "max_abs_steer": 0.37802,
+          "mean_throttle": 0.26849,
+          "mean_brake": 0.06017,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.99504,
+          "lateral_deviation_mean_m": 0.0285,
+          "lateral_deviation_max_m": 0.1298,
+          "lateral_deviation_samples": 724,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 9.329,
+          "tick_p95": 11.941,
+          "tick_max": 22.225,
+          "perception_p50": 6.771,
+          "perception_p95": 8.433
+        },
+        "expected_outcome": "arrived",
+        "expected_outcome_met": true,
+        "route_length_m": 129.986
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-obstacle_stop-2",
+        "scenario": "obstacle_stop",
+        "seed": 2,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_before_obstacle",
+        "ticks": 205,
+        "physics_steps": 205,
+        "sim_time_s": 10.25,
+        "wall_time_s": 3.391,
+        "realtime_factor": 3.0227,
+        "decision_counts": {
+          "follow_route": 44,
+          "slow": 37,
+          "controlled_stop": 124
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 44,
+          "OBSTACLE_AHEAD_SLOW": 37,
+          "OBSTACLE_AHEAD_STOP": 124
+        },
+        "perception_quality_counts": {
+          "valid": 205
+        },
+        "lane_status_counts": {
+          "valid": 205
+        },
+        "commands": {
+          "count": 205,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.04147,
+          "max_abs_steer": 0.34583,
+          "mean_throttle": 0.197,
+          "mean_brake": 0.24939,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.09349,
+          "lateral_deviation_mean_m": 0.0543,
+          "lateral_deviation_max_m": 0.1849,
+          "lateral_deviation_samples": 205,
+          "min_obstacle_gap_m": 8.0985,
+          "final_obstacle_gap_m": 8.0985,
+          "scenario_obstacle_route_s_m": [
+            24.352
+          ],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 16.44,
+          "tick_p95": 19.84,
+          "tick_max": 21.485,
+          "perception_p50": 6.94,
+          "perception_p95": 8.677
+        },
+        "expected_outcome": "stopped_before_obstacle",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-camera_blackout-2",
+        "scenario": "camera_blackout",
+        "seed": 2,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_camera_invalid",
+        "ticks": 195,
+        "physics_steps": 195,
+        "sim_time_s": 9.75,
+        "wall_time_s": 1.297,
+        "realtime_factor": 7.5173,
+        "decision_counts": {
+          "follow_route": 80,
+          "safety_stop": 115
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 80,
+          "CAMERA_BLACK": 115
+        },
+        "perception_quality_counts": {
+          "valid": 80,
+          "missing": 115
+        },
+        "lane_status_counts": {
+          "valid": 80,
+          "unavailable": 115
+        },
+        "commands": {
+          "count": 195,
+          "safety_overrides": 115,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.01698,
+          "max_abs_steer": 0.11927,
+          "mean_throttle": 0.2525,
+          "mean_brake": 0.58974,
+          "first_safety_override": {
+            "frame_id": 80,
+            "sim_time_s": 4.0,
+            "reason_codes": [
+              "CAMERA_BLACK"
+            ]
+          }
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.12204,
+          "lateral_deviation_mean_m": 0.0295,
+          "lateral_deviation_max_m": 0.0649,
+          "lateral_deviation_samples": 195,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 1.216,
+          "tick_p95": 16.662,
+          "tick_max": 27.708,
+          "perception_p50": 0.375,
+          "perception_p95": 8.222
+        },
+        "expected_outcome": "stopped_camera_invalid",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-stale_frame-2",
+        "scenario": "stale_frame",
+        "seed": 2,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_frame_stale",
+        "ticks": 192,
+        "physics_steps": 192,
+        "sim_time_s": 9.6,
+        "wall_time_s": 1.203,
+        "realtime_factor": 7.98,
+        "decision_counts": {
+          "follow_route": 60,
+          "slow": 20,
+          "safety_stop": 112
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 60,
+          "LANE_UNCERTAIN_SLOW": 20,
+          "FRAME_STALE": 112
+        },
+        "perception_quality_counts": {
+          "valid": 80,
+          "stale": 112
+        },
+        "lane_status_counts": {
+          "valid": 78,
+          "uncertain": 2,
+          "unavailable": 112
+        },
+        "commands": {
+          "count": 192,
+          "safety_overrides": 112,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.03964,
+          "max_abs_steer": 0.32967,
+          "mean_throttle": 0.27191,
+          "mean_brake": 0.60936,
+          "first_safety_override": {
+            "frame_id": 79,
+            "sim_time_s": 3.95,
+            "reason_codes": [
+              "FRAME_STALE"
+            ]
+          }
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.10151,
+          "lateral_deviation_mean_m": 0.0593,
+          "lateral_deviation_max_m": 0.2434,
+          "lateral_deviation_samples": 192,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 0.658,
+          "tick_p95": 15.463,
+          "tick_max": 17.135,
+          "perception_p50": 7.284,
+          "perception_p95": 8.248
+        },
+        "expected_outcome": "stopped_frame_stale",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-normal-3",
+        "scenario": "normal",
+        "seed": 3,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "arrived",
+        "outcome": "arrived",
+        "ticks": 723,
+        "physics_steps": 722,
+        "sim_time_s": 36.1,
+        "wall_time_s": 9.125,
+        "realtime_factor": 3.9562,
+        "decision_counts": {
+          "follow_route": 423,
+          "slow": 299,
+          "arrived": 1
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 423,
+          "LANE_UNCERTAIN_SLOW": 299,
+          "ARRIVED_AT_DESTINATION": 1
+        },
+        "perception_quality_counts": {
+          "valid": 723
+        },
+        "lane_status_counts": {
+          "valid": 525,
+          "uncertain": 113,
+          "unavailable": 85
+        },
+        "commands": {
+          "count": 723,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.02433,
+          "max_abs_steer": 0.33493,
+          "mean_throttle": 0.2356,
+          "mean_brake": 0.04622,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.99513,
+          "lateral_deviation_mean_m": 0.0337,
+          "lateral_deviation_max_m": 0.2024,
+          "lateral_deviation_samples": 722,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 12.857,
+          "tick_p95": 16.156,
+          "tick_max": 33.366,
+          "perception_p50": 6.626,
+          "perception_p95": 8.748
+        },
+        "expected_outcome": "arrived",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-bend-3",
+        "scenario": "bend",
+        "seed": 3,
+        "start_node": "D",
+        "destination_node": "I",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "arrived",
+        "outcome": "arrived",
+        "ticks": 706,
+        "physics_steps": 705,
+        "sim_time_s": 35.25,
+        "wall_time_s": 6.75,
+        "realtime_factor": 5.2222,
+        "decision_counts": {
+          "follow_route": 514,
+          "slow": 191,
+          "arrived": 1
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 514,
+          "CURVE_SPEED_LIMIT": 487,
+          "LANE_UNCERTAIN_SLOW": 191,
+          "ARRIVED_AT_DESTINATION": 1
+        },
+        "perception_quality_counts": {
+          "valid": 706
+        },
+        "lane_status_counts": {
+          "valid": 609,
+          "uncertain": 36,
+          "unavailable": 61
+        },
+        "commands": {
+          "count": 706,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.13133,
+          "max_abs_steer": 0.32996,
+          "mean_throttle": 0.22871,
+          "mean_brake": 0.04347,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.99506,
+          "lateral_deviation_mean_m": 0.0415,
+          "lateral_deviation_max_m": 0.2779,
+          "lateral_deviation_samples": 705,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 9.561,
+          "tick_p95": 12.536,
+          "tick_max": 36.063,
+          "perception_p50": 6.888,
+          "perception_p95": 8.989
+        },
+        "expected_outcome": "arrived",
+        "expected_outcome_met": true,
+        "route_length_m": 129.986
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-obstacle_stop-3",
+        "scenario": "obstacle_stop",
+        "seed": 3,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_before_obstacle",
+        "ticks": 198,
+        "physics_steps": 198,
+        "sim_time_s": 9.9,
+        "wall_time_s": 3.609,
+        "realtime_factor": 2.7431,
+        "decision_counts": {
+          "follow_route": 35,
+          "slow": 39,
+          "controlled_stop": 124
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 35,
+          "OBSTACLE_AHEAD_SLOW": 39,
+          "OBSTACLE_AHEAD_STOP": 124,
+          "LANE_UNCERTAIN_SLOW": 10
+        },
+        "perception_quality_counts": {
+          "valid": 198
+        },
+        "lane_status_counts": {
+          "valid": 197,
+          "uncertain": 1
+        },
+        "commands": {
+          "count": 198,
+          "safety_overrides": 0,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.03078,
+          "max_abs_steer": 0.18704,
+          "mean_throttle": 0.17698,
+          "mean_brake": 0.2485,
+          "first_safety_override": null
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.07817,
+          "lateral_deviation_mean_m": 0.0554,
+          "lateral_deviation_max_m": 0.2748,
+          "lateral_deviation_samples": 198,
+          "min_obstacle_gap_m": 8.1877,
+          "final_obstacle_gap_m": 8.1877,
+          "scenario_obstacle_route_s_m": [
+            22.45
+          ],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 17.898,
+          "tick_p95": 23.454,
+          "tick_max": 36.538,
+          "perception_p50": 7.794,
+          "perception_p95": 10.285
+        },
+        "expected_outcome": "stopped_before_obstacle",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-camera_blackout-3",
+        "scenario": "camera_blackout",
+        "seed": 3,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_camera_invalid",
+        "ticks": 192,
+        "physics_steps": 192,
+        "sim_time_s": 9.6,
+        "wall_time_s": 1.375,
+        "realtime_factor": 6.9818,
+        "decision_counts": {
+          "follow_route": 60,
+          "slow": 20,
+          "safety_stop": 112
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 60,
+          "LANE_UNCERTAIN_SLOW": 20,
+          "CAMERA_BLACK": 112
+        },
+        "perception_quality_counts": {
+          "valid": 80,
+          "missing": 112
+        },
+        "lane_status_counts": {
+          "valid": 78,
+          "uncertain": 2,
+          "unavailable": 112
+        },
+        "commands": {
+          "count": 192,
+          "safety_overrides": 112,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.02459,
+          "max_abs_steer": 0.1377,
+          "mean_throttle": 0.27342,
+          "mean_brake": 0.60986,
+          "first_safety_override": {
+            "frame_id": 80,
+            "sim_time_s": 4.0,
+            "reason_codes": [
+              "CAMERA_BLACK"
+            ]
+          }
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.1018,
+          "lateral_deviation_mean_m": 0.0372,
+          "lateral_deviation_max_m": 0.1045,
+          "lateral_deviation_samples": 192,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 1.238,
+          "tick_p95": 17.641,
+          "tick_max": 20.201,
+          "perception_p50": 0.388,
+          "perception_p95": 8.983
+        },
+        "expected_outcome": "stopped_camera_invalid",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      },
+      {
+        "run_id": "26f38e26ca9348a0adebad38b14746ab-stale_frame-3",
+        "scenario": "stale_frame",
+        "seed": 3,
+        "start_node": "A",
+        "destination_node": "C",
+        "perception_source": "synthetic_rgb_cv",
+        "run_state": "stopped",
+        "outcome": "stopped_frame_stale",
+        "ticks": 191,
+        "physics_steps": 191,
+        "sim_time_s": 9.55,
+        "wall_time_s": 1.344,
+        "realtime_factor": 7.1057,
+        "decision_counts": {
+          "follow_route": 55,
+          "slow": 25,
+          "safety_stop": 111
+        },
+        "reason_counts": {
+          "ROUTE_FOLLOWING": 55,
+          "LANE_UNCERTAIN_SLOW": 25,
+          "FRAME_STALE": 111
+        },
+        "perception_quality_counts": {
+          "valid": 80,
+          "stale": 111
+        },
+        "lane_status_counts": {
+          "valid": 76,
+          "uncertain": 4,
+          "unavailable": 111
+        },
+        "commands": {
+          "count": 191,
+          "safety_overrides": 111,
+          "clamped": 0,
+          "nan_rejected": 0,
+          "mean_abs_steer": 0.01574,
+          "max_abs_steer": 0.08632,
+          "mean_throttle": 0.26263,
+          "mean_brake": 0.60738,
+          "first_safety_override": {
+            "frame_id": 79,
+            "sim_time_s": 3.95,
+            "reason_codes": [
+              "FRAME_STALE"
+            ]
+          }
+        },
+        "evaluator": {
+          "collisions": 0,
+          "route_progress": 0.09605,
+          "lateral_deviation_mean_m": 0.0271,
+          "lateral_deviation_max_m": 0.044,
+          "lateral_deviation_samples": 191,
+          "min_obstacle_gap_m": null,
+          "final_obstacle_gap_m": null,
+          "scenario_obstacle_route_s_m": [],
+          "injected_obstacles": 0
+        },
+        "timing_ms": {
+          "tick_p50": 0.769,
+          "tick_p95": 17.466,
+          "tick_max": 18.836,
+          "perception_p50": 7.877,
+          "perception_p95": 9.321
+        },
+        "expected_outcome": "stopped_frame_stale",
+        "expected_outcome_met": true,
+        "route_length_m": 130.0
+      }
+    ],
+    "scenarios": [
+      "normal",
+      "bend",
+      "obstacle_stop",
+      "camera_blackout",
+      "stale_frame"
+    ],
+    "host": {
+      "platform": "Windows-10-10.0.26300-SP0",
+      "machine": "AMD64",
+      "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "cpu_count": 12,
+      "python": "3.11.9"
+    }
+  }
+}

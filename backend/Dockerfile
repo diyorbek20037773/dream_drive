@@ -54,6 +54,7 @@ WORKDIR /app/backend
 COPY --from=builder /app/backend/.venv /app/backend/.venv
 COPY config /app/config
 COPY contracts /app/contracts
+COPY evaluations/baseline /app/evaluations/baseline
 COPY backend/pyproject.toml backend/uv.lock /app/backend/
 COPY backend/app /app/backend/app
 ENV PATH="/app/backend/.venv/bin:${PATH}" \

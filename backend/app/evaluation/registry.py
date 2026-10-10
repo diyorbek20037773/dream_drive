@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -68,3 +69,28 @@ def load_evaluation_details(root: Path, eval_id: str) -> dict[str, Any] | None:
         return None
     doc = _read(root / f"{eval_id}.json")
     return doc.get("details") if doc is not None else None
+
+
+# Release baseline records (committed under evaluations/baseline/, copied into images) - measured evaluation results
+# recorded with their own code commit, model SHA256 and dataset manifest. They are seeded into the runtime evaluation
+# directory so the UI can list them; runtime evaluations are never overwritten.
+BASELINE_DIR = Path(__file__).resolve().parents[3] / "evaluations" / "baseline"
+
+
+def seed_baseline(root: Path, baseline_dir: Path = BASELINE_DIR) -> int:
+    """Copy valid baseline evaluation files that are missing from ``root``; returns how many were copied."""
+    if not baseline_dir.is_dir():
+        return 0
+    root.mkdir(parents=True, exist_ok=True)
+    copied = 0
+    for src in sorted(baseline_dir.glob("*.json")):
+        if not _ID.match(src.stem) or _read(src) is None:
+            continue
+        dest = root / src.name
+        if dest.exists():
+            continue
+        tmp = root / f".{src.stem}.seed.tmp"
+        shutil.copyfile(src, tmp)
+        os.replace(tmp, dest)
+        copied += 1
+    return copied

@@ -1,0 +1,400 @@
+{
+  "id": "9e313020dd6c4f4eb89431e1a6c02840",
+  "kind": "video_ml_accuracy",
+  "state": "succeeded",
+  "created_utc": "2026-10-10T16:11:34.296986+00:00",
+  "finished_utc": "2026-10-10T16:14:17.426039+00:00",
+  "source": "learned_model",
+  "sample_count": 150,
+  "metrics": {
+    "lane_iou_overall": {
+      "value": 0.2948,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel iou = sum TP / sum (TP+FP+FN), exact pixels; 150 images, 723,819 GT lane px, 1,315,707 predicted lane px; sample_count = images"
+    },
+    "lane_precision_overall": {
+      "value": 0.3529,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel precision = sum TP / sum (TP+FP), exact pixels; 150 images, 723,819 GT lane px, 1,315,707 predicted lane px; sample_count = images"
+    },
+    "lane_recall_overall": {
+      "value": 0.6415,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel recall = sum TP / sum (TP+FN), exact pixels; 150 images, 723,819 GT lane px, 1,315,707 predicted lane px; sample_count = images"
+    },
+    "lane_f1_overall": {
+      "value": 0.4553,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel f1 = 2TP / (2TP+FP+FN), exact pixels; 150 images, 723,819 GT lane px, 1,315,707 predicted lane px; sample_count = images"
+    },
+    "lane_tol_iou_overall": {
+      "value": 0.444,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel iou = sum TP / sum (TP+FP+FN), both masks dilated by a disk of radius k = round(8 W / 1280) (k=4 px for 150 images); 150 images, 1,550,013 GT lane px, 2,382,345 predicted lane px; sample_count = images"
+    },
+    "lane_tol_precision_overall": {
+      "value": 0.5076,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel precision = sum TP / sum (TP+FP), both masks dilated by a disk of radius k = round(8 W / 1280) (k=4 px for 150 images); 150 images, 1,550,013 GT lane px, 2,382,345 predicted lane px; sample_count = images"
+    },
+    "lane_tol_recall_overall": {
+      "value": 0.7801,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel recall = sum TP / sum (TP+FN), both masks dilated by a disk of radius k = round(8 W / 1280) (k=4 px for 150 images); 150 images, 1,550,013 GT lane px, 2,382,345 predicted lane px; sample_count = images"
+    },
+    "lane_tol_f1_overall": {
+      "value": 0.615,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "lane-marking pixel f1 = 2TP / (2TP+FP+FN), both masks dilated by a disk of radius k = round(8 W / 1280) (k=4 px for 150 images); 150 images, 1,550,013 GT lane px, 2,382,345 predicted lane px; sample_count = images"
+    },
+    "lane_buffered_precision_overall": {
+      "value": 0.625,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "predicted lane px within k px of a GT lane px / predicted lane px, pooled over 150 images"
+    },
+    "lane_buffered_recall_overall": {
+      "value": 0.794,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "GT lane px within k px of a predicted lane px / GT lane px, pooled over 150 images"
+    },
+    "lane_buffered_f1_overall": {
+      "value": 0.6994,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "harmonic mean of the buffered precision and recall, pooled over 150 images"
+    },
+    "lane_iou_per_image_p10": {
+      "value": 0.1488,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "10th percentile of per-image lane_iou over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_iou_per_image_p50": {
+      "value": 0.3055,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "50th percentile of per-image lane_iou over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_iou_per_image_p90": {
+      "value": 0.4316,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "90th percentile of per-image lane_iou over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_f1_per_image_p10": {
+      "value": 0.259,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "10th percentile of per-image lane_f1 over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_f1_per_image_p50": {
+      "value": 0.468,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "50th percentile of per-image lane_f1 over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_f1_per_image_p90": {
+      "value": 0.6029,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "90th percentile of per-image lane_f1 over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_tol_iou_per_image_p10": {
+      "value": 0.2516,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "10th percentile of per-image lane_tol_iou over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_tol_iou_per_image_p50": {
+      "value": 0.472,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "50th percentile of per-image lane_tol_iou over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_tol_iou_per_image_p90": {
+      "value": 0.596,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "90th percentile of per-image lane_tol_iou over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_tol_f1_per_image_p10": {
+      "value": 0.402,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "10th percentile of per-image lane_tol_f1 over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_tol_f1_per_image_p50": {
+      "value": 0.6413,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "50th percentile of per-image lane_tol_f1 over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "lane_tol_f1_per_image_p90": {
+      "value": 0.7468,
+      "unit": "ratio",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "90th percentile of per-image lane_tol_f1 over 150 images with a defined value; 0 images excluded (empty union / no GT and no prediction); sample_count = images"
+    },
+    "images_evaluated": {
+      "value": 150.0,
+      "unit": "count",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "images scored"
+    },
+    "inference_latency_p50_ms": {
+      "value": 990.8,
+      "unit": "ms",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "service timing_ms.total per image (cpu; every model the service runs)"
+    },
+    "inference_latency_p95_ms": {
+      "value": 1223.2,
+      "unit": "ms",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "service timing_ms.total per image (cpu; every model the service runs)"
+    },
+    "yolopv2_forward_p50_ms": {
+      "value": 753.5,
+      "unit": "ms",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "service timing_ms.inference_by_model.yolopv2 per image (cpu)"
+    },
+    "yolopv2_forward_p95_ms": {
+      "value": 949.3,
+      "unit": "ms",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "service timing_ms.inference_by_model.yolopv2 per image (cpu)"
+    },
+    "request_roundtrip_p50_ms": {
+      "value": 995.3,
+      "unit": "ms",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "client HTTP round trip incl. JPEG upload, masks and JSON"
+    },
+    "request_roundtrip_p95_ms": {
+      "value": 1230.2,
+      "unit": "ms",
+      "sample_count": 150,
+      "status": "measured",
+      "note": "client HTTP round trip incl. JPEG upload, masks and JSON"
+    },
+    "lane_instance_f1": {
+      "value": null,
+      "unit": "ratio",
+      "sample_count": 0,
+      "status": "unsupported",
+      "note": "not evaluated: YOLOPv2 returns a binary lane-line mask without lane instances, so TuSimple/CULane-style per-lane matching is not possible"
+    }
+  },
+  "limitations": [
+    "Capped run: the first 150 of 193 'test' images by sorted file name (max_images=150), to share CPU with a concurrently running stack.",
+    "Roboflow version preprocessing 'Stretch to 640x640' was applied by the dataset author before export, so the 'original' images evaluated here are the exported 640x640 images: camera frames of another aspect ratio are geometrically distorted (non-uniformly stretched) compared with what YOLOPv2 saw in training (BDD100K, 16:9).",
+    "Cross-dataset label convention: YOLOPv2's lane-line head was trained on BDD100K lane annotations (thin polylines along marking edges/centres, rendered at a fixed width), while this ground truth is hand-drawn polygons covering the painted marking. Line width, which markings are labelled (e.g. road edges, crosswalks, far-field dashes) and how dashed gaps are treated differ, so part of the measured error is convention mismatch, not model error. The exact pixel IoU of thin structures is very sensitive to 1-3 px offsets; read the tolerant numbers together with the exact ones.",
+    "Pixel-level metrics only: there is no per-lane instance matching (no TuSimple accuracy or CULane F1 with IoU-matched lanes), no lane type (solid/dashed) and no ego-lane assignment. YOLOPv2 outputs one binary lane-line mask and has no lane instances or types.",
+    "The service's fixed binary operating point (lane probability > 0.5) is evaluated; no threshold sweep.",
+    "Each exported image (already JPEG) is decoded and re-encoded once as JPEG q95 before inference, exactly as the video pipeline does, so results include one additional lossy compression step.",
+    "Production letterbox policy: the longest side is resized to 640 and the short side padded to a multiple of 32; the service crops the padding and resizes the lane probabilities back to the original H x W before thresholding.",
+    "The service ran the YOLOPv2 + RF-DETR-N ensemble; the lane mask is produced by YOLOPv2 alone, so model_sha256 is the YOLOPv2 checkpoint and the ensemble identity is recorded in details. Service latency includes both models.",
+    "Licence: CC BY 4.0 as declared by the Roboflow Universe dataset author (https://universe.roboflow.com/rtqi/lane-marking-9qzw7/dataset/2); the original capture provenance of the images is not documented by the author. Images and labels are used for this local measurement only and are not redistributed."
+  ],
+  "code_commit": "fa64cd00994dd5215e1a992fdd236765f69ed54b",
+  "model_sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+  "seeds": null,
+  "error_code": null,
+  "details": {
+    "task": "lane_marking_segmentation",
+    "run_label": null,
+    "dataset": {
+      "name": "Roboflow Universe rtqi/lane-marking-9qzw7 v2",
+      "manifest_id": "roboflow_lane-marking-9qzw7_v2",
+      "manifest_file": "roboflow_lane-marking-9qzw7_v2.json",
+      "manifest_sha256": "d64426dd9a3da884c6b77a7d7c0687f69b2e1d4de87ec869ed3e87c4ec918f4a",
+      "url": "https://universe.roboflow.com/rtqi/lane-marking-9qzw7/dataset/2",
+      "version": 2,
+      "split": "test",
+      "licence": "CC BY 4.0",
+      "licence_id": "CC-BY-4.0",
+      "attribution": "RTQI, 'Lane-Marking' dataset (version 2), Roboflow Universe, https://universe.roboflow.com/rtqi/lane-marking-9qzw7, licensed CC BY 4.0.",
+      "export_format": "coco-segmentation",
+      "preprocessing": {
+        "auto-orient": true,
+        "resize": {
+          "format": "Stretch to",
+          "width": 640,
+          "height": 640
+        }
+      },
+      "annotations_sha256": "a0d7b6a3c3247420b7758944ae06f6bf0ff33cf60e8a3215b339da0e59ac8118",
+      "categories_used": [
+        "LC",
+        "LD",
+        "MD",
+        "RC",
+        "RD"
+      ],
+      "images_in_split": 193,
+      "images_requested": 150,
+      "images_evaluated": 150,
+      "images_failed": [],
+      "cap": "first 150 by sorted file name"
+    },
+    "protocol": {
+      "input": "exported image -> RGB -> JPEG q95 (app.video.encode.encode_jpeg_bytes, as the video pipeline) -> POST /v1/infer via app.perception.client.InferenceClient",
+      "prediction": "lane_mask_png (YOLOPv2 lane-line probability > 0.5, unletterboxed to the original frame by the service) > 127",
+      "ground_truth": "union of all annotation polygons of the image (all lane-marking classes), rasterised at the original resolution with cv2.fillPoly (vertices - 0.5 px, 4 fractional bits)",
+      "tolerance": "k = max(1, floor(8 * W / 1280 + 0.5)) px; elliptical (disk) structuring element of size 2k+1; tolerant metrics dilate BOTH masks; buffered precision/recall dilate only the reference mask",
+      "k_px_counts": {
+        "4": 150
+      },
+      "dataset_level": "sum of per-image counts over images, then ratios",
+      "per_image": "ratios per image; undefined values (zero denominator) excluded and counted",
+      "jpeg_quality": 95,
+      "conf_threshold": 0.1,
+      "letterbox_geometries": {
+        "640x640->canvas 640x640 scale 1.000000 pad l0 t0 r0 b0": 150
+      },
+      "pred_non_binary_pixels_total": 0
+    },
+    "totals": {
+      "images": 150,
+      "exact": {
+        "tp": 464308,
+        "fp": 851399,
+        "fn": 259511,
+        "tn": 59864782,
+        "gt_lane_px": 723819,
+        "pred_lane_px": 1315707,
+        "iou": 0.294758,
+        "precision": 0.352896,
+        "recall": 0.64147,
+        "f1": 0.45531
+      },
+      "tolerant": {
+        "tp": 1209186,
+        "fp": 1173159,
+        "fn": 340827,
+        "tn": 58716828,
+        "gt_lane_px": 1550013,
+        "pred_lane_px": 2382345,
+        "iou": 0.444036,
+        "precision": 0.507561,
+        "recall": 0.780113,
+        "f1": 0.614993
+      },
+      "buffered": {
+        "pred": 1315707,
+        "pred_near_gt": 822336,
+        "gt": 723819,
+        "gt_near_pred": 574715
+      }
+    },
+    "models": [
+      {
+        "model_id": "yolopv2",
+        "sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+        "device": "cpu",
+        "precision": "fp32"
+      },
+      {
+        "model_id": "rfdetr_nano",
+        "sha256": "d8d6b9ee57d4d0ed2b1f305163624712a0532cb7bce0c747317984fc5457440d",
+        "device": "cpu",
+        "precision": "fp32"
+      }
+    ],
+    "yolopv2_sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+    "ensemble_sha256_reported": "e514a67df0620326cb5a57c6a3a3db79d789dae42f43a96b71e7268867d34777",
+    "service_model_info": {
+      "model_id": "yolopv2",
+      "ready": true,
+      "sha256": "f2a8c8374203ae3e67ff9c184e931f763957de92a993b23269e4e721627f1f8c",
+      "device": "cpu",
+      "precision": "fp32",
+      "torch_version": "2.14.1+cpu",
+      "input_policy": "letterbox640_stride32",
+      "ensemble_id": "yolopv2+rfdetr_nano",
+      "ensemble_sha256": "e514a67df0620326cb5a57c6a3a3db79d789dae42f43a96b71e7268867d34777"
+    },
+    "latency_ms": {
+      "service_total_p50": 990.83,
+      "service_total_p95": 1223.21,
+      "yolopv2_forward_p50": 753.47,
+      "yolopv2_forward_p95": 949.27,
+      "roundtrip_p50": 995.27,
+      "roundtrip_p95": 1230.22,
+      "samples": 150
+    },
+    "evidence": {
+      "per_image_csv": "9e313020dd6c4f4eb89431e1a6c02840.per_image.csv",
+      "visuals": {
+        "worst": {
+          "file_in_split": "My-Project_mp4-0032_jpg.rf.3a4ee25e49b8efb94bfee5ee9059d21a.jpg",
+          "iou": 0.0,
+          "tol_iou": 0.0,
+          "file": "9e313020dd6c4f4eb89431e1a6c02840_visual_worst.png"
+        },
+        "median": {
+          "file_in_split": "GH030156_MP4-0021_jpg.rf.e025ad3d5afc878240e409a1dcad7ba3.jpg",
+          "iou": 0.245908,
+          "tol_iou": 0.472306,
+          "file": "9e313020dd6c4f4eb89431e1a6c02840_visual_median.png"
+        },
+        "best": {
+          "file_in_split": "GH020156_MP4-0008_jpg.rf.0dbc44b61ee388eef8e49f9ac4be4b39.jpg",
+          "iou": 0.477314,
+          "tol_iou": 0.679762,
+          "file": "9e313020dd6c4f4eb89431e1a6c02840_visual_best.png"
+        }
+      }
+    },
+    "code": {
+      "head": "fa64cd00994dd5215e1a992fdd236765f69ed54b",
+      "dirty": true
+    },
+    "host": {
+      "platform": "Windows-10-10.0.26300-SP0",
+      "machine": "AMD64",
+      "python": "3.11.9",
+      "cpu_count": 12
+    }
+  }
+}

@@ -38,6 +38,7 @@ from rq import Queue, SimpleWorker  # noqa: E402
 
 from app.config import get_settings  # noqa: E402
 from app.db import get_database  # noqa: E402
+from app.evaluation.registry import seed_baseline  # noqa: E402
 from app.events.bus import EventBus  # noqa: E402
 from app.jobs.context import SHUTDOWN  # noqa: E402
 from app.jobs.maintenance import reconcile_after_restart, retention_cleanup  # noqa: E402
@@ -121,6 +122,8 @@ def main() -> int:
     client = redis_from_url(settings.redis_url)
     _wait_for_redis(client)
     reconcile_after_restart(db, client, EventBus(client), settings.artifact_root)
+    seeded = seed_baseline(settings.evaluation_root)
+    logger.info("baseline evaluations seeded", extra={"code": "baseline_seeded", "count": seeded})
 
     registry = CollectorRegistry()
     multiprocess.MultiProcessCollector(registry)
