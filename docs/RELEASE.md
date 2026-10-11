@@ -16,6 +16,7 @@ was typed by hand.
 | `diyorbek7377/dreamdrive-web` | `sha-267f3030f6edbc6213601bafa3259cbe96afaa90`, `v0.1.0` | `sha256:14ab20c490816f8532f792816d3ae17e9deef6a9334daf60cfbd01baba68decf` |
 | `diyorbek7377/dreamdrive-backend` | `sha-267f3030f6edbc6213601bafa3259cbe96afaa90`, `v0.1.0` | `sha256:94fc08a7180a0204bb14f778d1f65f5f985ad79b4676ecc11e1179e4827bd347` |
 | `diyorbek7377/dreamdrive-inference` | `sha-267f3030f6edbc6213601bafa3259cbe96afaa90`, `v0.1.0` | `sha256:c1bcdef0a82b2f8fef6b638786fa549d9e323b088885a8e692086595e1e43fc4` |
+| `diyorbek7377/dreamdrive-inference-gpu` (optional CUDA) | `sha-267f3030f6edbc6213601bafa3259cbe96afaa90`, `v0.1.0` | `sha256:95edc7458da86a27ec9d03873065274c6a2843e177c093abe481a552da203691` |
 
 Third-party images used by `compose.prod.yaml`:
 - `caddy:2.10-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d`
@@ -46,8 +47,17 @@ Ensemble `yolopv2+rfdetr_nano`, SHA256 `e514a67df0620326cb5a57c6a3a3db79d789dae4
 
 ## Supported platforms and limits
 - linux/amd64 only (Docker Desktop on Windows/macOS x86-64, Linux x86-64). ARM is not claimed: not built or tested.
-- CPU inference is the supported default. The CUDA image (`dreamdrive-inference-gpu`) is not part of this release
-  unless listed above.
+- CPU inference is the supported default.
+- CUDA image `dreamdrive-inference-gpu` (torch 2.14.1+cu126, fp16), built from the same commit in a clean worktree and
+  verified on one GPU only: NVIDIA GeForce RTX 3050 6 GB Laptop, driver 576.52, Docker Desktop WSL2.
+  - Before publishing: `tests/model_smoke` in the GPU test image with real weights, 10/10 passed, including the
+    CUDA-fp16-vs-CPU-fp32 agreement test; two-model server time p50 65.3 ms / p95 86.3 ms per 1280x720 frame;
+    peak CUDA memory reserved 294 MiB (allocated 196.5 MiB).
+  - After publishing: pulled by digest (local copy removed first), started with `--gpus all --read-only`, ready on
+    `cuda`/`fp16` with the release ensemble SHA256, and real `/v1/infer` requests returned detections (COCO street
+    image: 8 person, 2 vehicle, 2 traffic_light at score >= 0.4).
+  - Host requirement: NVIDIA driver with CUDA >= 12.6 and the NVIDIA container runtime (`make up GPU=1`). Other GPUs
+    are untested.
 - Not deployed to a public server: no host, domain or SSH access has been supplied (see docs/DEPLOY.md).
 
 ## Deploying these exact images

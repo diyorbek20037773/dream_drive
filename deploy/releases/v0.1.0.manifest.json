@@ -1,13 +1,13 @@
 {
   "schema": "dreamdrive-release/1",
   "git_commit": "267f3030f6edbc6213601bafa3259cbe96afaa90",
-  "resolved_utc": "2026-10-10T19:43:05Z",
+  "resolved_utc": "2026-10-11T06:13:27Z",
   "platforms": ["linux/amd64"],
   "images": {
     "web": "diyorbek7377/dreamdrive-web@sha256:14ab20c490816f8532f792816d3ae17e9deef6a9334daf60cfbd01baba68decf",
     "backend": "diyorbek7377/dreamdrive-backend@sha256:94fc08a7180a0204bb14f778d1f65f5f985ad79b4676ecc11e1179e4827bd347",
     "inference": "diyorbek7377/dreamdrive-inference@sha256:c1bcdef0a82b2f8fef6b638786fa549d9e323b088885a8e692086595e1e43fc4",
-    "inference_gpu": null
+    "inference_gpu": "diyorbek7377/dreamdrive-inference-gpu@sha256:95edc7458da86a27ec9d03873065274c6a2843e177c093abe481a552da203691"
   },
   "tags": {
     "web": "diyorbek7377/dreamdrive-web:sha-267f3030f6edbc6213601bafa3259cbe96afaa90",

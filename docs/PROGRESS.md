@@ -17,7 +17,7 @@ GitHub Actions runs.
 | 6. Evaluation | Done (measured) | COCO street subset 300 img: mAP50 0.684, mAP50:95 0.462; KITTI Road 289 img: drivable IoU 0.847, F1 0.917; Roboflow lane-marking v2 150 img: F1 0.455 exact / 0.615 at 4 px. evaluations/baseline/, docs/EVALUATION*.md | – |
 | 6. Monitoring | Prepared + rule-tested | promtool firing-transition tests; Grafana provisioning | Live OPS stack is optional |
 | 7. Containers + full QA | Done | make qa 21/21 on 267f303 (local) and in CI | – |
-| 8. GitHub + registry | Done | main = 267f303 pushed; CI run 38077565137 success; images published and pull-only smoke 14/14 (docs/RELEASE.md) | Optional GPU image |
+| 8. GitHub + registry | Done | main pushed; CI run 38077565137 success on the release commit 267f303; CPU images published and pull-only smoke 14/14; CUDA image published and pull-verified on RTX 3050 (docs/RELEASE.md) | – |
 | 9. Server deployment | Blocked: no server/domain/SSH supplied | deploy/ scripts, compose.prod.yaml, Caddyfile.prod; the exact deploy.sh path ran locally with HTTPS (internal CA) | Owner supplies host, domain, SSH user |
 | 10. Handoff | Done | README.md, docs/RELEASE.md, MODEL_CARD, DATA_SOURCES, LICENSES, EVALUATION*, RUNBOOK, DEPLOY | – |
 
